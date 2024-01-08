@@ -8,6 +8,7 @@ import arrow.core.getOrElse
 import arrow.core.nonEmptyListOf
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.impl.*
+import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
 import java.util.concurrent.ConcurrentHashMap
 
@@ -21,9 +22,18 @@ class FakeHeroRepository : InstrumentedHeroRepository {
     private val existingHeroes = ConcurrentHashMap.newKeySet<Hero>()
 
     private val assignableHeroes = ConcurrentHashMap<TaskId, Heroes>()
+
+    private val workableHeroes = ConcurrentHashMap<TaskId, Heroes>()
+
     override fun defineAssignableHeroes(taskId: TaskId, heroesToCreateIfNeeded: Heroes): Heroes {
         val heroes = ensureExisting(heroesToCreateIfNeeded)
         assignableHeroes[taskId] = heroes
+        return heroes
+    }
+
+    override fun defineWorkableHeroes(taskId: TaskId, heroesToCreateIfNeeded: Heroes): Heroes {
+        val heroes = ensureExisting(heroesToCreateIfNeeded)
+        workableHeroes[taskId] = heroes
         return heroes
     }
 
@@ -42,13 +52,14 @@ class FakeHeroRepository : InstrumentedHeroRepository {
                 val candidates = heroes.value
                 val (assignableHeroes, nonAssignableHeroes) =
                     assignees.value.partition { heroId ->
-                        candidates.map { it.heroId }.contains(heroId)
+                        candidates.map { it.id }.contains(heroId)
                     }
                 if (nonAssignableHeroes.isEmpty()) {
                     Right(
                         Heroes(
                             assignableHeroes
-                                .map { id -> existingHeroes.first { hero -> hero.heroId == id } })
+                                .map { id -> existingHeroes.first { hero -> hero.id == id } } //FIXME
+                                .toSet())
                     )
                 } else {
                     Left(
@@ -64,14 +75,31 @@ class FakeHeroRepository : InstrumentedHeroRepository {
             }
             ?: Left(nonEmptyListOf(TaskDoesNotExistAssignTaskError(id)))
 
-    private fun ensureExisting(heroes: Heroes): Heroes {
-        heroes.value.forEach { hero ->
-            ensureExisting(hero)
-        }
+    override fun canHeroStartWork(id: PendingTaskId, author: HeroId): EitherNel<StartWorkError, Hero> =
+        workableHeroes[id]
+            ?.let { heroes ->
+                if (heroes.contains(author)) {
+                    heroes[author]
+                        ?.let { Right(it) }
+                        ?: Left(nonEmptyListOf(HeroDoesNotExistStartWorkError(author)))
+                } else {
+                    Left(nonEmptyListOf(NonAssignableHeroStartWorkError(id, HeroIds(listOf(author)))))
+                }
+            }
+            ?: Left(nonEmptyListOf(TaskDoesNotExistStartWorkError(id)))
+
+    override fun getHero(author: HeroId): EitherNel<GetHeroError, Hero> =
+        existingHeroes
+            .firstOrNull { it.id == author }
+            ?.let { Right(it) }
+            ?: Left(nonEmptyListOf(HeroDoesNotExistError(author)))
+
+    override fun ensureExisting(heroes: Heroes): Heroes {
+        heroes.forEach { ensureExisting(it) }
         return heroes
     }
 
-    private fun ensureExisting(hero: Hero): Hero {
+    override fun ensureExisting(hero: Hero): Hero {
         existingHeroes.add(hero)
         return hero
     }
@@ -81,16 +109,16 @@ class FakeHeroRepository : InstrumentedHeroRepository {
             .flatMap { name ->
                 HeroId("${name.value}Id")
                     .map { id ->
-                        Right(ensureExisting(Hero(name, id)).heroId)
+                        Right(ensureExisting(Hero(name, id)).id)
                     }
             }
             .getOrElse {
                 throw RuntimeException("HeroId(1) should be valid")
             }
 
-    override fun canUserCreateTask(creator: HeroId): EitherNel<CreateTaskError, Hero> =
+    override fun canHeroCreateTask(creator: HeroId): EitherNel<CreateTaskError, Hero> =
         if (creator == NON_EXISTING_USER_ID) {
-            Left(nonEmptyListOf(HeroDoesNotExistError(creator)))
+            Left(nonEmptyListOf(HeroDoesNotExistCreateTaskError(creator)))
         } else {
             Right(
                 Hero(
@@ -100,7 +128,7 @@ class FakeHeroRepository : InstrumentedHeroRepository {
             )
         }
 
-    override fun canUserUpdateTaskTitle(author: HeroId): EitherNel<UpdateTitleError, Hero> =
+    override fun canHeroUpdateTaskTitle(author: HeroId): EitherNel<UpdateTitleError, Hero> =
         if (author == NON_EXISTING_USER_ID) {
             Left(nonEmptyListOf(HeroDoesNotExistUpdateTitleError(author)))
         } else {
@@ -112,7 +140,7 @@ class FakeHeroRepository : InstrumentedHeroRepository {
             )
         }
 
-    override fun canUserUpdateDescriptionTitle(author: HeroId): EitherNel<UpdateDescriptionError, Hero> =
+    override fun canHeroUpdateDescriptionTitle(author: HeroId): EitherNel<UpdateDescriptionError, Hero> =
         if (author == NON_EXISTING_USER_ID) {
             Left(nonEmptyListOf(HeroDoesNotExistUpdateDescriptionError(author)))
         } else {

@@ -15,10 +15,10 @@ sealed interface TaskId : StringValue {
 
     sealed interface TaskIdError : StringValueError
     data class BelowMinLengthError(val string: String) : TaskIdError {
-        override val message: String = "TaskId must be above $MIN_LENGTH characters, got ${string.length} in $string"
+        override val message: String = "Task id must be above $MIN_LENGTH characters, got ${string.length} in $string"
     }
 
     data class AboveMaxLengthError(val string: String) : TaskIdError {
-        override val message: String = "TaskId must be below $MAX_LENGTH characters, got ${string.length} in $string"
+        override val message: String = "Task id must be below $MAX_LENGTH characters, got ${string.length} in $string"
     }
 }

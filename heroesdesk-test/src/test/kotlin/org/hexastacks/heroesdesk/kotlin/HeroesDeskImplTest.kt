@@ -11,7 +11,7 @@ class HeroesDeskImplTest : AbstractHeroesDeskTest() {
     override fun heroesDesk(instrumentedUserRepository: InstrumentedHeroRepository): HeroesDesk =
         HeroesDeskImpl(instrumentedUserRepository, InMemoryTaskRepository())
 
-    override fun instrumentedUserRepository(): InstrumentedHeroRepository = FakeHeroRepository()
+    override fun instrumentedHeroRepository(): InstrumentedHeroRepository = FakeHeroRepository()
 
     override fun nonExistingHeroId(): HeroId = FakeHeroRepository.NON_EXISTING_USER_ID
     override fun nonExistingRawTaskId(): String = InMemoryTaskRepository.NON_EXISTING_TASK_ID

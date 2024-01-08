@@ -5,24 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8b8999cd-0409-4461-bc4e-7560dc4f357a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/AbstractHeroesDeskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/AbstractHeroesDeskTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/FakeUserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/FakeHeroRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/FakeHeroRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/FakeHeroRepository.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InMemoryTaskRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InMemoryTaskRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InstrumentedUserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InstrumentedHeroRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDeskImplTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDeskImplTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDesk.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDesk.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/Heroes.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/Heroes.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesDeskImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesDeskImpl.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/Task.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/Task.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/HeroRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/HeroRepository.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/TaskRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/TaskRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/UserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/HeroRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/AbstractTaskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/AbstractTaskTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DeletedTaskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DeletedTaskTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DoneTaskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DoneTaskTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/InProgressTaskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/InProgressTaskTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/PendingTaskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/PendingTaskTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -258,7 +249,7 @@
       <workItem from="1704461659628" duration="5945000" />
       <workItem from="1704468366595" duration="502000" />
       <workItem from="1704701749478" duration="151000" />
-      <workItem from="1704701908957" duration="6108000" />
+      <workItem from="1704701908957" duration="14110000" />
     </task>
     <servers />
   </component>
@@ -269,9 +260,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/AbstractHeroesDeskTest.kt</url>
-          <line>233</line>
-          <option name="timeStamp" value="3" />
+          <url>file://$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/Task.kt</url>
+          <line>14</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

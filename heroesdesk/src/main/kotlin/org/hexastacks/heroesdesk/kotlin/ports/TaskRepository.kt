@@ -1,11 +1,11 @@
 package org.hexastacks.heroesdesk.kotlin.ports
 
+import arrow.core.Either
 import arrow.core.EitherNel
+import arrow.core.NonEmptyList
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.impl.*
-import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTask
-import org.hexastacks.heroesdesk.kotlin.impl.task.Task
-import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
+import org.hexastacks.heroesdesk.kotlin.impl.task.*
 
 interface TaskRepository {
     fun createTask(title: Title, hero: Hero): EitherNel<CreateTaskError, PendingTask>
@@ -27,5 +27,7 @@ interface TaskRepository {
         assignees: Heroes,
         author: HeroId
     ): EitherNel<AssignTaskError, Task<*>>
+
+    fun startWork(id: PendingTaskId, hero: Hero): EitherNel<StartWorkError, InProgressTask>
 
 }

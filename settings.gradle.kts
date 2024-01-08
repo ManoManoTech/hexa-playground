@@ -4,7 +4,6 @@ plugins {
 rootProject.name = "hexa-playground"
 include("heroesdesk", "heroesdesk-test")
 
-
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {

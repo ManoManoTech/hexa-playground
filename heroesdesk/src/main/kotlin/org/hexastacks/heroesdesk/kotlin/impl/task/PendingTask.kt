@@ -12,5 +12,4 @@ data class PendingTask(
     override val creator: Hero,
     override val assignees: Heroes = Heroes.EMPTY_HEROES
 ) : Task<PendingTaskId> {
-
 }

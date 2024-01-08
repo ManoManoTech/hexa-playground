@@ -3,10 +3,7 @@ package org.hexastacks.heroesdesk.kotlin.ports
 import arrow.core.*
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.impl.*
-import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTask
-import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
-import org.hexastacks.heroesdesk.kotlin.impl.task.Task
-import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
+import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -85,6 +82,38 @@ class InMemoryTaskRepository : TaskRepository {
                 Either.Right(updatedTask)
             }
             ?: Either.Left(nonEmptyListOf(TaskDoesNotExistAssignTaskError(id)))
+
+    override fun startWork(id: PendingTaskId, hero: Hero): EitherNel<StartWorkError, InProgressTask> =
+        tasks[id]
+            ?.let { taskToUpdate ->
+                when (taskToUpdate) {
+                    is PendingTask -> {
+                        InProgressTaskId(taskToUpdate.taskId.value)
+                            .mapLeft { errors: NonEmptyList<TaskId.TaskIdError> ->
+                                errors.map {
+                                    when (it) {
+                                        is TaskId.BelowMinLengthError -> InvalidTaskIdStartWorkError(id, it)
+                                        is TaskId.AboveMaxLengthError -> InvalidTaskIdStartWorkError(id, it)
+                                    }
+                                }
+                            }
+                            .map { inProgressTaskId ->
+                                val inProgressTask =
+                                    InProgressTask(
+                                    inProgressTaskId,
+                                    taskToUpdate.title,
+                                    taskToUpdate.description,
+                                    taskToUpdate.creator,
+                                    taskToUpdate.assignees
+                                )
+                                tasks.replace(id, inProgressTask)
+                                inProgressTask
+                            }
+                    }
+                    else -> Either.Left(nonEmptyListOf(TaskNotPendingStartWorkError(taskToUpdate, id)))
+                }
+            }
+            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistStartWorkError(id)))
 
     companion object {
         const val NON_EXISTING_TASK_ID: String = "nonExistingTask"
