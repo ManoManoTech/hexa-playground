@@ -29,5 +29,5 @@ abstract class AbstractTaskTest<Id : TaskId, T : Task<Id>> {
 
     abstract fun createTaskIdOrThrow(taskId: String): Id
 
-    abstract fun createTaskOrThrow(id: Id, title: Title, description: Description, creator: Hero): T
+    abstract fun createTaskOrThrow(id: Id, title: Title, description: Description, creator: Hero, assignees: Heroes = Heroes.EMPTY_HEROES): T
 }

@@ -6,17 +6,17 @@ import org.hexastacks.heroesdesk.kotlin.HeroesDesk
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.ports.TaskRepository
-import org.hexastacks.heroesdesk.kotlin.ports.UserRepository
+import org.hexastacks.heroesdesk.kotlin.ports.HeroRepository
 
-class HeroesDeskImpl(private val userRepository: UserRepository, private val taskRepository: TaskRepository) :
+class HeroesDeskImpl(private val heroRepository: HeroRepository, private val taskRepository: TaskRepository) :
     HeroesDesk {
-    override fun currentHero(): EitherNel<CurrentHeroError, HeroId> = userRepository.currentHero()
+    override fun currentHero(): EitherNel<CurrentHeroError, HeroId> = heroRepository.currentHero()
 
     override fun createTask(
         title: Title,
         creator: HeroId
     ): EitherNel<CreateTaskError, PendingTask> =
-        userRepository
+        heroRepository
             .canUserCreateTask(creator)
             .flatMap { hero -> taskRepository.createTask(title, hero) }
 
@@ -27,7 +27,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         title: Title,
         author: HeroId
     ): EitherNel<UpdateTitleError, TaskId> =
-        userRepository
+        heroRepository
             .canUserUpdateTaskTitle(author)
             .flatMap { hero -> taskRepository.updateTitle(id, title, hero) }
 
@@ -36,25 +36,22 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         description: Description,
         author: HeroId
     ): EitherNel<UpdateDescriptionError, TaskId> =
-        userRepository
+        heroRepository
             .canUserUpdateDescriptionTitle(author)
-            .flatMap { hero ->
-                taskRepository.updateDescription(id, description, hero)
-            }
+            .flatMap { taskRepository.updateDescription(id, description, it) }
 
     override fun assignableHeroes(id: TaskId): EitherNel<AssignableHeroesError, Heroes> =
-        userRepository.assignableHeroes(id)
+        heroRepository.assignableHeroes(id)
 
     override fun assignTask(
         id: TaskId,
         assignees: HeroIds,
         author: HeroId
-    ): EitherNel<AssignTaskError, TaskId> =
-        userRepository
-            .areUsersAssignable(assignees)
-            .flatMap { hero ->
-                taskRepository.updateDescription(id, description, hero)
-            }
+    ): EitherNel<AssignTaskError, Task<*>> =
+        heroRepository
+            .areAllHeroesAssignable(id, assignees)
+            .flatMap { taskRepository.assign(id, it, author) }
+
 
     override fun startWork(
         id: PendingTaskId,

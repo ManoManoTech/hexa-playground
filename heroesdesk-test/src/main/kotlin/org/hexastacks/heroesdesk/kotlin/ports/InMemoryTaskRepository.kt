@@ -1,13 +1,8 @@
 package org.hexastacks.heroesdesk.kotlin.ports
 
-import arrow.core.Either
-import arrow.core.NonEmptyList
-import arrow.core.getOrElse
-import arrow.core.nonEmptyListOf
+import arrow.core.*
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
-import org.hexastacks.heroesdesk.kotlin.impl.Description
-import org.hexastacks.heroesdesk.kotlin.impl.Hero
-import org.hexastacks.heroesdesk.kotlin.impl.Title
+import org.hexastacks.heroesdesk.kotlin.impl.*
 import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTask
 import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
 import org.hexastacks.heroesdesk.kotlin.impl.task.Task
@@ -16,6 +11,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryTaskRepository : TaskRepository {
+
     private val tasks = ConcurrentHashMap<TaskId, Task<*>>()
 
     override fun createTask(
@@ -80,6 +76,15 @@ class InMemoryTaskRepository : TaskRepository {
                 tasks.replace(id, updatedTask)
                 id
             }
+
+    override fun assign(id: TaskId, assignees: Heroes, author: HeroId): EitherNel<AssignTaskError, Task<*>> =
+        tasks[id]
+            ?.let { taskToUpdate ->
+                val updatedTask: Task<*> = taskToUpdate.assign(assignees)
+                tasks.replace(id, updatedTask)
+                Either.Right(updatedTask)
+            }
+            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistAssignTaskError(id)))
 
     companion object {
         const val NON_EXISTING_TASK_ID: String = "nonExistingTask"

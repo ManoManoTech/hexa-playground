@@ -17,7 +17,7 @@ interface HeroesDesk {
     ): EitherNel<UpdateDescriptionError, TaskId>
 
     fun assignableHeroes(id: TaskId): EitherNel<AssignableHeroesError, Heroes>
-    fun assignTask(id: TaskId, assignees: HeroIds, author: HeroId): EitherNel<AssignTaskError, TaskId>
+    fun assignTask(id: TaskId, assignees: HeroIds, author: HeroId): EitherNel<AssignTaskError, Task<*>>
 
     /**
      * Adds the author to the assignees if not in already
@@ -88,9 +88,19 @@ interface HeroesDesk {
     data class TaskDoesNotExistStartWorkError(val taskId: TaskId) : StartWorkError {
         override val message = "Task $taskId does not exist"
     }
+
     sealed interface AssignTaskError : HeroesDeskError
+    data class NonAssignableHeroesAssignTaskError(
+        val task: TaskId,
+        val candidates: HeroIds,
+        val nonAssignables: HeroIds
+    ) : AssignTaskError {
+        override val message: String = "Task $task cannot be assigned to ${nonAssignables.value}"
+    }
 
-
+    data class TaskDoesNotExistAssignTaskError(val taskId: TaskId) : AssignTaskError {
+        override val message = "Task $taskId does not exist"
+    }
     sealed interface AssignableHeroesError : HeroesDeskError
 
     data class TaskDoesNotExistAssignableHeroesError(val taskId: TaskId) : AssignableHeroesError {

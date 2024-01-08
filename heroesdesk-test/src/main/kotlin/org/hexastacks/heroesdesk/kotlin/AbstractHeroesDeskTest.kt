@@ -14,7 +14,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.Heroes
 import org.hexastacks.heroesdesk.kotlin.impl.task.InProgressTask
 import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
-import org.hexastacks.heroesdesk.kotlin.ports.InstrumentedUserRepository
+import org.hexastacks.heroesdesk.kotlin.ports.InstrumentedHeroRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -217,24 +217,69 @@ abstract class AbstractHeroesDeskTest {
         val instrumentedUserRepository = instrumentedUserRepository()
         val heroesDesk = heroesDesk(instrumentedUserRepository)
         val createdTask = heroesDesk.createTaskOrThrow("title")
-        val heroes = Heroes(listOf(createHeroOrThrow("heroId1")))
-        instrumentedUserRepository.defineAssignableHeroes(
-            createdTask.taskId,
-            heroes
-        )
+        val heroes =
+            instrumentedUserRepository
+                .defineAssignableHeroes(
+                    createdTask.taskId,
+                    Heroes(listOf(createHeroOrThrow("heroId1")))
+                )
 
-        val assignedTask = heroesDesk.assignTask(
-            createdTask.taskId,
-            HeroIds(heroes.value.map { it.heroId }),
-            heroesDesk.currentHeroOrThrow()
-        )
+        val assignedTask =
+            heroesDesk.assignTask(
+                createdTask.taskId,
+                HeroIds(heroes.value.map { it.heroId }),
+                heroesDesk.currentHeroOrThrow()
+            )
 
         assertTrue(assignedTask.isRight())
         assignedTask.onRight {
-            assertEquals(it, createdTask.taskId)
-            assert(heroesDesk.getTaskOrThrow(it).assignees == heroes)
+            assertEquals(it.taskId, createdTask.taskId)
+            assertEquals(it.title, createdTask.title)
+            assertEquals(it.description, createdTask.description)
+            assertEquals(heroes, it.assignees)
         }
+    }
 
+    @Test
+    fun `assign task fails on non existing task`() {
+        val instrumentedUserRepository = instrumentedUserRepository()
+        val heroesDesk = heroesDesk(instrumentedUserRepository)
+        val heroes = Heroes(listOf(createHeroOrThrow("heroId1")))
+
+        val assignedTask =
+            heroesDesk.assignTask(
+                nonExistingPendingTaskId(),
+                HeroIds(heroes.value.map { it.heroId }),
+                heroesDesk.currentHeroOrThrow()
+            )
+
+        assertTrue(assignedTask.isLeft())
+        assignedTask.onLeft {
+            assertTrue(it.head is TaskDoesNotExistAssignTaskError)
+        }
+    }
+
+    @Test
+    fun `assign task fails on non assignable users`() {
+        val instrumentedUserRepository = instrumentedUserRepository()
+        val heroesDesk = heroesDesk(instrumentedUserRepository)
+        val createdTask = heroesDesk.createTaskOrThrow("title")
+        val heroes = Heroes(listOf(createHeroOrThrow("heroId1")))
+        instrumentedUserRepository
+            .defineAssignableHeroes(
+                createdTask.taskId,
+                Heroes(listOf(createHeroOrThrow("heroId2")))
+            )
+
+        val assignedTask =
+            heroesDesk.assignTask(
+                createdTask.taskId,
+                HeroIds(heroes.value.map { it.heroId }),
+                heroesDesk.currentHeroOrThrow()
+            )
+
+        assertTrue(assignedTask.isLeft())
+        assignedTask.onLeft { assertTrue(it.head is NonAssignableHeroesAssignTaskError) }
     }
 
     @Test
@@ -267,8 +312,8 @@ abstract class AbstractHeroesDeskTest {
 
     private fun heroesDesk(): HeroesDesk = heroesDesk(instrumentedUserRepository())
 
-    abstract fun instrumentedUserRepository(): InstrumentedUserRepository
-    abstract fun heroesDesk(instrumentedUserRepository: InstrumentedUserRepository): HeroesDesk
+    abstract fun instrumentedUserRepository(): InstrumentedHeroRepository
+    abstract fun heroesDesk(instrumentedUserRepository: InstrumentedHeroRepository): HeroesDesk
 
     abstract fun nonExistingHeroId(): HeroId
 
