@@ -30,18 +30,18 @@ class InMemoryTaskRepository : TaskRepository {
     }
 
 
-    override fun getTask(id: TaskId): Either<NonEmptyList<GetTaskError>, Task<*>> {
-        return tasks[id]
+    override fun getTask(taskId: TaskId): Either<NonEmptyList<GetTaskError>, Task<*>> {
+        return tasks[taskId]
             ?.let { Either.Right(it) }
-            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistError(id)))
+            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistError(taskId)))
     }
 
     override fun updateTitle(
-        id: TaskId,
+        taskId: TaskId,
         title: Title,
         hero: Hero
     ): Either<NonEmptyList<UpdateTitleError>, TaskId> =
-        getTask(id)
+        getTask(taskId)
             .mapLeft {
                 it.map { error ->
                     when (error) {
@@ -51,16 +51,16 @@ class InMemoryTaskRepository : TaskRepository {
             }
             .map { task ->
                 val updatedTask = task.updateTitle(title)
-                tasks.replace(id, updatedTask)
-                id
+                tasks.replace(taskId, updatedTask)
+                taskId
             }
 
     override fun updateDescription(
-        id: TaskId,
+        taskId: TaskId,
         description: Description,
         hero: Hero
     ): Either<NonEmptyList<UpdateDescriptionError>, TaskId> =
-        getTask(id)
+        getTask(taskId)
             .mapLeft {
                 it.map { error ->
                     when (error) {
@@ -70,21 +70,21 @@ class InMemoryTaskRepository : TaskRepository {
             }
             .map { task ->
                 val updatedTask = task.updateDescription(description)
-                tasks.replace(id, updatedTask)
-                id
+                tasks.replace(taskId, updatedTask)
+                taskId
             }
 
-    override fun assign(id: TaskId, assignees: Heroes, author: HeroId): EitherNel<AssignTaskError, Task<*>> =
-        tasks[id]
+    override fun assign(taskId: TaskId, assignees: Heroes, author: HeroId): EitherNel<AssignTaskError, Task<*>> =
+        tasks[taskId]
             ?.let { taskToUpdate ->
                 val updatedTask: Task<*> = taskToUpdate.assign(assignees)
-                tasks.replace(id, updatedTask)
+                tasks.replace(taskId, updatedTask)
                 Either.Right(updatedTask)
             }
-            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistAssignTaskError(id)))
+            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistAssignTaskError(taskId)))
 
-    override fun startWork(id: PendingTaskId, hero: Hero): EitherNel<StartWorkError, InProgressTask> =
-        tasks[id]
+    override fun startWork(pendingTaskId: PendingTaskId, hero: Hero): EitherNel<StartWorkError, InProgressTask> =
+        tasks[pendingTaskId]
             ?.let { taskToUpdate ->
                 when (taskToUpdate) {
                     is PendingTask -> {
@@ -92,28 +92,29 @@ class InMemoryTaskRepository : TaskRepository {
                             .mapLeft { errors: NonEmptyList<TaskId.TaskIdError> ->
                                 errors.map {
                                     when (it) {
-                                        is TaskId.BelowMinLengthError -> InvalidTaskIdStartWorkError(id, it)
-                                        is TaskId.AboveMaxLengthError -> InvalidTaskIdStartWorkError(id, it)
+                                        is TaskId.BelowMinLengthError -> InvalidTaskIdStartWorkError(pendingTaskId, it)
+                                        is TaskId.AboveMaxLengthError -> InvalidTaskIdStartWorkError(pendingTaskId, it)
                                     }
                                 }
                             }
                             .map { inProgressTaskId ->
                                 val inProgressTask =
                                     InProgressTask(
-                                    inProgressTaskId,
-                                    taskToUpdate.title,
-                                    taskToUpdate.description,
-                                    taskToUpdate.creator,
-                                    taskToUpdate.assignees
-                                )
-                                tasks.replace(id, inProgressTask)
+                                        inProgressTaskId,
+                                        taskToUpdate.title,
+                                        taskToUpdate.description,
+                                        taskToUpdate.creator,
+                                        taskToUpdate.assignees
+                                    )
+                                tasks.replace(pendingTaskId, inProgressTask)
                                 inProgressTask
                             }
                     }
-                    else -> Either.Left(nonEmptyListOf(TaskNotPendingStartWorkError(taskToUpdate, id)))
+
+                    else -> Either.Left(nonEmptyListOf(TaskNotPendingStartWorkError(taskToUpdate, pendingTaskId)))
                 }
             }
-            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistStartWorkError(id)))
+            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistStartWorkError(pendingTaskId)))
 
     companion object {
         const val NON_EXISTING_TASK_ID: String = "nonExistingTask"

@@ -20,5 +20,5 @@ interface InstrumentedHeroRepository : HeroRepository {
 
     fun ensureExisting(hero: Hero): Hero
 
-    fun ensureExistingOrThrow(heroId: String): Hero = ensureExisting(createHeroOrThrow(heroId))
+    fun ensureExistingOrThrow(rawHeroId: String): Hero = ensureExisting(createHeroOrThrow(rawHeroId))
 }

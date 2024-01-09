@@ -7,7 +7,13 @@ import org.hexastacks.heroesdesk.kotlin.impl.Heroes
 import org.hexastacks.heroesdesk.kotlin.impl.Title
 
 class DeletedTaskTest : AbstractTaskTest<DeletedTaskId, DeletedTask>() {
-    override fun createTaskOrThrow(id: DeletedTaskId, title: Title, description: Description, creator: Hero, assignees: Heroes) =
+    override fun createTaskOrThrow(
+        id: DeletedTaskId,
+        title: Title,
+        description: Description,
+        creator: Hero,
+        assignees: Heroes
+    ) =
         DeletedTask(id, title, description, creator, assignees)
 
     override fun createTaskIdOrThrow(taskId: String): DeletedTaskId =

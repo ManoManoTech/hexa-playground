@@ -7,7 +7,13 @@ import org.hexastacks.heroesdesk.kotlin.impl.Heroes
 import org.hexastacks.heroesdesk.kotlin.impl.Title
 
 class InProgressTaskTest : AbstractTaskTest<InProgressTaskId, InProgressTask>() {
-    override fun createTaskOrThrow(id: InProgressTaskId, title: Title, description: Description, creator: Hero, assignees: Heroes) =
+    override fun createTaskOrThrow(
+        id: InProgressTaskId,
+        title: Title,
+        description: Description,
+        creator: Hero,
+        assignees: Heroes
+    ) =
         InProgressTask(id, title, description, creator, assignees)
 
     override fun createTaskIdOrThrow(taskId: String): InProgressTaskId =

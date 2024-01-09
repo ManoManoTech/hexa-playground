@@ -20,6 +20,7 @@ object HeroesDeskTestExtensions {
     fun createHeroOrThrow(id: String) = Hero(createHeroNameOrThrow(id), createHeroIdOrThrow(id))
 
     fun createPendingTaskIdOrThrow(id: String) = PendingTaskId(id).getOrElse { throw AssertionError() }
+
     fun HeroesDesk.currentHeroOrThrow() = this.currentHero().getOrElse { throw AssertionError() }
 
     fun HeroesDesk.createTaskOrThrow(title: String): PendingTask =

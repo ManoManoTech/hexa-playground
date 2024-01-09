@@ -61,14 +61,16 @@ If you are experiencing or witnessing conflict, we ask you to use the following 
 conflict:
 
 1. Address the perceived conflict directly with those involved, preferably in a real-time medium.
-2. If this fails, get a third party (e.g. a mutual friend, and/or someone with background on the issue, but not involved in
+2. If this fails, get a third party (e.g. a mutual friend, and/or someone with background on the issue, but not involved
+   in
    the conflict) to intercede.
 3. If you are still unable to resolve the conflict, and you believe it rises to harassment or another code of conduct
    violation, report it.
 
 ## Reporting Violations
 
-Violations of the Code of Conduct can be reported to ManoMano’s Project Stewards or Fabien Lemarchand (fabien.lemarchand@manomano.com). The Project Steward will determine
+Violations of the Code of Conduct can be reported to ManoMano’s Project Stewards or Fabien Lemarchand (
+fabien.lemarchand@manomano.com). The Project Steward will determine
 whether the Code of Conduct was violated, and will issue an appropriate sanction, possibly including a written warning
 or expulsion from the project, project sponsored spaces, or project forums. We ask that you make a good-faith effort to
 resolve your conflict via the conflict resolution policy before submitting a report.
@@ -87,5 +89,6 @@ sanctions without notice.
 ## Attribution
 
 This Code of Conduct is adapted from the Contributor Covenant, version 1.4, available at
-[https://contributor-covenant.org/version/1/4/code-of-conduct.html](https://www.contributor-covenant.org/version/1/4/code-of-conduct.html), and includes some aspects of the Geek Feminism Code of Conduct and the
+[https://contributor-covenant.org/version/1/4/code-of-conduct.html](https://www.contributor-covenant.org/version/1/4/code-of-conduct.html),
+and includes some aspects of the Geek Feminism Code of Conduct and the
 Drupal Code of Conduct.

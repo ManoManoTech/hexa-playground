@@ -1,6 +1,9 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
-import org.hexastacks.heroesdesk.kotlin.impl.*
+import org.hexastacks.heroesdesk.kotlin.impl.Description
+import org.hexastacks.heroesdesk.kotlin.impl.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.Heroes
+import org.hexastacks.heroesdesk.kotlin.impl.Title
 
 sealed interface Task<T : TaskId> {
     fun updateTitle(title: Title): Task<out TaskId> = when (this) {

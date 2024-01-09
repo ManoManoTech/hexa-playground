@@ -3,6 +3,8 @@ package org.hexastacks.heroesdesk.kotlin.impl
 data class Heroes(val value: Set<Hero>) {
 
     constructor(vararg heroes: Hero) : this(heroes.toSet())
+    constructor(heroes: List<Hero>) : this(heroes.toSet())
+
     fun contains(author: HeroId): Boolean =
         value
             .map { it.id }
@@ -17,6 +19,8 @@ data class Heroes(val value: Set<Hero>) {
     operator fun get(author: HeroId): Hero? =
         value
             .firstOrNull { it.id == author }
+
+    fun isEmpty(): Boolean = value.isEmpty()
 
     companion object {
         val EMPTY_HEROES: Heroes = Heroes(emptySet())

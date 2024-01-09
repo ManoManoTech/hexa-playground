@@ -8,9 +8,8 @@ import arrow.core.nonEmptyListOf
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
-import org.hexastacks.heroesdesk.kotlin.ports.GetHeroError
-import org.hexastacks.heroesdesk.kotlin.ports.HeroDoesNotExistError
 import org.hexastacks.heroesdesk.kotlin.ports.HeroRepository
+import org.hexastacks.heroesdesk.kotlin.ports.HeroRepositoryExtensions.canHeroStartWork
 import org.hexastacks.heroesdesk.kotlin.ports.TaskRepository
 
 class HeroesDeskImpl(private val heroRepository: HeroRepository, private val taskRepository: TaskRepository) :
@@ -57,7 +56,6 @@ class HeroesDeskImpl(private val heroRepository: HeroRepository, private val tas
             .areAllHeroesAssignable(id, assignees)
             .flatMap { taskRepository.assign(id, it, author) }
 
-
     override fun startWork(
         id: PendingTaskId,
         author: HeroId
@@ -79,24 +77,18 @@ class HeroesDeskImpl(private val heroRepository: HeroRepository, private val tas
             }
             .flatMap { task: PendingTask ->
                 if (!task.assignees.contains(author)) {
-                    heroRepository.getHero(author)
-                        .mapLeft { errors ->
-                            errors.map {
-                                when (it) {
-                                    is HeroDoesNotExistError -> HeroDoesNotExistStartWorkError(author)
-                                }
-                            }
-                        }
+                    heroRepository.canHeroStartWork(task.taskId, author)
                         .flatMap { hero ->
                             taskRepository
                                 .assign(id, task.assignees.add(hero), author)
                                 .mapLeft { errors ->
                                     errors.map {
                                         when (it) {
-                                            is NonAssignableHeroesAssignTaskError -> NonAssignableHeroStartWorkError(
+                                            is NonAssignableHeroesAssignTaskError -> NonAllowedToStartWorkError(
                                                 id,
-                                                HeroIds(listOf(author))
+                                                HeroIds(author)
                                             )
+
                                             is TaskDoesNotExistAssignTaskError -> TaskDoesNotExistStartWorkError(id)
                                         }
                                     }
@@ -108,51 +100,53 @@ class HeroesDeskImpl(private val heroRepository: HeroRepository, private val tas
                                     }
                                 }
                         }
-                    } else Right(task)
-                }
+                } else Right(task)
+            }
             .flatMap { task: PendingTask ->
-                 heroRepository
-                    .canHeroStartWork(task.taskId, author)
-                    .flatMap { taskRepository.startWork(id, it) }
+                heroRepository
+                    .canHeroStartWork(task, author)
+                    .flatMap {
+                        taskRepository.startWork(id, it)
+                    }
             }
 
-        override fun startWork(
-            id: DoneTaskId,
-            author: HeroId
-        ): EitherNel<StartWorkError, InProgressTaskId> {
-            TODO("Not yet implemented")
-        }
-
-        override fun pauseWork(
-            id: InProgressTaskId,
-            author: HeroId
-        ): EitherNel<StopWorkError, PendingTaskId> {
-            TODO("Not yet implemented")
-        }
-
-        override fun pauseWork(
-            id: DoneTaskId,
-            author: HeroId
-        ): EitherNel<StopWorkError, PendingTaskId> {
-            TODO("Not yet implemented")
-        }
-
-        override fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTaskId> {
-            TODO("Not yet implemented")
-        }
-
-        override fun endWork(
-            id: InProgressTaskId,
-            author: HeroId
-        ): EitherNel<EndWorkError, DoneTaskId> {
-            TODO("Not yet implemented")
-        }
-
-        override fun delete(id: TaskId, author: HeroId): EitherNel<DeleteTaskError, DeletedTaskId> {
-            TODO("Not yet implemented")
-        }
-
-        override fun restore(id: DeletedTaskId, author: HeroId): EitherNel<RestoreTaskError, TaskId> {
-            TODO("Not yet implemented")
-        }
+    override fun startWork(
+        id: DoneTaskId,
+        author: HeroId
+    ): EitherNel<StartWorkError, InProgressTaskId> {
+        TODO("Not yet implemented")
     }
+
+    override fun pauseWork(
+        id: InProgressTaskId,
+        author: HeroId
+    ): EitherNel<StopWorkError, PendingTaskId> {
+        TODO("Not yet implemented")
+    }
+
+    override fun pauseWork(
+        id: DoneTaskId,
+        author: HeroId
+    ): EitherNel<StopWorkError, PendingTaskId> {
+        TODO("Not yet implemented")
+    }
+
+    override fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTaskId> {
+        TODO("Not yet implemented")
+    }
+
+    override fun endWork(
+        id: InProgressTaskId,
+        author: HeroId
+    ): EitherNel<EndWorkError, DoneTaskId> {
+        TODO("Not yet implemented")
+    }
+
+    override fun delete(id: TaskId, author: HeroId): EitherNel<DeleteTaskError, DeletedTaskId> {
+        TODO("Not yet implemented")
+    }
+
+    override fun restore(id: DeletedTaskId, author: HeroId): EitherNel<RestoreTaskError, TaskId> {
+        TODO("Not yet implemented")
+    }
+}

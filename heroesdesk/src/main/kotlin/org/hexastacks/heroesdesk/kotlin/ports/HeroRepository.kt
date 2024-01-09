@@ -11,15 +11,13 @@ import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
 
 interface HeroRepository {
     fun currentHero(): EitherNel<CurrentHeroError, HeroId>
-
-    fun getHero(author: HeroId): EitherNel<GetHeroError, Hero>
-
-    fun canHeroCreateTask(creator: HeroId): EitherNel<CreateTaskError, Hero>
-    fun canHeroUpdateTaskTitle(author: HeroId): EitherNel<UpdateTitleError, Hero>
-    fun canHeroUpdateDescriptionTitle(author: HeroId): EitherNel<UpdateDescriptionError, Hero>
-    fun assignableHeroes(id: TaskId): EitherNel<AssignableHeroesError, Heroes>
-    fun areAllHeroesAssignable(id: TaskId, assignees: HeroIds): EitherNel<AssignTaskError, Heroes>
-    fun canHeroStartWork(id: PendingTaskId, author: HeroId): EitherNel<StartWorkError, Hero>
+    fun getHero(heroId: HeroId): EitherNel<GetHeroError, Hero>
+    fun canHeroCreateTask(heroId: HeroId): EitherNel<CreateTaskError, Hero>
+    fun canHeroUpdateTaskTitle(heroId: HeroId): EitherNel<UpdateTitleError, Hero>
+    fun canHeroUpdateDescriptionTitle(heroId: HeroId): EitherNel<UpdateDescriptionError, Hero>
+    fun assignableHeroes(taskId: TaskId): EitherNel<AssignableHeroesError, Heroes>
+    fun areAllHeroesAssignable(taskId: TaskId, heroIds: HeroIds): EitherNel<AssignTaskError, Heroes>
+    fun canHeroStartWork(pendingTaskId: PendingTaskId, heroId: HeroId): EitherNel<StartWorkError, Hero>
 }
 
 sealed interface HeroRepositoryError {

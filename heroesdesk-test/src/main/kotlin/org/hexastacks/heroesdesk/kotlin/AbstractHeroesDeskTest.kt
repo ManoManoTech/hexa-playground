@@ -1,6 +1,7 @@
 package org.hexastacks.heroesdesk.kotlin
 
 import arrow.core.flatMap
+import arrow.core.getOrElse
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestExtensions.createDescriptionOrThrow
 import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestExtensions.createHeroOrThrow
@@ -12,6 +13,7 @@ import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestExtensions.getTaskOrThrow
 import org.hexastacks.heroesdesk.kotlin.impl.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.Heroes
+import org.hexastacks.heroesdesk.kotlin.impl.Heroes.Companion.EMPTY_HEROES
 import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
 import org.hexastacks.heroesdesk.kotlin.ports.InstrumentedHeroRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -25,7 +27,9 @@ abstract class AbstractHeroesDeskTest {
         val currentHero = heroesDesk().currentHero()
 
         assertTrue(currentHero.isRight())
-        currentHero.onRight { assertTrue(it.value.isNotEmpty()) }
+        currentHero.onRight {
+            assertTrue(it.value.isNotEmpty())
+        }
     }
 
     @Test
@@ -66,7 +70,9 @@ abstract class AbstractHeroesDeskTest {
         val task = heroesDesk().createTask(createTitleOrThrow(rawTitle), currentHero)
 
         assertTrue(task.isLeft())
-        task.onLeft { assertTrue(it.head is HeroDoesNotExistCreateTaskError) }
+        task.onLeft {
+            assertTrue(it.head is HeroDoesNotExistCreateTaskError)
+        }
     }
 
     @Test
@@ -77,7 +83,9 @@ abstract class AbstractHeroesDeskTest {
         val retrievedTask = heroesDesk.getTask(createdTask.taskId)
 
         assertTrue(retrievedTask.isRight())
-        retrievedTask.onRight { assertEquals(it, createdTask) }
+        retrievedTask.onRight {
+            assertEquals(it, createdTask)
+        }
     }
 
     @Test
@@ -85,7 +93,9 @@ abstract class AbstractHeroesDeskTest {
         val task = heroesDesk().getTask(nonExistingPendingTaskId())
 
         assertTrue(task.isLeft())
-        task.onLeft { assertTrue(it.head is TaskDoesNotExistError) }
+        task.onLeft {
+            assertTrue(it.head is TaskDoesNotExistError)
+        }
     }
 
     @Test
@@ -112,7 +122,9 @@ abstract class AbstractHeroesDeskTest {
             heroesDesk.updateTitle(nonExistingPendingTaskId(), newTitle, heroesDesk.currentHeroOrThrow())
 
         assertTrue(updatedTaskId.isLeft())
-        updatedTaskId.onLeft { assertTrue(it.head is TaskDoesNotExistUpdateTitleError) }
+        updatedTaskId.onLeft {
+            assertTrue(it.head is TaskDoesNotExistUpdateTitleError)
+        }
     }
 
     @Test
@@ -124,7 +136,9 @@ abstract class AbstractHeroesDeskTest {
         val updatedTaskId = heroesDesk.updateTitle(createdTask.taskId, newTitle, nonExistingHeroId())
 
         assertTrue(updatedTaskId.isLeft())
-        updatedTaskId.onLeft { assertTrue(it.head is HeroDoesNotExistUpdateTitleError) }
+        updatedTaskId.onLeft {
+            assertTrue(it.head is HeroDoesNotExistUpdateTitleError)
+        }
     }
 
     @Test
@@ -153,7 +167,9 @@ abstract class AbstractHeroesDeskTest {
             heroesDesk.updateDescription(nonExistingPendingTaskId(), newDescription, heroesDesk.currentHeroOrThrow())
 
         assertTrue(updatedTaskId.isLeft())
-        updatedTaskId.onLeft { assertTrue(it.head is TaskDoesNotExistUpdateDescriptionError) }
+        updatedTaskId.onLeft {
+            assertTrue(it.head is TaskDoesNotExistUpdateDescriptionError)
+        }
     }
 
     @Test
@@ -165,7 +181,9 @@ abstract class AbstractHeroesDeskTest {
         val updatedTaskId = heroesDesk.updateDescription(createdTask.taskId, newDescription, nonExistingHeroId())
 
         assertTrue(updatedTaskId.isLeft())
-        updatedTaskId.onLeft { assertTrue(it.head is HeroDoesNotExistUpdateDescriptionError) }
+        updatedTaskId.onLeft {
+            assertTrue(it.head is HeroDoesNotExistUpdateDescriptionError)
+        }
     }
 
     @Test
@@ -191,7 +209,7 @@ abstract class AbstractHeroesDeskTest {
         val instrumentedUserRepository = instrumentedHeroRepository()
         val heroesDesk = heroesDesk(instrumentedUserRepository)
         val createdTask = heroesDesk.createTaskOrThrow("title")
-        instrumentedUserRepository.defineAssignableHeroes(createdTask.taskId, Heroes.EMPTY_HEROES)
+        instrumentedUserRepository.defineAssignableHeroes(createdTask.taskId, EMPTY_HEROES)
 
         val assignableHeroes = heroesDesk.assignableHeroes(createdTask.taskId)
 
@@ -208,7 +226,9 @@ abstract class AbstractHeroesDeskTest {
         val assignableHeroes = heroesDesk.assignableHeroes(nonExistingPendingTaskId())
 
         assertTrue(assignableHeroes.isLeft())
-        assignableHeroes.onLeft { assertTrue(it.head is TaskDoesNotExistAssignableHeroesError) }
+        assignableHeroes.onLeft {
+            assertTrue(it.head is TaskDoesNotExistAssignableHeroesError)
+        }
     }
 
     @Test
@@ -278,7 +298,9 @@ abstract class AbstractHeroesDeskTest {
             )
 
         assertTrue(assignedTask.isLeft())
-        assignedTask.onLeft { assertTrue(it.head is NonAssignableHeroesAssignTaskError) }
+        assignedTask.onLeft {
+            assertTrue(it.head is NonAssignableHeroesAssignTaskError)
+        }
     }
 
     @Test
@@ -286,24 +308,56 @@ abstract class AbstractHeroesDeskTest {
         val instrumentedUserRepository = instrumentedHeroRepository()
         val heroesDesk = heroesDesk(instrumentedUserRepository)
         val createdTask = heroesDesk.createTaskOrThrow("title")
+        val taskId = createdTask.taskId
         val hero = instrumentedUserRepository.ensureExistingOrThrow("heroId1")
         val heroes = Heroes(hero)
         instrumentedUserRepository.defineAssignableHeroes(
-            createdTask.taskId,
+            taskId,
             heroes
         )
+        heroesDesk.assignTask(taskId, HeroIds(hero.id), hero.id).getOrElse { throw AssertionError() }
         instrumentedUserRepository.defineWorkableHeroes(
-            createdTask.taskId,
+            taskId,
             heroes
         )
 
         val updatedTaskId =
-            heroesDesk.startWork(createdTask.taskId, hero.id)
+            heroesDesk.startWork(taskId, hero.id)
 
         assertTrue(updatedTaskId.isRight())
-        updatedTaskId.onRight {
-            assertEquals(it.taskId.value, createdTask.taskId.value)//TODO: handle at TaskId level
-        }
+        updatedTaskId
+            .onRight {
+                assertEquals(it.taskId.value, taskId.value)//TODO: handle at TaskId level
+            }
+    }
+
+    @Test
+    fun `start work assigns hero starting work to task`() {
+        val instrumentedUserRepository = instrumentedHeroRepository()
+        val heroesDesk = heroesDesk(instrumentedUserRepository)
+        val createdTask = heroesDesk.createTaskOrThrow("title")
+        val taskId = createdTask.taskId
+        val hero = instrumentedUserRepository.ensureExistingOrThrow("heroId1")
+        val heroes = Heroes(hero)
+        instrumentedUserRepository.defineAssignableHeroes(
+            taskId,
+            heroes
+        )
+        instrumentedUserRepository.defineWorkableHeroes(
+            taskId,
+            heroes
+        )
+        assertTrue(createdTask.assignees.isEmpty())
+
+        val updatedTaskId =
+            heroesDesk.startWork(taskId, hero.id)
+
+        assertTrue(updatedTaskId.isRight())
+        updatedTaskId
+            .onRight {
+                assertEquals(it.taskId.value, taskId.value)
+                assertTrue(it.assignees.contains(hero.id))
+            }
     }
 
     @Test
@@ -314,7 +368,59 @@ abstract class AbstractHeroesDeskTest {
             heroesDesk.startWork(nonExistingPendingTaskId(), heroesDesk.currentHeroOrThrow())
 
         assertTrue(updatedTaskId.isLeft())
-        updatedTaskId.onLeft { assertTrue(it.head is TaskDoesNotExistStartWorkError) }
+        updatedTaskId
+            .onLeft {
+                assertTrue(it.head is TaskDoesNotExistStartWorkError)
+            }
+    }
+
+    @Test
+    fun `start work fails with non existing hero`() {
+        val instrumentedUserRepository = instrumentedHeroRepository()
+        val heroesDesk = heroesDesk(instrumentedUserRepository)
+        val createdTask = heroesDesk.createTaskOrThrow("title")
+        instrumentedUserRepository.defineAssignableHeroes(
+            createdTask.taskId,
+            EMPTY_HEROES
+        )
+        instrumentedUserRepository.defineWorkableHeroes(
+            createdTask.taskId,
+            EMPTY_HEROES
+        )
+
+        val updatedTaskId =
+            heroesDesk.startWork(createdTask.taskId, nonExistingHeroId())
+
+        assertTrue(updatedTaskId.isLeft())
+        updatedTaskId.onLeft {
+            assertTrue(it.head is HeroDoesNotExistStartWorkError)
+        }
+    }
+
+    @Test
+    fun `start work fails with hero lacking the right to`() {
+        val instrumentedUserRepository = instrumentedHeroRepository()
+        val heroesDesk = heroesDesk(instrumentedUserRepository)
+        val createdTask = heroesDesk.createTaskOrThrow("title")
+        val taskId = createdTask.taskId
+        val hero = instrumentedUserRepository.ensureExistingOrThrow("heroId1")
+        val heroes = Heroes(hero)
+        instrumentedUserRepository.defineAssignableHeroes(
+            taskId,
+            heroes
+        )
+        instrumentedUserRepository.defineWorkableHeroes(
+            taskId,
+            EMPTY_HEROES
+        )
+
+        val updatedTaskId =
+            heroesDesk.startWork(taskId, hero.id)
+
+        assertTrue(updatedTaskId.isLeft())
+        updatedTaskId.onLeft {
+            assertTrue(it.head is NonAllowedToStartWorkError)
+        }
     }
 
     private fun nonExistingPendingTaskId(): PendingTaskId = createPendingTaskIdOrThrow(nonExistingRawTaskId())
@@ -322,6 +428,7 @@ abstract class AbstractHeroesDeskTest {
     private fun heroesDesk(): HeroesDesk = heroesDesk(instrumentedHeroRepository())
 
     abstract fun instrumentedHeroRepository(): InstrumentedHeroRepository
+
     abstract fun heroesDesk(instrumentedUserRepository: InstrumentedHeroRepository): HeroesDesk
 
     abstract fun nonExistingHeroId(): HeroId

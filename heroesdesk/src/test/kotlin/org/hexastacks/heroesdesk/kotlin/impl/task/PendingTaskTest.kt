@@ -7,7 +7,13 @@ import org.hexastacks.heroesdesk.kotlin.impl.Heroes
 import org.hexastacks.heroesdesk.kotlin.impl.Title
 
 class PendingTaskTest : AbstractTaskTest<PendingTaskId, PendingTask>() {
-    override fun createTaskOrThrow(id: PendingTaskId, title: Title, description: Description, creator: Hero, assignees: Heroes) =
+    override fun createTaskOrThrow(
+        id: PendingTaskId,
+        title: Title,
+        description: Description,
+        creator: Hero,
+        assignees: Heroes
+    ) =
         PendingTask(id, title, description, creator, assignees)
 
     override fun createTaskIdOrThrow(taskId: String): PendingTaskId =

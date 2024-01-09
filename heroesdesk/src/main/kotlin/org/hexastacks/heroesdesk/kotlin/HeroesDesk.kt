@@ -8,7 +8,6 @@ interface HeroesDesk {
     fun currentHero(): EitherNel<CurrentHeroError, HeroId> // TODO: switch to Hero in repo & remove
 
     fun createTask(title: Title, creator: HeroId): EitherNel<CreateTaskError, PendingTask>
-
     fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>>
 
     fun updateTitle(id: TaskId, title: Title, author: HeroId): EitherNel<UpdateTitleError, TaskId>
@@ -16,14 +15,16 @@ interface HeroesDesk {
         id: TaskId, description: Description, author: HeroId
     ): EitherNel<UpdateDescriptionError, TaskId>
 
-    fun assignableHeroes(id: TaskId): EitherNel<AssignableHeroesError, Heroes>
     fun assignTask(id: TaskId, assignees: HeroIds, author: HeroId): EitherNel<AssignTaskError, Task<*>>
+    fun assignableHeroes(id: TaskId): EitherNel<AssignableHeroesError, Heroes>
 
     /**
      * Adds the author to the assignees if not in already
      */
-    fun startWork(id: PendingTaskId, // TODO: add heroStartingWork
-                  author: HeroId): EitherNel<StartWorkError, InProgressTask>
+    fun startWork(
+        id: PendingTaskId, // TODO: add heroStartingWork
+        author: HeroId
+    ): EitherNel<StartWorkError, InProgressTask>
 
     /**
      * Adds the author to the assignees if not in already
@@ -90,7 +91,7 @@ interface HeroesDesk {
         override val message = "Task $taskId does not exist"
     }
 
-    data class TaskNotPendingStartWorkError(val task:Task<*>,  val taskId: PendingTaskId) : StartWorkError {
+    data class TaskNotPendingStartWorkError(val task: Task<*>, val taskId: PendingTaskId) : StartWorkError {
         override val message = "Task $task not a pending one, despite being $taskId"
     }
 
@@ -102,8 +103,10 @@ interface HeroesDesk {
         override val message = "Hero $heroId does not exist"
     }
 
-    data class NonAssignableHeroStartWorkError(   val task: TaskId,
-                                                  val nonAssignables: HeroIds) : StartWorkError {
+    data class NonAllowedToStartWorkError(
+        val task: TaskId,
+        val nonAssignables: HeroIds
+    ) : StartWorkError {
         override val message: String = "Task $task cannot be assigned to ${nonAssignables.value}"
     }
 
@@ -119,6 +122,7 @@ interface HeroesDesk {
     data class TaskDoesNotExistAssignTaskError(val taskId: TaskId) : AssignTaskError {
         override val message = "Task $taskId does not exist"
     }
+
     sealed interface AssignableHeroesError : HeroesDeskError
 
     data class TaskDoesNotExistAssignableHeroesError(val taskId: TaskId) : AssignableHeroesError {

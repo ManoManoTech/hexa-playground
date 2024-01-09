@@ -3,11 +3,14 @@
 This repo aims at showcasing hexagonal architecture, hexagonal testing and providing a quick start.
 
 Beware though:
+
 - stack is updated & maintained on a best effort basis. Mind versions & dates if reusing,
 - for sure, it's likely plainly wrong: i'm open to all feedbacks and suggestions.
 
 # Quick-start/Usage
+
 Build with
+
 ```
 ./gradlew test 
 ```
@@ -22,11 +25,16 @@ For sure, it makes the business logic hard to get, but even worse it makes the c
 
 To avoid that, one can use Domain Driven Design with a hexagonal architecture.
 
-Domain Driven Design is all about making the business logic explicit, in one place in the code. More can be read about it in [Domain‐Driven Design Reference (PDF)](https://www.domainlanguage.com/wp-content/uploads/2016/05/DDD_Reference_2015-03.pdf).
+Domain Driven Design is all about making the business logic explicit, in one place in the code. More can be read about
+it
+in [Domain‐Driven Design Reference (PDF)](https://www.domainlanguage.com/wp-content/uploads/2016/05/DDD_Reference_2015-03.pdf).
 
-Hexagonal architecture is a technical pattern, making sure the business logic is independent of persistence and presentation. This [2008's article from Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/) is the best intro to the topic.
+Hexagonal architecture is a technical pattern, making sure the business logic is independent of persistence and
+presentation. This [2008's article from Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/) is the
+best intro to the topic.
 
-For sure, all the above is needed when dealing with significant & evolving business logic, seen as a long term investment.
+For sure, all the above is needed when dealing with significant & evolving business logic, seen as a long term
+investment.
 
 ## The need for constant change
 
@@ -38,36 +46,62 @@ First, is having a clear business logic, decoupled from technicalities, as expla
 
 Then, it's the ability to change in confidence, knowing what broke and what didn't, to get the whole working again.
 
-So far, the best way i found to get there is proper test coverage, of high quality code quality, hence easy to maintain and change.
+So far, the best way i found to get there is proper test coverage, of high quality code quality, hence easy to maintain
+and change.
 
-To get there, this repo shows an approach named *Hexagonal testing*: test cases are written against the Hexagon interface, ie against the business logic.
+To get there, this repo shows an approach named *Hexagonal testing*: test cases are written against the Hexagon
+interface, ie against the business logic.
 
 Then implementations and glue code make sure these tests are run against:
-- the model implementation and fake adapters of hexagon ports: easing initial iterations and then allowing for quick explorations, while defining early tests without being linked to an implementation,
+
+- the model implementation and fake adapters of hexagon ports: easing initial iterations and then allowing for quick
+  explorations, while defining early tests without being linked to an implementation,
 - the model and each implementation(s), making sure to test implementation properly & in an uniform way,
-    - on the way if some tests are lacking, then they're added to the test cases, and then run against all implementations,
-- finally, implementations of the test cases can be written against its interfaces: public API as well as user interfaces, like web pages for examples.
+    - on the way if some tests are lacking, then they're added to the test cases, and then run against all
+      implementations,
+- finally, implementations of the test cases can be written against its interfaces: public API as well as user
+  interfaces, like web pages for examples.
 
-Hence, test cases and data are written once, then run against all implementations, making sure they all behave the same while costing little to maintain.
+Hence, test cases and data are written once, then run against all implementations, making sure they all behave the same
+while costing little to maintain.
 
-# Functional requirements & tech constraints: the HeroesDesk app 
+## Factor errors out of existence
+
+A piece of code is obviously better when free of bug.
+
+It's even better when most of the bugs can't happen by design.
+
+This is notably the case when:
+
+- using a strong typed language: a string can't be given for an integer,
+- having null safety, meaning the language distinguishes between nullable and non nullable types. Thus a null can't be
+  given for a non nullable type,
+- making error handling first class code citizen, through the type system, rather than through exceptions out of the
+  type system.
+
+As such, the code is using Kotlin, a strong typed language with null safety. It also uses [Arrow](https://arrow-kt.io/)
+to make error handling a first class citizen.
+
+# Functional requirements & tech constraints: the HeroesDesk app
 
 When doing a tech showcase, which business model to use is often tricky.
-The following one, HeroesDesk, was chosen because it's familiar to developers, allows some complexity and has a clear mission statement.
+The following one, HeroesDesk, was chosen because it's familiar to developers, allows some complexity and has a clear
+mission statement.
 
 HeroesDesk: task tracker for heroes :)
 
 No time tracking, no endless workflow customizing, only tasks that need to be done. Or not: let the heroes decide :)
 
 A task is made of:
+
 - title: mandatory, updatable, single line, 1 up to 255 chars
 - description: optional, updatable, multi line, up to 1024 chars
 - creator: mandatory, fixed at creation
 - assignees: optional, updatable
 - a task can be pending, in progress or done: default to pending
-  - each state can be moved to any of the 2 others
+    - each state can be moved to any of the 2 others
 - a task can be deleted and restored to its pre deletion state
-  - a deleted task content can't be changed
+    - a deleted task content can't be changed
 
 Multiple tasks with same title or description can be created.
 
