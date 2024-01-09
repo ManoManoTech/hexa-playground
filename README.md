@@ -76,7 +76,7 @@ It's wished that right management can be detailed: each action needs the corresp
 
 # License
 
-See [license](https://github.com/ManoManoTech/hexa-playground/LICENSE).
+See [License](https://github.com/ManoManoTech/hexa-playground/LICENSE).
 
 # Code of conduct
 
