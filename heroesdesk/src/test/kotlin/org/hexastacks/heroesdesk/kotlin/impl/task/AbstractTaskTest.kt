@@ -2,6 +2,10 @@ package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import arrow.core.getOrElse
 import org.hexastacks.heroesdesk.kotlin.impl.*
+import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createDescriptionOrThrow
+import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createTitleOrThrow
+import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -20,11 +24,12 @@ abstract class AbstractTaskTest<Id : TaskId, T : Task<Id>> {
     private fun createTaskOrThrow(taskId: String, title: String, description: String, creator: String): T =
         createTaskOrThrow(
             createTaskIdOrThrow(taskId),
-            Title(title).getOrElse { throw RuntimeException("title should be valid") },
-            Description(description).getOrElse { throw RuntimeException("description should be valid") },
+            createTitleOrThrow(title),
+            createDescriptionOrThrow(description),
             Hero(
-                HeroName(creator).getOrElse { throw RuntimeException("$creator should be valid") },
-                HeroId(creator).getOrElse { throw RuntimeException("$creator should be valid") })
+                TestUtils.createHeroNameOrThrow(creator),
+                TestUtils.createHeroIdOrThrow(creator)
+            )
         )
 
     abstract fun createTaskIdOrThrow(taskId: String): Id

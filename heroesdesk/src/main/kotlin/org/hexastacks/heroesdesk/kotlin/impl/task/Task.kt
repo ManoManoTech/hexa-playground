@@ -1,9 +1,7 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
-import org.hexastacks.heroesdesk.kotlin.impl.Description
-import org.hexastacks.heroesdesk.kotlin.impl.Hero
-import org.hexastacks.heroesdesk.kotlin.impl.Heroes
-import org.hexastacks.heroesdesk.kotlin.impl.Title
+import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 sealed interface Task<T : TaskId> {
     fun updateTitle(title: Title): Task<out TaskId> = when (this) {
@@ -30,8 +28,6 @@ sealed interface Task<T : TaskId> {
     val taskId: T
     val title: Title
     val description: Description
-    val creator: Hero
     val assignees: Heroes
-
 
 }

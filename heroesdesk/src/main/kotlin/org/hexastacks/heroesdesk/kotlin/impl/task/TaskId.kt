@@ -5,12 +5,9 @@ import org.hexastacks.heroesdesk.kotlin.impl.StringValueError
 
 sealed interface TaskId : StringValue {
 
-    override val value: String
-
     companion object {
         const val MIN_LENGTH = 1
         const val MAX_LENGTH = 36
-
     }
 
     sealed interface TaskIdError : StringValueError

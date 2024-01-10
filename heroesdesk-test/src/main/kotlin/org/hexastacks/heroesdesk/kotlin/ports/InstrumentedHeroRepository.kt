@@ -1,8 +1,10 @@
 package org.hexastacks.heroesdesk.kotlin.ports
 
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestExtensions.createHeroOrThrow
-import org.hexastacks.heroesdesk.kotlin.impl.Hero
-import org.hexastacks.heroesdesk.kotlin.impl.Heroes
+import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createHeroOrThrow
+import org.hexastacks.heroesdesk.kotlin.impl.user.Admin
+import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
+import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
 
 interface InstrumentedHeroRepository : HeroRepository {
@@ -14,11 +16,12 @@ interface InstrumentedHeroRepository : HeroRepository {
      */
     fun defineAssignableHeroes(taskId: TaskId, heroesToCreateIfNeeded: Heroes): Heroes
 
-    fun defineWorkableHeroes(taskId: TaskId, heroesToCreateIfNeeded: Heroes): Heroes
+    fun defineHeroesAbleToChangeStatus(taskId: TaskId, heroesToCreateIfNeeded: Heroes): Heroes
 
     fun ensureExisting(heroes: Heroes): Heroes
 
     fun ensureExisting(hero: Hero): Hero
+    fun ensureExisting(admin: AdminId): Admin
 
     fun ensureExistingOrThrow(rawHeroId: String): Hero = ensureExisting(createHeroOrThrow(rawHeroId))
 }

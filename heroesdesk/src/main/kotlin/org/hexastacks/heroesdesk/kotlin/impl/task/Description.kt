@@ -1,10 +1,12 @@
-package org.hexastacks.heroesdesk.kotlin.impl
+package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import arrow.core.raise.either
 import arrow.core.raise.ensure
+import org.hexastacks.heroesdesk.kotlin.impl.AbstractStringValue
+import org.hexastacks.heroesdesk.kotlin.impl.StringValueError
 
 class Description private constructor(value: String) : AbstractStringValue(value) {
 

@@ -5,20 +5,51 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8b8999cd-0409-4461-bc4e-7560dc4f357a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/CODE_OF_CONDUCT.md" beforeDir="false" afterPath="$PROJECT_DIR$/CODE_OF_CONDUCT.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/scope/NameTest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/AdminIdTest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroIdsTest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroesTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/AbstractHeroesDeskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/AbstractHeroesDeskTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDeskTestExtensions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDeskTestUtils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/FakeHeroRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/FakeHeroRepository.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InMemoryTaskRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InMemoryTaskRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InstrumentedHeroRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InstrumentedHeroRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDeskImplTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDeskImplTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDesk.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDesk.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/Description.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/Description.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/Hero.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/Hero.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroId.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroId.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroIds.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroIds.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroName.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroName.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/Heroes.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/Heroes.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesDeskImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesDeskImpl.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/Title.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/Title.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DeletedTask.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DeletedTask.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DoneTask.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DoneTask.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/InProgressTask.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/InProgressTask.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/PendingTask.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/PendingTask.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/Task.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/Task.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroIdsTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroIdsTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/TaskId.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/TaskId.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/HeroRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/HeroRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/HeroRepositoryExtensions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/HeroRepositoryExtensions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/TaskRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/TaskRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/DescriptionTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DescriptionTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroIdTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroIdTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroIdsTest.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroNameTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroNameTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesTest.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/TitleTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/TitleTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/AbstractTaskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/AbstractTaskTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DeletedTaskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DeletedTaskTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DoneTaskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/DoneTaskTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/InProgressTaskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/InProgressTaskTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/PendingTaskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/PendingTaskTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,6 +96,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JUnit5 Test Class" />
+        <option value="Kotlin Object" />
         <option value="Kotlin Class" />
       </list>
     </option>
@@ -92,14 +124,19 @@
     "Gradle.DeletedTaskIdTest.executor": "Run",
     "Gradle.HeroTest.executor": "Run",
     "Gradle.HeroesDeskImplTest.executor": "Run",
+    "Gradle.HeroesTest.executor": "Run",
     "Gradle.Tests in 'hexa-playground.heroesdesk'.executor": "Coverage",
-    "Gradle.Tests in 'hexa-playground.heroesdesk-test'.executor": "Coverage",
+    "Gradle.Tests in 'hexa-playground.heroesdesk-test'.executor": "Run",
     "Gradle.hexa-playground [clean].executor": "Run",
     "JUnit.All in hexa-playground.executor": "Run",
     "JUnit.HeroesDeskImplTest.assign task fails on non existing task.executor": "Debug",
     "JUnit.HeroesDeskImplTest.assign task works (1).executor": "Run",
     "JUnit.HeroesDeskImplTest.assign task works (2).executor": "Debug",
     "JUnit.HeroesDeskImplTest.assign task works.executor": "Run",
+    "JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same id.executor": "Run",
+    "JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same name.executor": "Run",
+    "JUnit.HeroesDeskImplTest.createScope returns a scope.executor": "Run",
+    "JUnit.HeroesDeskImplTest.createScope works on many parallel creations.executor": "Run",
     "JUnit.HeroesDeskImplTest.executor": "Run",
     "JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to (1).executor": "Debug",
     "JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to (2).executor": "Debug",
@@ -124,7 +161,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "settings.editor.selected.configurable": "preferences.keymap",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -133,40 +170,21 @@
       <recent name="" />
     </key>
     <key name="CreateKotlinClassDialog.RecentsKey">
+      <recent name="org.hexastacks.heroesdesk.kotlin.impl.user" />
       <recent name="org.hexastacks.heroesdesk.kotlin.impl" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
-      <recent name="org.hexastacks.heroesdesk.kotlin.impl" />
       <recent name="org.hexastacks.heroesdesk.kotlin.impl.task" />
+      <recent name="org.hexastacks.heroesdesk.kotlin.impl.scope" />
+      <recent name="org.hexastacks.heroesdesk.kotlin.impl.user" />
+      <recent name="org.hexastacks.heroesdesk.kotlin.impl" />
     </key>
     <key name="CreateTestDialog.RecentsKey">
       <recent name="org.hexastacks.heroesdesk.kotlin.impl" />
       <recent name="org.hexastacks.heroesdesk.kotlin.impl.task" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Tests in 'hexa-playground.heroesdesk-test'">
-    <configuration name="Tests in 'hexa-playground.heroesdesk-test'" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":heroesdesk-test:test" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Gradle.Tests in 'hexa-playground.heroesdesk'">
     <configuration name="Tests in 'hexa-playground.heroesdesk'" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -204,7 +222,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HeroesDeskImplTest.start work fails with non existing hero (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HeroesDeskImplTest.createScope fails on pre existing scope with same id" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hexa-playground.heroesdesk-test.test" />
       <extension name="coverage">
         <pattern>
@@ -214,13 +232,13 @@
       </extension>
       <option name="PACKAGE_NAME" value="org.hexastacks.heroesdesk.kotlin" />
       <option name="MAIN_CLASS_NAME" value="org.hexastacks.heroesdesk.kotlin.HeroesDeskImplTest" />
-      <option name="METHOD_NAME" value="start work fails with non existing hero" />
+      <option name="METHOD_NAME" value="createScope fails on pre existing scope with same id" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HeroesDeskImplTest.start work fails with non existing hero (2)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HeroesDeskImplTest.createScope fails on pre existing scope with same name" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hexa-playground.heroesdesk-test.test" />
       <extension name="coverage">
         <pattern>
@@ -230,7 +248,23 @@
       </extension>
       <option name="PACKAGE_NAME" value="org.hexastacks.heroesdesk.kotlin" />
       <option name="MAIN_CLASS_NAME" value="org.hexastacks.heroesdesk.kotlin.HeroesDeskImplTest" />
-      <option name="METHOD_NAME" value="start work fails with non existing hero" />
+      <option name="METHOD_NAME" value="createScope fails on pre existing scope with same name" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HeroesDeskImplTest.createScope works on many parallel creations" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hexa-playground.heroesdesk-test.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.hexastacks.heroesdesk.kotlin.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.hexastacks.heroesdesk.kotlin" />
+      <option name="MAIN_CLASS_NAME" value="org.hexastacks.heroesdesk.kotlin.HeroesDeskImplTest" />
+      <option name="METHOD_NAME" value="createScope works on many parallel creations" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -238,11 +272,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.Tests in 'hexa-playground.heroesdesk-test'" />
         <item itemvalue="Gradle.Tests in 'hexa-playground.heroesdesk'" />
-        <item itemvalue="JUnit.HeroesDeskImplTest.start work fails with non existing hero (2)" />
-        <item itemvalue="JUnit.HeroesDeskImplTest.start work fails with non existing hero (1)" />
         <item itemvalue="JUnit.HeroesDeskImplTest" />
+        <item itemvalue="JUnit.HeroesDeskImplTest.createScope works on many parallel creations" />
+        <item itemvalue="JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same name" />
+        <item itemvalue="JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same name" />
       </list>
     </recent_temporary>
   </component>
@@ -265,7 +299,9 @@
       <workItem from="1704468366595" duration="502000" />
       <workItem from="1704701749478" duration="151000" />
       <workItem from="1704701908957" duration="22079000" />
-      <workItem from="1704789430765" duration="16903000" />
+      <workItem from="1704789430765" duration="19100000" />
+      <workItem from="1704874381874" duration="16710000" />
+      <workItem from="1704899682830" duration="5136000" />
     </task>
     <servers />
   </component>
@@ -277,28 +313,14 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/Task.kt</url>
-          <line>17</line>
+          <line>15</line>
           <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/AbstractHeroesDeskTest.kt</url>
-          <line>395</line>
-          <option name="timeStamp" value="33" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-function">
-          <url>file://$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDesk.kt</url>
-          <line>105</line>
-          <properties class="org.hexastacks.heroesdesk.kotlin.HeroesDesk.NonAllowedToStartWorkError" method="&lt;init&gt;">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="32" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/hexa_playground$Tests_in__hexa_playground_heroesdesk_test_.ic" NAME="Tests in 'hexa-playground.heroesdesk-test' Coverage Results" MODIFIED="1704814375160" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
-    <SUITE FILE_PATH="coverage/hexa_playground$Tests_in__hexa_playground_heroesdesk_.ic" NAME="Tests in 'hexa-playground.heroesdesk' Coverage Results" MODIFIED="1704814362975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/hexa_playground$Tests_in__hexa_playground_heroesdesk_.ic" NAME="Tests in 'hexa-playground.heroesdesk' Coverage Results" MODIFIED="1704883451046" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>

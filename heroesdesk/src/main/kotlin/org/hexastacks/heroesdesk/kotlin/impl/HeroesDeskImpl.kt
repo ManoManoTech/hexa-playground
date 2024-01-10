@@ -7,14 +7,26 @@ import arrow.core.flatMap
 import arrow.core.nonEmptyListOf
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
+import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.ports.HeroRepository
 import org.hexastacks.heroesdesk.kotlin.ports.HeroRepositoryExtensions.canHeroStartWork
 import org.hexastacks.heroesdesk.kotlin.ports.TaskRepository
 
 class HeroesDeskImpl(private val heroRepository: HeroRepository, private val taskRepository: TaskRepository) :
     HeroesDesk {
-    override fun currentHero(): EitherNel<CurrentHeroError, HeroId> = heroRepository.currentHero()
+    override fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope> = taskRepository.createScope(scopeKey, name, creator)
+    override fun assignScope(
+        scopeKey: ScopeKey,
+        assignees: HeroIds,
+        changeAuthor: AdminId
+    ): EitherNel<AssignHeroesOnScopeError, Scope> = taskRepository.assignScope(scopeKey, assignees, changeAuthor)
 
     override fun createTask(
         title: Title,
@@ -139,14 +151,6 @@ class HeroesDeskImpl(private val heroRepository: HeroRepository, private val tas
         id: InProgressTaskId,
         author: HeroId
     ): EitherNel<EndWorkError, DoneTaskId> {
-        TODO("Not yet implemented")
-    }
-
-    override fun delete(id: TaskId, author: HeroId): EitherNel<DeleteTaskError, DeletedTaskId> {
-        TODO("Not yet implemented")
-    }
-
-    override fun restore(id: DeletedTaskId, author: HeroId): EitherNel<RestoreTaskError, TaskId> {
         TODO("Not yet implemented")
     }
 }

@@ -1,6 +1,6 @@
 package org.hexastacks.heroesdesk.kotlin
 
-import org.hexastacks.heroesdesk.kotlin.impl.HeroId
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.HeroesDeskImpl
 import org.hexastacks.heroesdesk.kotlin.ports.FakeHeroRepository
 import org.hexastacks.heroesdesk.kotlin.ports.InMemoryTaskRepository

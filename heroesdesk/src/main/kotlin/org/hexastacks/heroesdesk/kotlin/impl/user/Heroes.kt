@@ -1,6 +1,8 @@
-package org.hexastacks.heroesdesk.kotlin.impl
+package org.hexastacks.heroesdesk.kotlin.impl.user
 
 data class Heroes(val value: Set<Hero>) {
+
+    val size: Int = value.size
 
     constructor(vararg heroes: Hero) : this(heroes.toSet())
     constructor(heroes: List<Hero>) : this(heroes.toSet())
@@ -10,7 +12,7 @@ data class Heroes(val value: Set<Hero>) {
             .map { it.id }
             .contains(author)
 
-    fun add(hero: Hero): Heroes = Heroes(value + hero) // FIXME: test
+    fun add(hero: Hero): Heroes = Heroes(value + hero)
 
     fun forEach(action: (Hero) -> Unit) {
         value.forEach(action)

@@ -2,8 +2,11 @@ package org.hexastacks.heroesdesk.kotlin.ports
 
 import arrow.core.EitherNel
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
-import org.hexastacks.heroesdesk.kotlin.impl.*
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
+import org.hexastacks.heroesdesk.kotlin.impl.user.*
 
 interface TaskRepository {
 
@@ -30,5 +33,11 @@ interface TaskRepository {
     ): EitherNel<AssignTaskError, Task<*>>
 
     fun startWork(pendingTaskId: PendingTaskId, hero: Hero): EitherNel<StartWorkError, InProgressTask>
+    fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope>
+    fun assignScope(
+        scopeKey: ScopeKey,
+        assignees: HeroIds,
+        changeAuthor: AdminId
+    ): EitherNel<AssignHeroesOnScopeError, Scope>
 
 }

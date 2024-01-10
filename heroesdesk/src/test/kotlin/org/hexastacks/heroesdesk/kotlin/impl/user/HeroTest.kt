@@ -1,4 +1,4 @@
-package org.hexastacks.heroesdesk.kotlin.impl
+package org.hexastacks.heroesdesk.kotlin.impl.user
 
 import arrow.core.getOrElse
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -35,7 +35,7 @@ class HeroTest {
 
     private fun heroId(id: String): HeroId = HeroId(id).getOrElse { throw RuntimeException("HeroId should be valid") }
 
-    private fun heroName(name: String): HeroName =
-        HeroName(name).getOrElse { throw RuntimeException("HeroName should be valid") }
+    private fun heroName(name: String): UserName =
+        UserName(name).getOrElse { throw RuntimeException("HeroName should be valid") }
 
 }

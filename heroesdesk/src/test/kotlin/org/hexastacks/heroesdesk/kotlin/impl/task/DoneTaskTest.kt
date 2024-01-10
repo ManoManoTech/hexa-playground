@@ -1,10 +1,8 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import arrow.core.getOrElse
-import org.hexastacks.heroesdesk.kotlin.impl.Description
-import org.hexastacks.heroesdesk.kotlin.impl.Hero
-import org.hexastacks.heroesdesk.kotlin.impl.Heroes
-import org.hexastacks.heroesdesk.kotlin.impl.Title
+import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 class DoneTaskTest : AbstractTaskTest<DoneTaskId, DoneTask>() {
     override fun createTaskOrThrow(
@@ -14,7 +12,7 @@ class DoneTaskTest : AbstractTaskTest<DoneTaskId, DoneTask>() {
         creator: Hero,
         assignees: Heroes
     ) =
-        DoneTask(id, title, description, creator, assignees)
+        DoneTask(id, title, description, assignees)
 
     override fun createTaskIdOrThrow(taskId: String): DoneTaskId =
         DoneTaskId(taskId).getOrElse { throw RuntimeException("$taskId should be valid") }

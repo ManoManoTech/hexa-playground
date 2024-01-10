@@ -1,15 +1,22 @@
 package org.hexastacks.heroesdesk.kotlin.ports
 
 import arrow.core.*
+import arrow.core.Either.Left
+import arrow.core.Either.Right
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
-import org.hexastacks.heroesdesk.kotlin.impl.*
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds.Companion.EMPTY_HEROIDS
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
+import org.hexastacks.heroesdesk.kotlin.impl.user.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryTaskRepository : TaskRepository {
 
     private val tasks = ConcurrentHashMap<TaskId, Task<*>>()
+    private val scopes = ConcurrentHashMap.newKeySet<Scope>()
 
     override fun createTask(
         title: Title,
@@ -21,19 +28,17 @@ class InMemoryTaskRepository : TaskRepository {
         }
         val task = PendingTask(
             taskId = taskId,
-            title = title,
-            creator = hero
+            title = title
         )
         return tasks.putIfAbsent(taskId, task)
-            ?.let { Either.Left(nonEmptyListOf(TaskRepositoryHeroDoesNotExistError("New task id $taskId already existing"))) }
-            ?: Either.Right(task)
+            ?.let { Left(nonEmptyListOf(TaskRepositoryHeroDoesNotExistError("New task id $taskId already existing"))) }
+            ?: Right(task)
     }
-
 
     override fun getTask(taskId: TaskId): Either<NonEmptyList<GetTaskError>, Task<*>> {
         return tasks[taskId]
-            ?.let { Either.Right(it) }
-            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistError(taskId)))
+            ?.let { Right(it) }
+            ?: Left(nonEmptyListOf(TaskDoesNotExistError(taskId)))
     }
 
     override fun updateTitle(
@@ -79,9 +84,9 @@ class InMemoryTaskRepository : TaskRepository {
             ?.let { taskToUpdate ->
                 val updatedTask: Task<*> = taskToUpdate.assign(assignees)
                 tasks.replace(taskId, updatedTask)
-                Either.Right(updatedTask)
+                Right(updatedTask)
             }
-            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistAssignTaskError(taskId)))
+            ?: Left(nonEmptyListOf(TaskDoesNotExistAssignTaskError(taskId)))
 
     override fun startWork(pendingTaskId: PendingTaskId, hero: Hero): EitherNel<StartWorkError, InProgressTask> =
         tasks[pendingTaskId]
@@ -103,7 +108,6 @@ class InMemoryTaskRepository : TaskRepository {
                                         inProgressTaskId,
                                         taskToUpdate.title,
                                         taskToUpdate.description,
-                                        taskToUpdate.creator,
                                         taskToUpdate.assignees
                                     )
                                 tasks.replace(pendingTaskId, inProgressTask)
@@ -111,10 +115,34 @@ class InMemoryTaskRepository : TaskRepository {
                             }
                     }
 
-                    else -> Either.Left(nonEmptyListOf(TaskNotPendingStartWorkError(taskToUpdate, pendingTaskId)))
+                    else -> Left(nonEmptyListOf(TaskNotPendingStartWorkError(taskToUpdate, pendingTaskId)))
                 }
             }
-            ?: Either.Left(nonEmptyListOf(TaskDoesNotExistStartWorkError(pendingTaskId)))
+            ?: Left(nonEmptyListOf(TaskDoesNotExistStartWorkError(pendingTaskId)))
+
+    override fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope> {
+        return if (scopes.any { it.name == name })
+            Left(
+                nonEmptyListOf(ScopeNameAlreadyExistsError(name))
+            ) else if (scopes.any { it.key == scopeKey })
+            Left(
+                nonEmptyListOf(ScopeIdAlreadyExistsError(scopeKey))
+            ) else {
+            val newScope = Scope(name, scopeKey, EMPTY_HEROIDS)
+            if (scopes.add(newScope))
+                Right(newScope)
+            else
+                Left(nonEmptyListOf(ScopeIdAlreadyExistsError(scopeKey)))
+        }
+    }
+
+    override fun assignScope(
+        scopeKey: ScopeKey,
+        assignees: HeroIds,
+        changeAuthor: AdminId
+    ): EitherNel<AssignHeroesOnScopeError, Scope> {
+        TODO()
+    }
 
     companion object {
         const val NON_EXISTING_TASK_ID: String = "nonExistingTask"

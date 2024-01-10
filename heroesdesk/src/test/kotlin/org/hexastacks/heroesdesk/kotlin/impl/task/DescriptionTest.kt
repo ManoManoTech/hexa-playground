@@ -1,7 +1,8 @@
-package org.hexastacks.heroesdesk.kotlin.impl
+package org.hexastacks.heroesdesk.kotlin.impl.task
 
 
-import org.hexastacks.heroesdesk.kotlin.impl.Description.DescriptionError
+import org.hexastacks.heroesdesk.kotlin.impl.AbstractStringValueTest
+import org.hexastacks.heroesdesk.kotlin.impl.task.Description.DescriptionError
 
 class DescriptionTest : AbstractStringValueTest<Description, DescriptionError>() {
 

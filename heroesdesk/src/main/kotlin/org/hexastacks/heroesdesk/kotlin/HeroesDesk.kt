@@ -1,16 +1,27 @@
 package org.hexastacks.heroesdesk.kotlin
 
 import arrow.core.EitherNel
-import org.hexastacks.heroesdesk.kotlin.impl.*
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
+import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 interface HeroesDesk {
-    fun currentHero(): EitherNel<CurrentHeroError, HeroId> // TODO: switch to Hero in repo & remove
+
+    fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope>
+    fun assignScope(scopeKey: ScopeKey, assignees: HeroIds, changeAuthor: AdminId): EitherNel<AssignHeroesOnScopeError, Scope>
+
+    // fun updateScopeName(scopeId: ScopeId, name:Name, changeAuthor: AdminId): EitherNel<UpdateScopeNameError, Scope>
+//    fun getScope(id: ScopeId): EitherNel<GetScopeError, Scope>
 
     fun createTask(title: Title, creator: HeroId): EitherNel<CreateTaskError, PendingTask>
     fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>>
 
-    fun updateTitle(id: TaskId, title: Title, author: HeroId): EitherNel<UpdateTitleError, TaskId>
+    fun updateTitle(id: TaskId, title: Title, author: HeroId): EitherNel<UpdateTitleError, TaskId>  // TODO: handle some history and use author here, apply to other methods here too
     fun updateDescription(
         id: TaskId, description: Description, author: HeroId
     ): EitherNel<UpdateDescriptionError, TaskId>
@@ -35,16 +46,21 @@ interface HeroesDesk {
     fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTaskId>
     fun endWork(id: InProgressTaskId, author: HeroId): EitherNel<EndWorkError, DoneTaskId>
 
-    fun delete(id: TaskId, author: HeroId): EitherNel<DeleteTaskError, DeletedTaskId>
-    fun restore(id: DeletedTaskId, author: HeroId): EitherNel<RestoreTaskError, TaskId>
-
-
     sealed interface HeroesDeskError {
         val message: String
     }
 
-    sealed interface CurrentHeroError :
-        HeroesDeskError // TODO: consider (& test !) adding Action*RepoError(msg, exp) to all error parents
+    sealed interface CreateScopeError: HeroesDeskError
+
+    data class ScopeNameAlreadyExistsError(val name: Name) : CreateScopeError {
+        override val message = "Scope $name already exists"
+    }
+
+    data class ScopeIdAlreadyExistsError(val id: ScopeKey) : CreateScopeError {
+        override val message = "Scope $id already exists"
+    }
+
+    sealed interface AssignHeroesOnScopeError: HeroesDeskError
 
     sealed interface CreateTaskError : HeroesDeskError
 
@@ -81,8 +97,6 @@ interface HeroesDesk {
         override val message = "Task $taskId does not exist"
     }
 
-    sealed interface RestoreTaskError : HeroesDeskError
-    sealed interface DeleteTaskError : HeroesDeskError
     sealed interface EndWorkError : HeroesDeskError
     sealed interface StopWorkError : HeroesDeskError
     sealed interface StartWorkError : HeroesDeskError

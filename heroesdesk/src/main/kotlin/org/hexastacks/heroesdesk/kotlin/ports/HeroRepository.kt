@@ -2,15 +2,14 @@ package org.hexastacks.heroesdesk.kotlin.ports
 
 import arrow.core.EitherNel
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
-import org.hexastacks.heroesdesk.kotlin.impl.Hero
-import org.hexastacks.heroesdesk.kotlin.impl.HeroId
-import org.hexastacks.heroesdesk.kotlin.impl.HeroIds
-import org.hexastacks.heroesdesk.kotlin.impl.Heroes
+import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
 
 interface HeroRepository {
-    fun currentHero(): EitherNel<CurrentHeroError, HeroId>
     fun getHero(heroId: HeroId): EitherNel<GetHeroError, Hero>
     fun canHeroCreateTask(heroId: HeroId): EitherNel<CreateTaskError, Hero>
     fun canHeroUpdateTaskTitle(heroId: HeroId): EitherNel<UpdateTitleError, Hero>
