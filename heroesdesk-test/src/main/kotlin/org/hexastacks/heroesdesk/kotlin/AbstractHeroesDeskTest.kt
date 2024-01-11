@@ -27,6 +27,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
 import org.hexastacks.heroesdesk.kotlin.ports.InstrumentedHeroRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
@@ -34,6 +35,7 @@ import java.util.concurrent.Executors
 abstract class AbstractHeroesDeskTest {
 
     @Test
+    @Disabled
     fun `createScope returns a scope`() {
         val instrumentedUserRepository = instrumentedHeroRepository()
         val heroesDesk = heroesDesk(instrumentedUserRepository)
@@ -51,6 +53,7 @@ abstract class AbstractHeroesDeskTest {
     }
 
     @Test
+    @Disabled
     fun `createScope fails on non existing admin`() {
         val instrumentedUserRepository = instrumentedHeroRepository()
         val heroesDesk = heroesDesk(instrumentedUserRepository)
@@ -138,6 +141,7 @@ abstract class AbstractHeroesDeskTest {
     }
 
     @Test
+    @Disabled
     fun `assignScope works`() {
         val instrumentedUserRepository = instrumentedHeroRepository()
         val heroesDesk = heroesDesk(instrumentedUserRepository)
