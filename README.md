@@ -108,7 +108,7 @@ A task is made of:
 - assignees: can be empty, updatable
 - a task can be pending, in progress or done: default to pending
     - each state can be moved to any of the 2 others
-    - a hero marking a task as in progress is automatically added as assignee
+    - if a task without assigned is set to in progress, the hero doing the action is automatically added as assignee
 
 Multiple tasks with same title or description can be created.
 

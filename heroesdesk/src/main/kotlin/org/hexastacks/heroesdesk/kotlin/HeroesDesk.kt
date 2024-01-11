@@ -60,7 +60,15 @@ interface HeroesDesk {
         override val message = "Scope $id already exists"
     }
 
+    data class  AdminDoesNotExistCreateScopeError(val adminId: AdminId) : CreateScopeError {
+        override val message = "Admin $adminId does not exist"
+    }
+
     sealed interface AssignHeroesOnScopeError: HeroesDeskError
+
+    data class ScopeDoesNotExistAssignHeroesOnScopeError(val scopeKey: ScopeKey) : AssignHeroesOnScopeError {
+        override val message = "Scope $scopeKey does not exist"
+    }
 
     sealed interface CreateTaskError : HeroesDeskError
 

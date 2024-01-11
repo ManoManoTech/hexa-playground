@@ -1,6 +1,7 @@
 package org.hexastacks.heroesdesk.kotlin.impl.scope
 
 import arrow.core.Either
+import arrow.core.EitherNel
 import arrow.core.NonEmptyList
 import arrow.core.raise.either
 import arrow.core.raise.ensure
@@ -14,7 +15,7 @@ class ScopeKey private constructor(value: String) : AbstractStringValue(value) {
         const val MIN_LENGTH = 1
         const val MAX_LENGTH = 36
 
-        operator fun invoke(stringBetween1And36Chars: String): Either<NonEmptyList<ScopeIdError>, ScopeKey> =
+        operator fun invoke(stringBetween1And36Chars: String): EitherNel<ScopeIdError, ScopeKey> =
             either {
                 zipOrAccumulate(
                     // TODO: see how to  consolidate

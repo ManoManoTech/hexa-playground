@@ -9,14 +9,14 @@ import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
 import org.hexastacks.heroesdesk.kotlin.impl.user.*
 import java.util.concurrent.ConcurrentHashMap
 
-class FakeHeroRepository : InstrumentedHeroRepository {
+class FakeUserRepository : InstrumentedUserRepository {
     companion object {
         val NON_EXISTING_USER_ID: HeroId =
             HeroId("nonExistingUser")
                 .getOrElse { throw RuntimeException("nonExistingUser should be valid") }
     }
 
-    private val users = ConcurrentHashMap.newKeySet<Hero>()
+    private val users = ConcurrentHashMap.newKeySet<User<*>>()
 
     private val assignableHeroes = ConcurrentHashMap<TaskId, Heroes>()
 
@@ -59,9 +59,11 @@ class FakeHeroRepository : InstrumentedHeroRepository {
                     Right(
                         Heroes(
                             assignableHeroes
-                                .map { id ->
-                                    users.first { hero -> hero.id == id }
-                                } //FIXME
+                                .mapNotNull { id ->
+                                    users
+                                        .firstOrNull { hero -> hero.id == id }
+                                        ?.asHero()
+                                }
                         )
                     )
                 } else {
@@ -110,8 +112,16 @@ class FakeHeroRepository : InstrumentedHeroRepository {
     override fun getHero(heroId: HeroId): EitherNel<GetHeroError, Hero> =
         users
             .firstOrNull { it.id == heroId }
+            ?.asHero()
             ?.let { Right(it) }
             ?: Left(nonEmptyListOf(HeroDoesNotExistError(heroId)))
+
+    override fun getAdmin(adminId: AdminId): EitherNel<GetAdminError, Admin> =
+        users
+            .firstOrNull { it.id == adminId }
+            ?.asAdmin()
+            ?.let { Right(it) }
+            ?: Left(nonEmptyListOf(AdminDoesNotExistError(adminId)))
 
     override fun ensureExisting(heroes: Heroes): Heroes {
         heroes.forEach { ensureExisting(it) }
@@ -123,8 +133,9 @@ class FakeHeroRepository : InstrumentedHeroRepository {
         return hero
     }
 
-    override fun ensureExisting(admin: AdminId): Admin {
-        TODO("Not yet implemented")
+    override fun ensureExisting(admin: Admin): Admin {
+        users.add(admin)
+        return admin
     }
 
     override fun canHeroCreateTask(heroId: HeroId): EitherNel<CreateTaskError, Hero> =

@@ -5,7 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8b8999cd-0409-4461-bc4e-7560dc4f357a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/scope/ScopeTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/AbstractHeroesDeskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/AbstractHeroesDeskTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDeskTestUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDeskTestUtils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/FakeHeroRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/FakeHeroRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InMemoryTaskRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InMemoryTaskRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InstrumentedHeroRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InstrumentedHeroRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDesk.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDesk.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesDeskImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesDeskImpl.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/scope/Scope.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/scope/Scope.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/scope/ScopeKey.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/scope/ScopeKey.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/User.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/HeroRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/HeroRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,14 +65,19 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="JUnit5 Test Class" />
         <option value="Kotlin Object" />
         <option value="Kotlin Class" />
+        <option value="JUnit5 Test Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JsbtTreeLayoutManager">
+    <layout place="tools.popupGrunt">
+      <scroll-view-position x="0" y="0" />
+    </layout>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -74,53 +93,55 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Build hexa-playground.executor": "Run",
-    "Gradle.DeletedTaskIdTest.executor": "Run",
-    "Gradle.HeroTest.executor": "Run",
-    "Gradle.HeroesDeskImplTest.executor": "Run",
-    "Gradle.HeroesTest.executor": "Run",
-    "Gradle.Tests in 'hexa-playground.heroesdesk'.executor": "Run",
-    "Gradle.Tests in 'hexa-playground.heroesdesk-test'.executor": "Run",
-    "Gradle.hexa-playground [clean].executor": "Run",
-    "JUnit.All in hexa-playground.executor": "Run",
-    "JUnit.HeroesDeskImplTest.assign task fails on non existing task.executor": "Debug",
-    "JUnit.HeroesDeskImplTest.assign task works (1).executor": "Run",
-    "JUnit.HeroesDeskImplTest.assign task works (2).executor": "Debug",
-    "JUnit.HeroesDeskImplTest.assign task works.executor": "Run",
-    "JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same id.executor": "Run",
-    "JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same name.executor": "Run",
-    "JUnit.HeroesDeskImplTest.createScope returns a scope.executor": "Run",
-    "JUnit.HeroesDeskImplTest.createScope works on many parallel creations.executor": "Run",
-    "JUnit.HeroesDeskImplTest.executor": "Run",
-    "JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to (1).executor": "Debug",
-    "JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to (2).executor": "Debug",
-    "JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to.executor": "Run",
-    "JUnit.HeroesDeskImplTest.start work fails with non existing hero (1).executor": "Debug",
-    "JUnit.HeroesDeskImplTest.start work fails with non existing hero (2).executor": "Run",
-    "JUnit.HeroesDeskImplTest.start work fails with non existing hero.executor": "Debug",
-    "JUnit.HeroesDeskImplTest.start work works on existing & pending task.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_directory_selection": "/Users/joseph.pachod/projects/hexa-playground/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl",
-    "last_opened_file_path": "/Users/joseph.pachod/projects/hexa-playground",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build hexa-playground.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.DeletedTaskIdTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.HeroTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.HeroesDeskImplTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.HeroesTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ScopeTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Tests in 'hexa-playground.heroesdesk'.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Tests in 'hexa-playground.heroesdesk-test'.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.hexa-playground [clean].executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.All in hexa-playground.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assign task fails on non existing task.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assign task works (1).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assign task works (2).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assign task works.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assignScope works.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same id.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same name.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.createScope returns a scope.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.createScope works on many parallel creations.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to (1).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to (2).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with non existing hero (1).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with non existing hero (2).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with non existing hero.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work works on existing &amp; pending task.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_directory_selection&quot;: &quot;/Users/joseph.pachod/projects/hexa-playground/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/scope&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/joseph.pachod/projects/hexa-playground&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
@@ -136,11 +157,60 @@
       <recent name="org.hexastacks.heroesdesk.kotlin.impl" />
     </key>
     <key name="CreateTestDialog.RecentsKey">
+      <recent name="org.hexastacks.heroesdesk.kotlin.impl.scope" />
       <recent name="org.hexastacks.heroesdesk.kotlin.impl" />
       <recent name="org.hexastacks.heroesdesk.kotlin.impl.task" />
     </key>
   </component>
   <component name="RunManager" selected="Gradle.Tests in 'hexa-playground.heroesdesk-test'">
+    <configuration name="HeroTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":heroesdesk:test" />
+            <option value="--tests" />
+            <option value="&quot;org.hexastacks.heroesdesk.kotlin.impl.user.HeroTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="ScopeTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":heroesdesk:test" />
+            <option value="--tests" />
+            <option value="&quot;org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="Tests in 'hexa-playground.heroesdesk-test'" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -185,7 +255,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="HeroesDeskImplTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HeroesDeskImplTest.assignScope works" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hexa-playground.heroesdesk-test.test" />
       <extension name="coverage">
         <pattern>
@@ -195,38 +265,7 @@
       </extension>
       <option name="PACKAGE_NAME" value="org.hexastacks.heroesdesk.kotlin" />
       <option name="MAIN_CLASS_NAME" value="org.hexastacks.heroesdesk.kotlin.HeroesDeskImplTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HeroesDeskImplTest.createScope fails on pre existing scope with same name" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="hexa-playground.heroesdesk-test.test" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="org.hexastacks.heroesdesk.kotlin.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="org.hexastacks.heroesdesk.kotlin" />
-      <option name="MAIN_CLASS_NAME" value="org.hexastacks.heroesdesk.kotlin.HeroesDeskImplTest" />
-      <option name="METHOD_NAME" value="createScope fails on pre existing scope with same name" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HeroesDeskImplTest.createScope works on many parallel creations" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="hexa-playground.heroesdesk-test.test" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="org.hexastacks.heroesdesk.kotlin.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="org.hexastacks.heroesdesk.kotlin" />
-      <option name="MAIN_CLASS_NAME" value="org.hexastacks.heroesdesk.kotlin.HeroesDeskImplTest" />
-      <option name="METHOD_NAME" value="createScope works on many parallel creations" />
+      <option name="METHOD_NAME" value="assignScope works" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -236,9 +275,9 @@
       <list>
         <item itemvalue="Gradle.Tests in 'hexa-playground.heroesdesk-test'" />
         <item itemvalue="Gradle.Tests in 'hexa-playground.heroesdesk'" />
-        <item itemvalue="JUnit.HeroesDeskImplTest" />
-        <item itemvalue="JUnit.HeroesDeskImplTest.createScope works on many parallel creations" />
-        <item itemvalue="JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same name" />
+        <item itemvalue="Gradle.ScopeTest" />
+        <item itemvalue="Gradle.HeroTest" />
+        <item itemvalue="JUnit.HeroesDeskImplTest.assignScope works" />
       </list>
     </recent_temporary>
   </component>
@@ -263,7 +302,8 @@
       <workItem from="1704701908957" duration="22079000" />
       <workItem from="1704789430765" duration="19100000" />
       <workItem from="1704874381874" duration="16710000" />
-      <workItem from="1704899682830" duration="6656000" />
+      <workItem from="1704899682830" duration="14582000" />
+      <workItem from="1705007418393" duration="307000" />
     </task>
     <servers />
   </component>

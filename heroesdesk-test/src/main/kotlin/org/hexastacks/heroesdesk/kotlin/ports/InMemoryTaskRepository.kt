@@ -7,9 +7,9 @@ import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
-import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds.Companion.EMPTY_HEROIDS
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.*
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds.Companion.EMPTY_HEROIDS
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -140,9 +140,17 @@ class InMemoryTaskRepository : TaskRepository {
         scopeKey: ScopeKey,
         assignees: HeroIds,
         changeAuthor: AdminId
-    ): EitherNel<AssignHeroesOnScopeError, Scope> {
-        TODO()
-    }
+    ): EitherNel<AssignHeroesOnScopeError, Scope> =
+        scopes
+            .firstOrNull { it.key == scopeKey }
+            ?.let { scope ->
+                val newScope = scope.copy(assignees = assignees)
+                scopes.remove(scope)
+                scopes.add(newScope)
+                return Right(newScope)
+            }
+            ?: Left(nonEmptyListOf(ScopeDoesNotExistAssignHeroesOnScopeError(scopeKey)))
+
 
     companion object {
         const val NON_EXISTING_TASK_ID: String = "nonExistingTask"

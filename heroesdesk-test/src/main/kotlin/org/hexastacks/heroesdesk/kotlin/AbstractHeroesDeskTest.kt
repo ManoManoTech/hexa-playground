@@ -18,16 +18,15 @@ import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createScopeIdOrThrow
 import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createTaskOrThrow
 import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createTitleOrThrow
 import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.getTaskOrThrow
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
+import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes.Companion.EMPTY_HEROES
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
-import org.hexastacks.heroesdesk.kotlin.ports.InstrumentedHeroRepository
+import org.hexastacks.heroesdesk.kotlin.ports.InstrumentedUserRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
@@ -35,13 +34,12 @@ import java.util.concurrent.Executors
 abstract class AbstractHeroesDeskTest {
 
     @Test
-    @Disabled
     fun `createScope returns a scope`() {
         val instrumentedUserRepository = instrumentedHeroRepository()
         val heroesDesk = heroesDesk(instrumentedUserRepository)
         val id = createScopeIdOrThrow("id")
         val name = createNameOrThrow("name")
-        val creator = instrumentedUserRepository.ensureExisting(createAdminIdOrThrow("adminId"))
+        val creator = instrumentedUserRepository.ensureAdminExistingOrThrow("adminId")
 
         val scope = heroesDesk.createScope(
             id,
@@ -53,18 +51,20 @@ abstract class AbstractHeroesDeskTest {
     }
 
     @Test
-    @Disabled
     fun `createScope fails on non existing admin`() {
         val instrumentedUserRepository = instrumentedHeroRepository()
         val heroesDesk = heroesDesk(instrumentedUserRepository)
-        val name = createNameOrThrow("name")
 
         val creationFailure =
-            heroesDesk.createScope(createScopeIdOrThrow("id2"), name, createAdminIdOrThrow("adminId2"))
+            heroesDesk.createScope(
+                createScopeIdOrThrow("id2"),
+                createNameOrThrow("name"),
+                createAdminIdOrThrow("adminId2")
+            )
 
         assertTrue(creationFailure.isLeft())
         creationFailure.onLeft {
-            assertTrue(it.head is ScopeNameAlreadyExistsError)
+            assertTrue(it.head is AdminDoesNotExistCreateScopeError)
         }
     }
 
@@ -73,10 +73,10 @@ abstract class AbstractHeroesDeskTest {
         val instrumentedUserRepository = instrumentedHeroRepository()
         val heroesDesk = heroesDesk(instrumentedUserRepository)
         val name = createNameOrThrow("name")
-        heroesDesk.createScope(createScopeIdOrThrow("id1"), name, createAdminIdOrThrow("adminId1"))
+        heroesDesk.createScope(createScopeIdOrThrow("id1"), name, instrumentedUserRepository.ensureAdminExistingOrThrow("adminId1").id)
 
         val creationFailure =
-            heroesDesk.createScope(createScopeIdOrThrow("id2"), name, createAdminIdOrThrow("adminId2"))
+            heroesDesk.createScope(createScopeIdOrThrow("id2"), name, instrumentedUserRepository.ensureAdminExistingOrThrow("adminId2").id)
 
         assertTrue(creationFailure.isLeft())
         creationFailure.onLeft {
@@ -90,10 +90,10 @@ abstract class AbstractHeroesDeskTest {
         val heroesDesk = heroesDesk(instrumentedUserRepository)
         val nameCommonStart = "startEnding"
         val id = createScopeIdOrThrow("id")
-        heroesDesk.createScope(id, createNameOrThrow("${nameCommonStart}1"), createAdminIdOrThrow("adminId1"))
+        heroesDesk.createScope(id, createNameOrThrow("${nameCommonStart}1"), instrumentedUserRepository.ensureAdminExistingOrThrow("adminId1").id)
 
         val creationFailure =
-            heroesDesk.createScope(id, createNameOrThrow("${nameCommonStart}2"), createAdminIdOrThrow("adminId2"))
+            heroesDesk.createScope(id, createNameOrThrow("${nameCommonStart}2"), instrumentedUserRepository.ensureAdminExistingOrThrow("adminId2").id)
 
         assertTrue(creationFailure.isLeft())
         creationFailure.onLeft {
@@ -113,7 +113,7 @@ abstract class AbstractHeroesDeskTest {
         val dispatcher = executor.asCoroutineDispatcher()
         val runNb = 1000
         val createdTaskTarget = 250
-        val admin = createAdminIdOrThrow("adminId")
+        val admin = instrumentedUserRepository.ensureAdminExistingOrThrow("adminId")
 
         runBlocking {
             val jobs = List(runNb) {
@@ -123,7 +123,7 @@ abstract class AbstractHeroesDeskTest {
                         .createScope(
                             createScopeIdOrThrow("id$suffix"),
                             createNameOrThrow("${suffix}name"),
-                            admin
+                            admin.id
                         )
                 }
             }
@@ -143,17 +143,16 @@ abstract class AbstractHeroesDeskTest {
     }
 
     @Test
-    @Disabled
     fun `assignScope works`() {
         val instrumentedUserRepository = instrumentedHeroRepository()
         val heroesDesk = heroesDesk(instrumentedUserRepository)
         val scopeId = createScopeIdOrThrow("scopeId")
         val heroIds = HeroIds(createHeroIdOrThrow("heroId"))
-        val adminId = createAdminIdOrThrow("adminId")
+        val admin = instrumentedUserRepository.ensureAdminExistingOrThrow("adminId")
         val scope =
-            heroesDesk.createScope(scopeId, createNameOrThrow("name"), adminId).getOrElse { throw AssertionError() }
+            heroesDesk.createScope(scopeId, createNameOrThrow("name"), admin.id).getOrElse { throw AssertionError() }
 
-        val assignedScope = heroesDesk.assignScope(scopeId, heroIds, adminId).getOrElse { throw AssertionError() }
+        val assignedScope = heroesDesk.assignScope(scopeId, heroIds, admin.id).getOrElse { throw AssertionError() }
 
         assertEquals(scope, assignedScope)
         assertEquals(heroIds, assignedScope.assignees)
@@ -422,7 +421,7 @@ abstract class AbstractHeroesDeskTest {
         val heroesDesk = heroesDesk(instrumentedUserRepository)
         val createdTask = heroesDesk.createTaskOrThrow("title", "randomHeroId")
         val taskId = createdTask.taskId
-        val hero = instrumentedUserRepository.ensureExistingOrThrow("heroId1")
+        val hero = instrumentedUserRepository.ensureHeroExistingOrThrow("heroId1")
         val heroes = Heroes(hero)
         instrumentedUserRepository.defineAssignableHeroes(
             taskId,
@@ -447,7 +446,7 @@ abstract class AbstractHeroesDeskTest {
         val heroesDesk = heroesDesk(instrumentedUserRepository)
         val createdTask = heroesDesk.createTaskOrThrow("title", "randomHeroId")
         val taskId = createdTask.taskId
-        val hero = instrumentedUserRepository.ensureExistingOrThrow("heroId1")
+        val hero = instrumentedUserRepository.ensureHeroExistingOrThrow("heroId1")
         val heroes = Heroes(hero)
         instrumentedUserRepository.defineAssignableHeroes(
             taskId,
@@ -510,7 +509,7 @@ abstract class AbstractHeroesDeskTest {
         val heroesDesk = heroesDesk(instrumentedUserRepository)
         val createdTask = heroesDesk.createTaskOrThrow("title", "heroId")
         val taskId = createdTask.taskId
-        val hero = instrumentedUserRepository.ensureExistingOrThrow("heroId1")
+        val hero = instrumentedUserRepository.ensureHeroExistingOrThrow("heroId1")
         val heroes = Heroes(hero)
         instrumentedUserRepository.defineAssignableHeroes(
             taskId,
@@ -534,9 +533,9 @@ abstract class AbstractHeroesDeskTest {
 
     private fun heroesDesk(): HeroesDesk = heroesDesk(instrumentedHeroRepository())
 
-    abstract fun instrumentedHeroRepository(): InstrumentedHeroRepository
+    abstract fun instrumentedHeroRepository(): InstrumentedUserRepository
 
-    abstract fun heroesDesk(instrumentedUserRepository: InstrumentedHeroRepository): HeroesDesk
+    abstract fun heroesDesk(instrumentedUserRepository: InstrumentedUserRepository): HeroesDesk
 
     abstract fun nonExistingHeroId(): HeroId
 

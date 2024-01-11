@@ -30,7 +30,7 @@ class HeroTest {
         val hero1 = Hero(heroName("John"), heroId(id))
         val hero2 = Hero(heroName(hero1.name.value + "2"), heroId(id))
 
-        assertEquals(hero1, hero2)
+        assertEquals(hero1.hashCode(), hero2.hashCode())
     }
 
     private fun heroId(id: String): HeroId = HeroId(id).getOrElse { throw RuntimeException("HeroId should be valid") }

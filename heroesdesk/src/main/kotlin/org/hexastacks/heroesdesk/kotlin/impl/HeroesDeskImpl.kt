@@ -15,13 +15,27 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
-import org.hexastacks.heroesdesk.kotlin.ports.HeroRepository
+import org.hexastacks.heroesdesk.kotlin.ports.AdminDoesNotExistError
+import org.hexastacks.heroesdesk.kotlin.ports.UserRepository
 import org.hexastacks.heroesdesk.kotlin.ports.HeroRepositoryExtensions.canHeroStartWork
 import org.hexastacks.heroesdesk.kotlin.ports.TaskRepository
 
-class HeroesDeskImpl(private val heroRepository: HeroRepository, private val taskRepository: TaskRepository) :
+class HeroesDeskImpl(private val userRepository: UserRepository, private val taskRepository: TaskRepository) :
     HeroesDesk {
-    override fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope> = taskRepository.createScope(scopeKey, name, creator)
+    override fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope> =
+        userRepository
+            .getAdmin(creator)
+            .mapLeft { errors ->
+                errors.map {
+                    when (it) {
+                        is AdminDoesNotExistError -> AdminDoesNotExistCreateScopeError(creator)
+                    }
+                }
+            }
+            .flatMap {
+                taskRepository.createScope(scopeKey, name, creator)
+            }
+
     override fun assignScope(
         scopeKey: ScopeKey,
         assignees: HeroIds,
@@ -32,7 +46,7 @@ class HeroesDeskImpl(private val heroRepository: HeroRepository, private val tas
         title: Title,
         creator: HeroId
     ): EitherNel<CreateTaskError, PendingTask> =
-        heroRepository
+        userRepository
             .canHeroCreateTask(creator)
             .flatMap { hero -> taskRepository.createTask(title, hero) }
 
@@ -43,7 +57,7 @@ class HeroesDeskImpl(private val heroRepository: HeroRepository, private val tas
         title: Title,
         author: HeroId
     ): EitherNel<UpdateTitleError, TaskId> =
-        heroRepository
+        userRepository
             .canHeroUpdateTaskTitle(author)
             .flatMap { hero -> taskRepository.updateTitle(id, title, hero) }
 
@@ -52,19 +66,19 @@ class HeroesDeskImpl(private val heroRepository: HeroRepository, private val tas
         description: Description,
         author: HeroId
     ): EitherNel<UpdateDescriptionError, TaskId> =
-        heroRepository
+        userRepository
             .canHeroUpdateDescriptionTitle(author)
             .flatMap { taskRepository.updateDescription(id, description, it) }
 
     override fun assignableHeroes(id: TaskId): EitherNel<AssignableHeroesError, Heroes> =
-        heroRepository.assignableHeroes(id)
+        userRepository.assignableHeroes(id)
 
     override fun assignTask(
         id: TaskId,
         assignees: HeroIds,
         author: HeroId
     ): EitherNel<AssignTaskError, Task<*>> =
-        heroRepository
+        userRepository
             .areAllHeroesAssignable(id, assignees)
             .flatMap { taskRepository.assign(id, it, author) }
 
@@ -89,7 +103,7 @@ class HeroesDeskImpl(private val heroRepository: HeroRepository, private val tas
             }
             .flatMap { task: PendingTask ->
                 if (!task.assignees.contains(author)) {
-                    heroRepository.canHeroStartWork(task.taskId, author)
+                    userRepository.canHeroStartWork(task.taskId, author)
                         .flatMap { hero ->
                             taskRepository
                                 .assign(id, task.assignees.add(hero), author)
@@ -115,7 +129,7 @@ class HeroesDeskImpl(private val heroRepository: HeroRepository, private val tas
                 } else Right(task)
             }
             .flatMap { task: PendingTask ->
-                heroRepository
+                userRepository
                     .canHeroStartWork(task, author)
                     .flatMap {
                         taskRepository.startWork(id, it)
