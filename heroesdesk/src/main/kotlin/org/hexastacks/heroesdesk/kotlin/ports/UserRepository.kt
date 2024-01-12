@@ -1,13 +1,26 @@
 package org.hexastacks.heroesdesk.kotlin.ports
 
-import arrow.core.EitherNel
+import arrow.core.*
+import arrow.core.Either.Right
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
 import org.hexastacks.heroesdesk.kotlin.impl.user.*
 
 interface UserRepository {
-    fun getHero(heroId: HeroId): EitherNel<GetHeroError, Hero>
+    fun getHero(heroId: HeroId): EitherNel<GetHeroError, Hero> =
+        getHeroes(HeroIds(heroId))
+            .flatMap {
+                it
+                    .firstOrNone()
+                    .map { hero -> Right(hero) }
+                    .getOrElse {
+                        Either.Left(nonEmptyListOf(HeroesDoNotExistError(HeroIds(heroId))))
+                    }
+            }
+
+    fun getHeroes(heroIds: HeroIds): EitherNel<GetHeroError, Heroes>
+
     fun getAdmin(adminId: AdminId): EitherNel<GetAdminError, Admin>
 
     fun canHeroCreateTask(heroId: HeroId): EitherNel<CreateTaskError, Hero>
@@ -24,9 +37,10 @@ sealed interface HeroRepositoryError {
 
 sealed interface GetHeroError : HeroRepositoryError
 
-data class HeroDoesNotExistError(val heroId: HeroId) : GetHeroError {
-    override val message = "Hero $heroId does not exist"
+data class HeroesDoNotExistError(val heroIds: HeroIds) : GetHeroError {
+    override val message = "Heroes $heroIds do not exist"
 }
+
 sealed interface GetAdminError : HeroRepositoryError
 
 data class AdminDoesNotExistError(val adminId: AdminId) : GetAdminError {

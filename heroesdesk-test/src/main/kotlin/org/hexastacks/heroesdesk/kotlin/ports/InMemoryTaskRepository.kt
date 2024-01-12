@@ -120,7 +120,7 @@ class InMemoryTaskRepository : TaskRepository {
             }
             ?: Left(nonEmptyListOf(TaskDoesNotExistStartWorkError(pendingTaskId)))
 
-    override fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope> {
+    override fun createScope(scopeKey: ScopeKey, name: Name): EitherNel<CreateScopeError, Scope> {
         return if (scopes.any { it.name == name })
             Left(
                 nonEmptyListOf(ScopeNameAlreadyExistsError(name))
@@ -138,19 +138,37 @@ class InMemoryTaskRepository : TaskRepository {
 
     override fun assignScope(
         scopeKey: ScopeKey,
-        assignees: HeroIds,
-        changeAuthor: AdminId
+        assignees: Heroes
     ): EitherNel<AssignHeroesOnScopeError, Scope> =
         scopes
             .firstOrNull { it.key == scopeKey }
             ?.let { scope ->
-                val newScope = scope.copy(assignees = assignees)
+                val newScope = scope.copy(assignees = HeroIds(assignees))
                 scopes.remove(scope)
                 scopes.add(newScope)
                 return Right(newScope)
             }
             ?: Left(nonEmptyListOf(ScopeDoesNotExistAssignHeroesOnScopeError(scopeKey)))
 
+    override fun updateScopeName(
+        scopeKey: ScopeKey,
+        name: Name
+    ): EitherNel<UpdateScopeNameError, Scope> =
+        scopes
+            .firstOrNull { it.key == scopeKey }
+            ?.let { scope ->
+                val newScope = scope.copy(name = name)
+                scopes.remove(scope)
+                scopes.add(newScope)
+                return Right(newScope)
+            }
+            ?: Left(nonEmptyListOf(ScopeNotExistingUpdateScopeNameError(scopeKey)))
+
+    override fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope> =
+        scopes
+            .firstOrNull { it.key == scopeKey }
+            ?.let { Right(it) }
+            ?: Left(nonEmptyListOf(ScopeNotExistingGetScopeError(scopeKey)))
 
     companion object {
         const val NON_EXISTING_TASK_ID: String = "nonExistingTask"

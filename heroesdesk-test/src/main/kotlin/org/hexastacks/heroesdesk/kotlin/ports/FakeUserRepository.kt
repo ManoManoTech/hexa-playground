@@ -10,11 +10,6 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.*
 import java.util.concurrent.ConcurrentHashMap
 
 class FakeUserRepository : InstrumentedUserRepository {
-    companion object {
-        val NON_EXISTING_USER_ID: HeroId =
-            HeroId("nonExistingUser")
-                .getOrElse { throw RuntimeException("nonExistingUser should be valid") }
-    }
 
     private val users = ConcurrentHashMap.newKeySet<User<*>>()
 
@@ -101,7 +96,7 @@ class FakeUserRepository : InstrumentedUserRepository {
             .mapLeft { errors ->
                 errors.map {
                     when (it) {
-                        is HeroDoesNotExistError -> HeroDoesNotExistStartWorkError(author)
+                        is HeroesDoNotExistError -> HeroDoesNotExistStartWorkError(author)
                     }
                 }
             }
@@ -109,12 +104,34 @@ class FakeUserRepository : InstrumentedUserRepository {
                 Left(nonEmptyListOf(NonAllowedToStartWorkError(id, HeroIds(listOf(author)))))
             }
 
-    override fun getHero(heroId: HeroId): EitherNel<GetHeroError, Hero> =
-        users
-            .firstOrNull { it.id == heroId }
-            ?.asHero()
-            ?.let { Right(it) }
-            ?: Left(nonEmptyListOf(HeroDoesNotExistError(heroId)))
+    override fun getHeroes(heroIds: HeroIds): EitherNel<GetHeroError, Heroes> {
+        val userRawIds = users.map { it.id.value }
+
+        val (assignableHeroes, nonAssignableHeroes) =
+            heroIds
+                .value
+                .partition { heroId ->
+                    userRawIds.contains(heroId.value)
+                }
+        return if (nonAssignableHeroes.isEmpty()) {
+            Right(
+                Heroes(
+                    assignableHeroes
+                        .mapNotNull { id ->
+                            users
+                                .firstOrNull { hero -> hero.id == id }
+                                ?.asHero()
+                        }
+                )
+            )
+        } else {
+            Left(
+                nonEmptyListOf(
+                    HeroesDoNotExistError(heroIds)
+                )
+            )
+        }
+    }
 
     override fun getAdmin(adminId: AdminId): EitherNel<GetAdminError, Admin> =
         users
@@ -139,38 +156,26 @@ class FakeUserRepository : InstrumentedUserRepository {
     }
 
     override fun canHeroCreateTask(heroId: HeroId): EitherNel<CreateTaskError, Hero> =
-        if (heroId == NON_EXISTING_USER_ID) {
-            Left(nonEmptyListOf(HeroDoesNotExistCreateTaskError(heroId)))
-        } else {
-            Right(
-                Hero(
-                    UserName(heroId.value).getOrElse { throw RuntimeException("failing to create hero name  from $heroId") },
-                    heroId
-                )
+        Right(
+            Hero(
+                UserName(heroId.value).getOrElse { throw RuntimeException("failing to create hero name  from $heroId") },
+                heroId
             )
-        }
+        )
 
     override fun canHeroUpdateTaskTitle(heroId: HeroId): EitherNel<UpdateTitleError, Hero> =
-        if (heroId == NON_EXISTING_USER_ID) {
-            Left(nonEmptyListOf(HeroDoesNotExistUpdateTitleError(heroId)))
-        } else {
-            Right(
-                Hero(
-                    UserName(heroId.value).getOrElse { throw RuntimeException("failing to create hero name  from $heroId") },
-                    heroId
-                )
+        Right(
+            Hero(
+                UserName(heroId.value).getOrElse { throw RuntimeException("failing to create hero name  from $heroId") },
+                heroId
             )
-        }
+        )
 
     override fun canHeroUpdateDescriptionTitle(heroId: HeroId): EitherNel<UpdateDescriptionError, Hero> =
-        if (heroId == NON_EXISTING_USER_ID) {
-            Left(nonEmptyListOf(HeroDoesNotExistUpdateDescriptionError(heroId)))
-        } else {
-            Right(
-                Hero(
-                    UserName(heroId.value).getOrElse { throw RuntimeException("failing to create hero name  from $heroId") },
-                    heroId
-                )
+        Right(
+            Hero(
+                UserName(heroId.value).getOrElse { throw RuntimeException("failing to create hero name  from $heroId") },
+                heroId
             )
-        }
+        )
 }

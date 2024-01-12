@@ -4,12 +4,12 @@ import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createHeroIdOrThrow
 import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createHeroNameOrThrow
 import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createHeroOrThrow
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class HeroesTest {
     @Test
@@ -109,10 +109,68 @@ class HeroesTest {
     }
 
     @Test
-    fun `Heroes can be constructed from list`(){
+    fun `Heroes can be constructed from list`() {
         val hero1 = createHeroOrThrow("name1", "id1")
         val heroes = Heroes(listOf(hero1, createHeroOrThrow("name2", "id2"), hero1))
 
         assertEquals(heroes.size, 2)
     }
+
+    @Test
+    fun `firstOrNone returns none on empty Heroes`() {
+        val result = Heroes(emptySet()).firstOrNone()
+
+        assertTrue(result.isNone())
+    }
+
+    @Test
+    fun `firstOrNone returns element on 1 elem Heroes`() {
+        val hero = createHeroOrThrow("name1", "id1")
+
+        val result = Heroes(hero).firstOrNone()
+
+        assertTrue(result.isSome())
+        result.onSome {
+            assertEquals(hero, it)
+        }
+    }
+
+
+    @Test
+    fun `firstOrNone returns element on N elems Heroes`() {
+        val hero1 = createHeroOrThrow("name1", "id1")
+        val hero2 = createHeroOrThrow("name2", "id2")
+        val heroes = Heroes(hero1, hero2)
+
+        val result = heroes.firstOrNone()
+
+        assertTrue(result.isSome())
+        result.onSome {
+            assertTrue(
+                heroes
+                    .contains(it)
+            )
+        }
+    }
+
+    @Test
+    fun `contains on empty heroes return false`(){
+        val heroes = Heroes(emptySet())
+        val hero = createHeroOrThrow("name1", "id1")
+
+        val containsId1 = heroes.contains(hero)
+
+        assertFalse(containsId1)
+    }
+
+    @Test
+    fun `contains on heroes with hero return true`(){
+        val hero = createHeroOrThrow("name1", "id1")
+        val heroes = Heroes(hero, createHeroOrThrow("name2","id2"))
+
+        val containsId1 = heroes.contains(hero)
+
+        assertTrue(containsId1)
+    }
+
 }

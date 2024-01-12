@@ -2,7 +2,6 @@ package org.hexastacks.heroesdesk.kotlin
 
 import arrow.core.getOrElse
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.*
@@ -21,12 +20,6 @@ object HeroesDeskTestUtils {
 
     fun createPendingTaskIdOrThrow(id: String) = PendingTaskId(id).getOrElse { throw AssertionError() }
 
-    fun HeroesDesk.createTaskOrThrow(title: String, hero: String): PendingTask =
-        this.createTask(createTitleOrThrow(title), createHeroIdOrThrow(hero)).getOrElse { throw AssertionError() }
-
-    fun HeroesDesk.createTaskOrThrow(title: String, hero: Hero): PendingTask =
-        this.createTask(createTitleOrThrow(title), hero.id).getOrElse { throw AssertionError() }
-
     fun HeroesDesk.getTaskOrThrow(id: TaskId): Task<*> = this.getTask(id).getOrElse { throw AssertionError() }
     fun createAdminIdOrThrow(adminId: String): AdminId = AdminId(adminId).getOrElse { throw AssertionError() }
     fun createAdminOrThrow(adminId: String): Admin =
@@ -34,5 +27,5 @@ object HeroesDeskTestUtils {
 
     fun createNameOrThrow(name: String): Name = Name(name).getOrElse { throw AssertionError() }
 
-    fun createScopeIdOrThrow(scopeId: String): ScopeKey = ScopeKey(scopeId).getOrElse { throw AssertionError() }
+    fun createScopeKeyOrThrow(scopeKey: String): ScopeKey = ScopeKey(scopeKey).getOrElse { throw AssertionError() }
 }

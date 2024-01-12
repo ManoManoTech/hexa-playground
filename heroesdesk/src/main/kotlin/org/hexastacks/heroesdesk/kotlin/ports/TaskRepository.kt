@@ -1,12 +1,16 @@
 package org.hexastacks.heroesdesk.kotlin.ports
 
+import arrow.core.Either
 import arrow.core.EitherNel
+import arrow.core.NonEmptyList
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
-import org.hexastacks.heroesdesk.kotlin.impl.user.*
+import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 interface TaskRepository {
 
@@ -33,11 +37,17 @@ interface TaskRepository {
     ): EitherNel<AssignTaskError, Task<*>>
 
     fun startWork(pendingTaskId: PendingTaskId, hero: Hero): EitherNel<StartWorkError, InProgressTask>
-    fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope>
+    fun createScope(scopeKey: ScopeKey, name: Name): EitherNel<CreateScopeError, Scope>
     fun assignScope(
         scopeKey: ScopeKey,
-        assignees: HeroIds,
-        changeAuthor: AdminId
+        assignees: Heroes
     ): EitherNel<AssignHeroesOnScopeError, Scope>
+
+    fun updateScopeName(
+        scopeKey: ScopeKey,
+        name: Name
+    ): EitherNel<UpdateScopeNameError, Scope>
+
+    fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope>
 
 }

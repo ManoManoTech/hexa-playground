@@ -15,10 +15,8 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
-import org.hexastacks.heroesdesk.kotlin.ports.AdminDoesNotExistError
-import org.hexastacks.heroesdesk.kotlin.ports.UserRepository
+import org.hexastacks.heroesdesk.kotlin.ports.*
 import org.hexastacks.heroesdesk.kotlin.ports.HeroRepositoryExtensions.canHeroStartWork
-import org.hexastacks.heroesdesk.kotlin.ports.TaskRepository
 
 class HeroesDeskImpl(private val userRepository: UserRepository, private val taskRepository: TaskRepository) :
     HeroesDesk {
@@ -33,21 +31,74 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                 }
             }
             .flatMap {
-                taskRepository.createScope(scopeKey, name, creator)
+                taskRepository.createScope(scopeKey, name)
             }
 
     override fun assignScope(
         scopeKey: ScopeKey,
         assignees: HeroIds,
         changeAuthor: AdminId
-    ): EitherNel<AssignHeroesOnScopeError, Scope> = taskRepository.assignScope(scopeKey, assignees, changeAuthor)
+    ): EitherNel<AssignHeroesOnScopeError, Scope> =
+        userRepository
+            .getHeroes(assignees)
+            .mapLeft { errors ->
+                errors.map {
+                    when (it) {
+                        is HeroesDoNotExistError ->
+                            AssignedHeroIdsNotExistAssignHeroesOnScopeError(it.heroIds, assignees)
+                    }
+                }
+            }
+            .flatMap { heroes ->
+                userRepository
+                    .getAdmin(changeAuthor)
+                    .mapLeft { errors ->
+                        errors.map { it: GetAdminError ->
+                            when (it) {
+                                is AdminDoesNotExistError -> AdminIdNotExistingAssignHeroesOnScopeError(it.adminId)
+                            }
+                        }
+                    }
+                    .map { _ -> heroes }
+            }.flatMap {
+                taskRepository.assignScope(scopeKey, it)
+            }
+
+    override fun updateScopeName(
+        scopeKey: ScopeKey,
+        name: Name,
+        changeAuthor: AdminId
+    ): EitherNel<UpdateScopeNameError, Scope> =
+        userRepository
+            .getAdmin(changeAuthor)
+            .mapLeft { errors ->
+                errors.map {
+                    when (it) {
+                        is AdminDoesNotExistError ->
+                            AdminIdNotExistingUpdateScopeNameError(changeAuthor)
+                    }
+                }
+            }
+            .flatMap {
+                taskRepository.updateScopeName(scopeKey, name)
+            }
+
+    override fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope> =
+        taskRepository.getScope(scopeKey)
 
     override fun createTask(
         title: Title,
         creator: HeroId
     ): EitherNel<CreateTaskError, PendingTask> =
         userRepository
-            .canHeroCreateTask(creator)
+            .getHero(creator)
+            .mapLeft { errors ->
+                errors.map {
+                    when (it) {
+                        is HeroesDoNotExistError -> HeroDoesNotExistCreateTaskError(creator)
+                    }
+                }
+            }
             .flatMap { hero -> taskRepository.createTask(title, hero) }
 
     override fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>> = taskRepository.getTask(id)
@@ -58,7 +109,14 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         author: HeroId
     ): EitherNel<UpdateTitleError, TaskId> =
         userRepository
-            .canHeroUpdateTaskTitle(author)
+            .getHero(author)
+            .mapLeft { errors ->
+                errors.map {
+                    when (it) {
+                        is HeroesDoNotExistError -> HeroDoesNotExistUpdateTitleError(author)
+                    }
+                }
+            }
             .flatMap { hero -> taskRepository.updateTitle(id, title, hero) }
 
     override fun updateDescription(
@@ -67,7 +125,14 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         author: HeroId
     ): EitherNel<UpdateDescriptionError, TaskId> =
         userRepository
-            .canHeroUpdateDescriptionTitle(author)
+            .getHero(author)
+            .mapLeft { errors ->
+                errors.map {
+                    when (it) {
+                        is HeroesDoNotExistError -> HeroDoesNotExistUpdateDescriptionError(author)
+                    }
+                }
+            }
             .flatMap { taskRepository.updateDescription(id, description, it) }
 
     override fun assignableHeroes(id: TaskId): EitherNel<AssignableHeroesError, Heroes> =

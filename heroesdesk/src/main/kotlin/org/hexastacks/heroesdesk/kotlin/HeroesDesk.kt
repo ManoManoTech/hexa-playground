@@ -15,8 +15,9 @@ interface HeroesDesk {
     fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope>
     fun assignScope(scopeKey: ScopeKey, assignees: HeroIds, changeAuthor: AdminId): EitherNel<AssignHeroesOnScopeError, Scope>
 
-    // fun updateScopeName(scopeId: ScopeId, name:Name, changeAuthor: AdminId): EitherNel<UpdateScopeNameError, Scope>
-//    fun getScope(id: ScopeId): EitherNel<GetScopeError, Scope>
+     fun updateScopeName(scopeKey: ScopeKey, name:Name, changeAuthor: AdminId): EitherNel<UpdateScopeNameError, Scope>
+
+    fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope>
 
     fun createTask(title: Title, creator: HeroId): EitherNel<CreateTaskError, PendingTask>
     fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>>
@@ -70,6 +71,29 @@ interface HeroesDesk {
         override val message = "Scope $scopeKey does not exist"
     }
 
+    data class AssignedHeroIdsNotExistAssignHeroesOnScopeError(val missingAssignees: HeroIds, val assignees: HeroIds) : AssignHeroesOnScopeError {
+        override val message = "Hero ids $missingAssignees not existing (out of ${assignees.size()} assignees"
+    }
+
+    data class AdminIdNotExistingAssignHeroesOnScopeError(val adminId: AdminId) : AssignHeroesOnScopeError {
+        override val message = "Admin id $adminId not existing"
+    }
+
+    sealed interface UpdateScopeNameError : HeroesDeskError
+
+    data class AdminIdNotExistingUpdateScopeNameError(val adminId: AdminId): UpdateScopeNameError{
+        override val message = "Admin id $adminId not existing"
+    }
+
+    data class ScopeNotExistingUpdateScopeNameError(val scopeKey: ScopeKey): UpdateScopeNameError{
+        override val message = "Scope $scopeKey not existing"
+    }
+
+    sealed interface GetScopeError : HeroesDeskError
+
+    data class ScopeNotExistingGetScopeError(val scopeKey: ScopeKey): GetScopeError{
+        override val message = "Scope $scopeKey not existing"
+    }
     sealed interface CreateTaskError : HeroesDeskError
 
     data class HeroDoesNotExistCreateTaskError(val heroId: HeroId) : CreateTaskError {

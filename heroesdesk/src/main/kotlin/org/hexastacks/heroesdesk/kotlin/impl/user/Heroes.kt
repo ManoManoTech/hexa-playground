@@ -1,5 +1,8 @@
 package org.hexastacks.heroesdesk.kotlin.impl.user
 
+import arrow.core.Option
+import arrow.core.firstOrNone
+
 data class Heroes(val value: Set<Hero>) {
 
     val size: Int = value.size
@@ -7,10 +10,12 @@ data class Heroes(val value: Set<Hero>) {
     constructor(vararg heroes: Hero) : this(heroes.toSet())
     constructor(heroes: List<Hero>) : this(heroes.toSet())
 
-    fun contains(author: HeroId): Boolean =
+    fun contains(hero: Hero): Boolean = value.contains(hero)
+
+    fun contains(heroId: HeroId): Boolean =
         value
             .map { it.id }
-            .contains(author)
+            .contains(heroId)
 
     fun add(hero: Hero): Heroes = Heroes(value + hero)
 
@@ -23,6 +28,9 @@ data class Heroes(val value: Set<Hero>) {
             .firstOrNull { it.id == author }
 
     fun isEmpty(): Boolean = value.isEmpty()
+
+    fun firstOrNone(): Option<Hero> = value.firstOrNone()
+    fun <R> map(transform: (Hero) -> R): List<R> = value.map { transform(it) }
 
     companion object {
         val EMPTY_HEROES: Heroes = Heroes(emptySet())
