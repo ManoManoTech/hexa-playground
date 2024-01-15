@@ -6,10 +6,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.Description
 import org.hexastacks.heroesdesk.kotlin.impl.task.Title
-import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
-import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
-import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
-import org.hexastacks.heroesdesk.kotlin.impl.user.UserName
+import org.hexastacks.heroesdesk.kotlin.impl.user.*
 
 object TestUtils {
 
@@ -17,7 +14,7 @@ object TestUtils {
         Scope(
             Name(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") },
             ScopeKey(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") },
-            HeroIds.EMPTY_HERO_IDS
+            Heroes.EMPTY_HEROES
         )
 
     fun createTitleOrThrow(title: String): Title =

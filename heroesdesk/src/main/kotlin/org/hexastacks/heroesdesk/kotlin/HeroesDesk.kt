@@ -18,25 +18,21 @@ interface HeroesDesk {
         assignees: HeroIds,
         changeAuthor: AdminId
     ): EitherNel<AssignHeroesOnScopeError, Scope>
-
     fun updateScopeName(scopeKey: ScopeKey, name: Name, changeAuthor: AdminId): EitherNel<UpdateScopeNameError, Scope>
     fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope>
 
     fun createTask(scopeKey: ScopeKey, title: Title, creator: HeroId): EitherNel<CreateTaskError, PendingTask>
     fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>>
-
     fun updateTitle(
         id: TaskId,
         title: Title,
         author: HeroId
     ): EitherNel<UpdateTitleError, TaskId>  // TODO: handle some history and use author here, apply to other methods here too
-
     fun updateDescription(
         id: TaskId, description: Description, author: HeroId
     ): EitherNel<UpdateDescriptionError, TaskId>
 
     fun assignTask(id: TaskId, assignees: HeroIds, author: HeroId): EitherNel<AssignTaskError, Task<*>>
-    fun assignableHeroes(id: TaskId): EitherNel<AssignableHeroesError, Heroes>
 
     /**
      * Adds the author to the assignees if not in already
@@ -180,12 +176,6 @@ interface HeroesDesk {
     }
 
     data class TaskDoesNotExistAssignTaskError(val taskId: TaskId) : AssignTaskError {
-        override val message = "Task $taskId does not exist"
-    }
-
-    sealed interface AssignableHeroesError : HeroesDeskError
-
-    data class TaskDoesNotExistAssignableHeroesError(val taskId: TaskId) : AssignableHeroesError {
         override val message = "Task $taskId does not exist"
     }
 }

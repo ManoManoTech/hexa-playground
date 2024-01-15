@@ -154,16 +154,16 @@ abstract class AbstractHeroesDeskTest {
     @Test
     fun `assignScope works`() {
         val scopeId = createScopeKeyOrThrow("scopeId")
-        val heroIds = HeroIds(ensureHeroExisting("heroId"))
+        val heroes = Heroes(ensureHeroExisting("heroId"))
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
         val scope =
             heroesDesk.createScope(scopeId, createNameOrThrow("name"), admin.id).getOrElse { throw AssertionError() }
 
         val assignedScope =
-            heroesDesk.assignScope(scopeId, heroIds, admin.id).getOrElse { throw AssertionError(it.toString()) }
+            heroesDesk.assignScope(scopeId, HeroIds(heroes), admin.id).getOrElse { throw AssertionError(it.toString()) }
 
         assertEquals(scope, assignedScope)
-        assertEquals(heroIds, assignedScope.assignees)
+        assertEquals(heroes, assignedScope.assignees)
     }
 
     @Test
@@ -430,39 +430,6 @@ abstract class AbstractHeroesDeskTest {
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
             assertTrue(it.head is HeroDoesNotExistUpdateDescriptionError)
-        }
-    }
-
-    @Test
-    fun `assignable heroes returns avail heroes when some`() {
-        val createdTask = createTaskOrThrow("title", "heroId")
-        userRepo.defineAssignableHeroes(
-            createdTask.taskId,
-            Heroes(createHeroOrThrow("heroId1"), createHeroOrThrow("heroId2"))
-        )
-
-        val assignableHeroes = heroesDesk.assignableHeroes(createdTask.taskId).getOrElse { throw AssertionError() }
-
-        assertTrue(assignableHeroes.value.isNotEmpty())
-    }
-
-    @Test
-    fun `assignable heroes returns no heroes when none`() {
-        val createdTask = createTaskOrThrow("title", "heroId")
-        userRepo.defineAssignableHeroes(createdTask.taskId, EMPTY_HEROES)
-
-        val assignableHeroes = heroesDesk.assignableHeroes(createdTask.taskId).getOrElse { throw AssertionError() }
-
-        assertTrue(assignableHeroes.value.isEmpty())
-    }
-
-    @Test
-    fun `assignable heroes fails on non existing task id`() {
-        val assignableHeroes = heroesDesk.assignableHeroes(nonExistingPendingTaskId())
-
-        assertTrue(assignableHeroes.isLeft())
-        assignableHeroes.onLeft {
-            assertTrue(it.head is TaskDoesNotExistAssignableHeroesError)
         }
     }
 

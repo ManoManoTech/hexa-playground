@@ -13,6 +13,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds.Companion.EMPTY_HERO_IDS
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes.Companion.EMPTY_HEROES
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -134,7 +135,7 @@ class InMemoryTaskRepository : TaskRepository {
             Left(
                 nonEmptyListOf(ScopeIdAlreadyExistsError(scopeKey))
             ) else {
-            val newScope = Scope(name, scopeKey, EMPTY_HERO_IDS)
+            val newScope = Scope(name, scopeKey, EMPTY_HEROES)
             if (scopes.add(newScope))
                 Right(newScope)
             else
@@ -149,7 +150,7 @@ class InMemoryTaskRepository : TaskRepository {
         scopes
             .firstOrNull { it.key == scopeKey }
             ?.let { scope ->
-                val newScope = scope.copy(assignees = HeroIds(assignees))
+                val newScope = scope.copy(assignees = assignees)
                 scopes.remove(scope)
                 scopes.add(newScope)
                 return Right(newScope)

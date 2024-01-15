@@ -29,12 +29,6 @@ class FakeUserRepository : InstrumentedUserRepository {
         return heroes
     }
 
-    override fun assignableHeroes(taskId: TaskId): EitherNel<AssignableHeroesError, Heroes> {
-        return assignableHeroes[taskId]
-            ?.let { Right(it) }
-            ?: Left(nonEmptyListOf(TaskDoesNotExistAssignableHeroesError(taskId)))
-    }
-
     override fun areAllHeroesAssignable(
         taskId: TaskId,
         heroIds: HeroIds

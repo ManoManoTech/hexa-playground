@@ -16,7 +16,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.ports.*
-import org.hexastacks.heroesdesk.kotlin.ports.HeroRepositoryExtensions.canHeroStartWork
+import org.hexastacks.heroesdesk.kotlin.ports.UserRepositoryExtensions.canHeroStartWork
 
 class HeroesDeskImpl(private val userRepository: UserRepository, private val taskRepository: TaskRepository) :
     HeroesDesk {
@@ -135,9 +135,6 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                 }
             }
             .flatMap { taskRepository.updateDescription(id, description, it) }
-
-    override fun assignableHeroes(id: TaskId): EitherNel<AssignableHeroesError, Heroes> =
-        userRepository.assignableHeroes(id)
 
     override fun assignTask(
         id: TaskId,

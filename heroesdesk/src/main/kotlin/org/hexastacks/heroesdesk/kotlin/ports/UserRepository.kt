@@ -26,7 +26,6 @@ interface UserRepository {
     fun canHeroCreateTask(heroId: HeroId): EitherNel<CreateTaskError, Hero>
     fun canHeroUpdateTaskTitle(heroId: HeroId): EitherNel<UpdateTitleError, Hero>
     fun canHeroUpdateDescriptionTitle(heroId: HeroId): EitherNel<UpdateDescriptionError, Hero>
-    fun assignableHeroes(taskId: TaskId): EitherNel<AssignableHeroesError, Heroes>
     fun areAllHeroesAssignable(taskId: TaskId, heroIds: HeroIds): EitherNel<AssignTaskError, Heroes>
     fun canHeroStartWork(pendingTaskId: PendingTaskId, heroId: HeroId): EitherNel<StartWorkError, Hero>
 }
