@@ -1,8 +1,6 @@
 package org.hexastacks.heroesdesk.kotlin.ports
 
-import arrow.core.Either
 import arrow.core.EitherNel
-import arrow.core.NonEmptyList
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
@@ -14,7 +12,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 interface TaskRepository {
 
-    fun createTask(title: Title, hero: Hero): EitherNel<CreateTaskError, PendingTask>
+    fun createTask(scopeKey: ScopeKey, title: Title, hero: Hero): EitherNel<CreateTaskError, PendingTask>
 
     fun getTask(taskId: TaskId): EitherNel<GetTaskError, Task<*>>
 

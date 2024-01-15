@@ -87,6 +87,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         taskRepository.getScope(scopeKey)
 
     override fun createTask(
+        scopeKey: ScopeKey,
         title: Title,
         creator: HeroId
     ): EitherNel<CreateTaskError, PendingTask> =
@@ -99,7 +100,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                     }
                 }
             }
-            .flatMap { hero -> taskRepository.createTask(title, hero) }
+            .flatMap { hero -> taskRepository.createTask(scopeKey, title, hero,) }
 
     override fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>> = taskRepository.getTask(id)
 

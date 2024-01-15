@@ -1,13 +1,25 @@
 package org.hexastacks.heroesdesk.kotlin.impl
 
 import arrow.core.getOrElse
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.Description
 import org.hexastacks.heroesdesk.kotlin.impl.task.Title
 import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.user.UserName
 
 object TestUtils {
+
+    fun createScopeOrThow(scopeKey: String): Scope =
+        Scope(
+            Name(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") },
+            ScopeKey(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") },
+            HeroIds.EMPTY_HERO_IDS
+        )
+
     fun createTitleOrThrow(title: String): Title =
         Title(title).getOrElse { throw RuntimeException("title should be valid: $it") }
 

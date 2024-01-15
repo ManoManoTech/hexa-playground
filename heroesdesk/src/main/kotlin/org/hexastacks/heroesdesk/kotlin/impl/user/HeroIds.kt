@@ -14,6 +14,6 @@ data class HeroIds(val value: Set<HeroId>) {
 
 
     companion object {
-        val EMPTY_HEROIDS: HeroIds = HeroIds(emptySet())
+        val EMPTY_HERO_IDS: HeroIds = HeroIds(emptySet())
     }
 }

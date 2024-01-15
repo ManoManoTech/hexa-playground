@@ -1,5 +1,6 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
@@ -25,9 +26,9 @@ sealed interface Task<T : TaskId> {
         is DeletedTask -> copy(assignees = assignees)
     }
 
+    val scope: Scope
     val taskId: T
     val title: Title
     val description: Description
     val assignees: Heroes
-
 }

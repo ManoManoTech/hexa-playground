@@ -6,18 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8b8999cd-0409-4461-bc4e-7560dc4f357a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/AbstractHeroesDeskTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/AbstractHeroesDeskTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDeskTestUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDeskTestUtils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/FakeUserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/FakeUserRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InMemoryTaskRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InMemoryTaskRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDesk.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/HeroesDesk.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesDeskImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/HeroesDeskImpl.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroIds.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroIds.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/Heroes.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/Heroes.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/TaskRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/TaskRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/UserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/UserRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroIdsTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroIdsTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroesTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/user/HeroesTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,66 +79,70 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Build hexa-playground.executor": "Run",
-    "Gradle.DeletedTaskIdTest.executor": "Run",
-    "Gradle.HeroIdsTest.executor": "Run",
-    "Gradle.HeroTest.executor": "Run",
-    "Gradle.HeroesDeskImplTest.executor": "Run",
-    "Gradle.HeroesTest.contains on heroes with hero return true.executor": "Run",
-    "Gradle.HeroesTest.executor": "Run",
-    "Gradle.HeroesTest.firstOrNone returns element on 1 elem Heroes.executor": "Run",
-    "Gradle.ScopeTest.executor": "Run",
-    "Gradle.Tests in 'hexa-playground.heroesdesk'.executor": "Run",
-    "Gradle.Tests in 'hexa-playground.heroesdesk-test'.executor": "Run",
-    "Gradle.hexa-playground [clean].executor": "Run",
-    "JUnit.All in hexa-playground.executor": "Run",
-    "JUnit.HeroesDeskImplTest.assign task fails on non existing task.executor": "Debug",
-    "JUnit.HeroesDeskImplTest.assign task works (1).executor": "Run",
-    "JUnit.HeroesDeskImplTest.assign task works (2).executor": "Debug",
-    "JUnit.HeroesDeskImplTest.assign task works.executor": "Run",
-    "JUnit.HeroesDeskImplTest.assignScope fails on inexisting admin (1).executor": "Run",
-    "JUnit.HeroesDeskImplTest.assignScope fails on inexisting admin.executor": "Run",
-    "JUnit.HeroesDeskImplTest.assignScope fails on inexisting heroIds (1).executor": "Debug",
-    "JUnit.HeroesDeskImplTest.assignScope fails on inexisting heroIds (2).executor": "Run",
-    "JUnit.HeroesDeskImplTest.assignScope fails on inexisting heroIds (3).executor": "Run",
-    "JUnit.HeroesDeskImplTest.assignScope fails on inexisting heroIds.executor": "Debug",
-    "JUnit.HeroesDeskImplTest.assignScope fails on inexisting scope.executor": "Run",
-    "JUnit.HeroesDeskImplTest.assignScope works.executor": "Run",
-    "JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same id.executor": "Run",
-    "JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same name.executor": "Run",
-    "JUnit.HeroesDeskImplTest.createScope returns a scope.executor": "Run",
-    "JUnit.HeroesDeskImplTest.createScope works on many parallel creations.executor": "Run",
-    "JUnit.HeroesDeskImplTest.executor": "Run",
-    "JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to (1).executor": "Debug",
-    "JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to (2).executor": "Debug",
-    "JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to.executor": "Run",
-    "JUnit.HeroesDeskImplTest.start work fails with non existing hero (1).executor": "Debug",
-    "JUnit.HeroesDeskImplTest.start work fails with non existing hero (2).executor": "Run",
-    "JUnit.HeroesDeskImplTest.start work fails with non existing hero.executor": "Debug",
-    "JUnit.HeroesDeskImplTest.start work works on existing & pending task.executor": "Run",
-    "JUnit.HeroesDeskImplTest.updateScopeName fails on inexisting admin.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_directory_selection": "/Users/joseph.pachod/projects/hexa-playground/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/scope",
-    "last_opened_file_path": "/Users/joseph.pachod/projects/hexa-playground",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build hexa-playground.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.DeletedTaskIdTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.HeroIdsTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.HeroTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.HeroesDeskImplTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.HeroesTest.contains on heroes with hero return true.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.HeroesTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.HeroesTest.firstOrNone returns element on 1 elem Heroes.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ScopeTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Tests in 'hexa-playground.heroesdesk'.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Tests in 'hexa-playground.heroesdesk-test'.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.hexa-playground [clean].executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.All in hexa-playground.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assign task fails on non existing task.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assign task works (1).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assign task works (2).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assign task works.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assignScope fails on inexisting admin (1).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assignScope fails on inexisting admin.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assignScope fails on inexisting heroIds (1).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assignScope fails on inexisting heroIds (2).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assignScope fails on inexisting heroIds (3).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assignScope fails on inexisting heroIds.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assignScope fails on inexisting scope.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.assignScope works.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same id.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.createScope fails on pre existing scope with same name.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.createScope returns a scope.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.createScope works on many parallel creations.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to (1).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to (2).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with hero lacking the right to.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with non existing hero (1).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with non existing hero (2).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work fails with non existing hero.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.start work works on existing &amp; pending task.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.update description fails with non existing TaskId.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.updateScopeName fails on inexisting admin (1).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.HeroesDeskImplTest.updateScopeName fails on inexisting admin.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.updateScopeName fails on inexisting scope.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HeroesDeskImplTest.updateScopeName works on inexisting scope.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_directory_selection&quot;: &quot;/Users/joseph.pachod/projects/hexa-playground/heroesdesk/src/test/kotlin/org/hexastacks/heroesdesk/kotlin/impl/scope&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/joseph.pachod/projects/hexa-playground&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
@@ -171,7 +163,7 @@
       <recent name="org.hexastacks.heroesdesk.kotlin.impl.task" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.HeroesDeskImplTest.updateScopeName fails on inexisting admin">
+  <component name="RunManager" selected="JUnit.HeroesDeskImplTest">
     <configuration name="HeroesDeskImplTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hexa-playground.heroesdesk-test.test" />
       <extension name="coverage">
@@ -187,7 +179,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HeroesDeskImplTest.assignScope fails on inexisting admin (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HeroesDeskImplTest.start work fails with non existing hero" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hexa-playground.heroesdesk-test.test" />
       <extension name="coverage">
         <pattern>
@@ -197,13 +189,13 @@
       </extension>
       <option name="PACKAGE_NAME" value="org.hexastacks.heroesdesk.kotlin" />
       <option name="MAIN_CLASS_NAME" value="org.hexastacks.heroesdesk.kotlin.HeroesDeskImplTest" />
-      <option name="METHOD_NAME" value="assignScope fails on inexisting admin" />
+      <option name="METHOD_NAME" value="start work fails with non existing hero" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HeroesDeskImplTest.assignScope fails on inexisting admin" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HeroesDeskImplTest.update description fails with non existing TaskId" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hexa-playground.heroesdesk-test.test" />
       <extension name="coverage">
         <pattern>
@@ -213,13 +205,13 @@
       </extension>
       <option name="PACKAGE_NAME" value="org.hexastacks.heroesdesk.kotlin" />
       <option name="MAIN_CLASS_NAME" value="org.hexastacks.heroesdesk.kotlin.HeroesDeskImplTest" />
-      <option name="METHOD_NAME" value="assignScope fails on inexisting admin" />
+      <option name="METHOD_NAME" value="update description fails with non existing TaskId" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HeroesDeskImplTest.assignScope fails on inexisting heroIds (3)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HeroesDeskImplTest.updateScopeName fails on inexisting scope" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hexa-playground.heroesdesk-test.test" />
       <extension name="coverage">
         <pattern>
@@ -229,13 +221,13 @@
       </extension>
       <option name="PACKAGE_NAME" value="org.hexastacks.heroesdesk.kotlin" />
       <option name="MAIN_CLASS_NAME" value="org.hexastacks.heroesdesk.kotlin.HeroesDeskImplTest" />
-      <option name="METHOD_NAME" value="assignScope fails on inexisting heroIds" />
+      <option name="METHOD_NAME" value="updateScopeName fails on inexisting scope" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HeroesDeskImplTest.updateScopeName fails on inexisting admin" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HeroesDeskImplTest.updateScopeName works on inexisting scope" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hexa-playground.heroesdesk-test.test" />
       <extension name="coverage">
         <pattern>
@@ -245,7 +237,7 @@
       </extension>
       <option name="PACKAGE_NAME" value="org.hexastacks.heroesdesk.kotlin" />
       <option name="MAIN_CLASS_NAME" value="org.hexastacks.heroesdesk.kotlin.HeroesDeskImplTest" />
-      <option name="METHOD_NAME" value="updateScopeName fails on inexisting admin" />
+      <option name="METHOD_NAME" value="updateScopeName works on inexisting scope" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -253,10 +245,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.HeroesDeskImplTest.updateScopeName fails on inexisting admin" />
         <item itemvalue="JUnit.HeroesDeskImplTest" />
-        <item itemvalue="JUnit.HeroesDeskImplTest.assignScope fails on inexisting admin (1)" />
-        <item itemvalue="JUnit.HeroesDeskImplTest.assignScope fails on inexisting admin" />
+        <item itemvalue="JUnit.HeroesDeskImplTest.start work fails with non existing hero" />
+        <item itemvalue="JUnit.HeroesDeskImplTest" />
+        <item itemvalue="JUnit.HeroesDeskImplTest.update description fails with non existing TaskId" />
         <item itemvalue="JUnit.HeroesDeskImplTest" />
       </list>
     </recent_temporary>
@@ -285,6 +277,8 @@
       <workItem from="1704899682830" duration="14582000" />
       <workItem from="1705007418393" duration="11248000" />
       <workItem from="1705072687418" duration="277000" />
+      <workItem from="1705072970396" duration="2225000" />
+      <workItem from="1705158028245" duration="619000" />
     </task>
     <servers />
   </component>
@@ -298,16 +292,6 @@
           <url>file://$PROJECT_DIR$/heroesdesk/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/impl/task/Task.kt</url>
           <line>15</line>
           <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InMemoryTaskRepository.kt</url>
-          <line>145</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/heroesdesk-test/src/main/kotlin/org/hexastacks/heroesdesk/kotlin/ports/InMemoryTaskRepository.kt</url>
-          <line>150</line>
-          <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

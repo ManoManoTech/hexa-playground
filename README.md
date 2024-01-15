@@ -104,7 +104,7 @@ A task is made of:
 - title: mandatory, updatable, single line, 1 up to 255 chars
 - description: optional, updatable, multi line, up to 1024 chars
 - creator: mandatory, fixed at creation
-- id: unique among all tasks, fixed at creation, made of the scope id, a dash and a unique number, 2 to 73 chars
+- id: unique among all tasks, fixed at creation, made of the scope key, a dash and a unique number, 2 to 73 chars
 - assignees: can be empty, updatable
 - a task can be pending, in progress or done: default to pending
     - each state can be moved to any of the 2 others
@@ -114,7 +114,7 @@ Multiple tasks with same title or description can be created.
 
 A scope has:
 - a name, 1 up to 255 chars, unique among all scopes, updatable, must be unique
-- an id, unique among all scopes, by default deduced from the name, 1 to 36 chars, must be unique
+- a key, unique among all scopes, by default deduced from the name, 1 to 36 chars, must be unique
  - can't be changed
 
 User management should be linkable to a preexisting user directory.

@@ -13,16 +13,24 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 interface HeroesDesk {
 
     fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope>
-    fun assignScope(scopeKey: ScopeKey, assignees: HeroIds, changeAuthor: AdminId): EitherNel<AssignHeroesOnScopeError, Scope>
+    fun assignScope(
+        scopeKey: ScopeKey,
+        assignees: HeroIds,
+        changeAuthor: AdminId
+    ): EitherNel<AssignHeroesOnScopeError, Scope>
 
-     fun updateScopeName(scopeKey: ScopeKey, name:Name, changeAuthor: AdminId): EitherNel<UpdateScopeNameError, Scope>
-
+    fun updateScopeName(scopeKey: ScopeKey, name: Name, changeAuthor: AdminId): EitherNel<UpdateScopeNameError, Scope>
     fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope>
 
-    fun createTask(title: Title, creator: HeroId): EitherNel<CreateTaskError, PendingTask>
+    fun createTask(scopeKey: ScopeKey, title: Title, creator: HeroId): EitherNel<CreateTaskError, PendingTask>
     fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>>
 
-    fun updateTitle(id: TaskId, title: Title, author: HeroId): EitherNel<UpdateTitleError, TaskId>  // TODO: handle some history and use author here, apply to other methods here too
+    fun updateTitle(
+        id: TaskId,
+        title: Title,
+        author: HeroId
+    ): EitherNel<UpdateTitleError, TaskId>  // TODO: handle some history and use author here, apply to other methods here too
+
     fun updateDescription(
         id: TaskId, description: Description, author: HeroId
     ): EitherNel<UpdateDescriptionError, TaskId>
@@ -51,7 +59,7 @@ interface HeroesDesk {
         val message: String
     }
 
-    sealed interface CreateScopeError: HeroesDeskError
+    sealed interface CreateScopeError : HeroesDeskError
 
     data class ScopeNameAlreadyExistsError(val name: Name) : CreateScopeError {
         override val message = "Scope $name already exists"
@@ -61,17 +69,18 @@ interface HeroesDesk {
         override val message = "Scope $id already exists"
     }
 
-    data class  AdminDoesNotExistCreateScopeError(val adminId: AdminId) : CreateScopeError {
+    data class AdminDoesNotExistCreateScopeError(val adminId: AdminId) : CreateScopeError {
         override val message = "Admin $adminId does not exist"
     }
 
-    sealed interface AssignHeroesOnScopeError: HeroesDeskError
+    sealed interface AssignHeroesOnScopeError : HeroesDeskError
 
     data class ScopeDoesNotExistAssignHeroesOnScopeError(val scopeKey: ScopeKey) : AssignHeroesOnScopeError {
         override val message = "Scope $scopeKey does not exist"
     }
 
-    data class AssignedHeroIdsNotExistAssignHeroesOnScopeError(val missingAssignees: HeroIds, val assignees: HeroIds) : AssignHeroesOnScopeError {
+    data class AssignedHeroIdsNotExistAssignHeroesOnScopeError(val missingAssignees: HeroIds, val assignees: HeroIds) :
+        AssignHeroesOnScopeError {
         override val message = "Hero ids $missingAssignees not existing (out of ${assignees.size()} assignees"
     }
 
@@ -81,23 +90,28 @@ interface HeroesDesk {
 
     sealed interface UpdateScopeNameError : HeroesDeskError
 
-    data class AdminIdNotExistingUpdateScopeNameError(val adminId: AdminId): UpdateScopeNameError{
+    data class AdminIdNotExistingUpdateScopeNameError(val adminId: AdminId) : UpdateScopeNameError {
         override val message = "Admin id $adminId not existing"
     }
 
-    data class ScopeNotExistingUpdateScopeNameError(val scopeKey: ScopeKey): UpdateScopeNameError{
+    data class ScopeNotExistingUpdateScopeNameError(val scopeKey: ScopeKey) : UpdateScopeNameError {
         override val message = "Scope $scopeKey not existing"
     }
 
     sealed interface GetScopeError : HeroesDeskError
 
-    data class ScopeNotExistingGetScopeError(val scopeKey: ScopeKey): GetScopeError{
+    data class ScopeNotExistingGetScopeError(val scopeKey: ScopeKey) : GetScopeError {
         override val message = "Scope $scopeKey not existing"
     }
+
     sealed interface CreateTaskError : HeroesDeskError
 
     data class HeroDoesNotExistCreateTaskError(val heroId: HeroId) : CreateTaskError {
         override val message = "Hero $heroId does not exist"
+    }
+
+    data class ScopeNotExistCreateTaskError(val scopeKey: ScopeKey) : CreateTaskError {
+        override val message = "Scope $scopeKey does not exist"
     }
 
     data class TaskRepositoryHeroDoesNotExistError(override val message: String, val exception: Exception? = null) :

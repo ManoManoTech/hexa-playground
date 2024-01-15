@@ -8,8 +8,11 @@ import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
-import org.hexastacks.heroesdesk.kotlin.impl.user.*
-import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds.Companion.EMPTY_HEROIDS
+import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds.Companion.EMPTY_HERO_IDS
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -19,6 +22,7 @@ class InMemoryTaskRepository : TaskRepository {
     private val scopes = ConcurrentHashMap.newKeySet<Scope>()
 
     override fun createTask(
+        scopeKey: ScopeKey,
         title: Title,
         hero: Hero
     ): Either<NonEmptyList<CreateTaskError>, PendingTask> {
@@ -26,13 +30,14 @@ class InMemoryTaskRepository : TaskRepository {
         val taskId = PendingTaskId(uuid).getOrElse {
             throw RuntimeException("taskId $uuid should be valid")
         }
-        val task = PendingTask(
-            taskId = taskId,
-            title = title
-        )
-        return tasks.putIfAbsent(taskId, task)
-            ?.let { Left(nonEmptyListOf(TaskRepositoryHeroDoesNotExistError("New task id $taskId already existing"))) }
-            ?: Right(task)
+        return scopes.firstOrNull { it.key == scopeKey }
+            ?.let { scope ->
+                val task = PendingTask(scope, taskId, title)
+                tasks.putIfAbsent(taskId, task)
+                    ?.let { Left(nonEmptyListOf(TaskRepositoryHeroDoesNotExistError("New task id $taskId already existing"))) }
+                    ?: Right(task)
+            }
+            ?: Left(nonEmptyListOf(ScopeNotExistCreateTaskError(scopeKey)))
     }
 
     override fun getTask(taskId: TaskId): Either<NonEmptyList<GetTaskError>, Task<*>> {
@@ -105,6 +110,7 @@ class InMemoryTaskRepository : TaskRepository {
                             .map { inProgressTaskId ->
                                 val inProgressTask =
                                     InProgressTask(
+                                        taskToUpdate.scope,
                                         inProgressTaskId,
                                         taskToUpdate.title,
                                         taskToUpdate.description,
@@ -128,7 +134,7 @@ class InMemoryTaskRepository : TaskRepository {
             Left(
                 nonEmptyListOf(ScopeIdAlreadyExistsError(scopeKey))
             ) else {
-            val newScope = Scope(name, scopeKey, EMPTY_HEROIDS)
+            val newScope = Scope(name, scopeKey, EMPTY_HERO_IDS)
             if (scopes.add(newScope))
                 Right(newScope)
             else

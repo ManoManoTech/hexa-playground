@@ -1,7 +1,6 @@
 package org.hexastacks.heroesdesk.kotlin.impl.scope
 
 import arrow.core.getOrElse
-import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.junit.jupiter.api.Assertions.*
@@ -11,7 +10,7 @@ class ScopeTest {
     @Test
     fun `scopes with same keys and different content are equals`() {
         val scopeKey = scopeKey("COD")
-        val scope1 = Scope(name("Write code"), scopeKey, HeroIds.EMPTY_HEROIDS)
+        val scope1 = Scope(name("Write code"), scopeKey, HeroIds.EMPTY_HERO_IDS)
         val scope2 = Scope(name("Read coode"), scopeKey, HeroIds(heroId()))
 
         assertEquals(scope1, scope2)
@@ -20,7 +19,7 @@ class ScopeTest {
     @Test
     fun `scopes with different ids and same content aren't equals`() {
         val name = name("Write code")
-        val assignees = HeroIds.EMPTY_HEROIDS
+        val assignees = HeroIds.EMPTY_HERO_IDS
         val scope1 = Scope(name,  scopeKey("COD"), assignees)
         val scope2 = Scope(name,  scopeKey("WRI"), assignees)
 
@@ -30,7 +29,7 @@ class ScopeTest {
     @Test
     fun `scopes with same ids and different content have same hashcode`() {
         val scopeKey = scopeKey("COD")
-        val scope1 = Scope(name("Write code"), scopeKey, HeroIds.EMPTY_HEROIDS).hashCode()
+        val scope1 = Scope(name("Write code"), scopeKey, HeroIds.EMPTY_HERO_IDS).hashCode()
         val scope2 = Scope(name("Read coode"), scopeKey, HeroIds(heroId())).hashCode()
 
         assertEquals(scope1, scope2)
