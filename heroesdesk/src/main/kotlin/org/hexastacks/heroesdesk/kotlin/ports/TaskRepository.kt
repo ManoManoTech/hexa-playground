@@ -11,6 +11,11 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 interface TaskRepository {
+    fun createScope(scopeKey: ScopeKey, name: Name): EitherNel<CreateScopeError, Scope>
+    fun assignScope(
+        scopeKey: ScopeKey,
+        assignees: Heroes
+    ): EitherNel<AssignHeroesOnScopeError, Scope>
 
     fun createTask(scopeKey: ScopeKey, title: Title, hero: Hero): EitherNel<CreateTaskError, PendingTask>
 
@@ -35,11 +40,6 @@ interface TaskRepository {
     ): EitherNel<AssignTaskError, Task<*>>
 
     fun startWork(pendingTaskId: PendingTaskId, hero: Hero): EitherNel<StartWorkError, InProgressTask>
-    fun createScope(scopeKey: ScopeKey, name: Name): EitherNel<CreateScopeError, Scope>
-    fun assignScope(
-        scopeKey: ScopeKey,
-        assignees: Heroes
-    ): EitherNel<AssignHeroesOnScopeError, Scope>
 
     fun updateScopeName(
         scopeKey: ScopeKey,

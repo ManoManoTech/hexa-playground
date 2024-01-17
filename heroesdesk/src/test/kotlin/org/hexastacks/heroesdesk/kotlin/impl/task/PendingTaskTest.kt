@@ -16,7 +16,7 @@ class PendingTaskTest : AbstractTaskTest<PendingTaskId, PendingTask>() {
     ) =
         PendingTask(scope, id, title, description, assignees)
 
-    override fun createTaskIdOrThrow(taskId: String): PendingTaskId =
-        PendingTaskId(taskId).getOrElse { throw RuntimeException("$taskId should be valid") }
+    override fun createTaskIdOrThrow(scope: Scope, taskId: String): PendingTaskId =
+        PendingTaskId(scope, taskId).getOrElse { throw RuntimeException("$taskId should be valid") }
 
 }

@@ -19,9 +19,7 @@ data class Heroes(val value: Set<Hero>) {
 
     fun add(hero: Hero): Heroes = Heroes(value + hero)
 
-    fun forEach(action: (Hero) -> Unit) {
-        value.forEach(action)
-    }
+    fun forEach(action: (Hero) -> Unit) = value.forEach(action)
 
     operator fun get(author: HeroId): Hero? =
         value
@@ -33,6 +31,6 @@ data class Heroes(val value: Set<Hero>) {
     fun <R> map(transform: (Hero) -> R): List<R> = value.map { transform(it) }
 
     companion object {
-        val EMPTY_HEROES: Heroes = Heroes(emptySet())
+        val empty: Heroes = Heroes(emptySet())
     }
 }

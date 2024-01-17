@@ -6,14 +6,18 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.zipOrAccumulate
 import org.hexastacks.heroesdesk.kotlin.impl.AbstractStringValue
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.*
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.Companion.MAX_LENGTH
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.Companion.MIN_LENGTH
 
-class DoneTaskId private constructor(value: String) : TaskId, AbstractStringValue(value) {
+class DoneTaskId private constructor(override val scope: Scope, value: String) : TaskId, AbstractStringValue(value) {
 
     companion object {
-        operator fun invoke(stringBetween1And36Chars: String): Either<NonEmptyList<TaskIdError>, DoneTaskId> =
+        operator fun invoke(
+            scope: Scope,
+            stringBetween1And36Chars: String
+        ): Either<NonEmptyList<TaskIdError>, DoneTaskId> =
             either {
                 zipOrAccumulate(
                     // TODO: see how to  consolidate
@@ -32,7 +36,7 @@ class DoneTaskId private constructor(value: String) : TaskId, AbstractStringValu
                         }
                     },
                 ) { _, _ ->
-                    DoneTaskId(stringBetween1And36Chars)
+                    DoneTaskId(scope, stringBetween1And36Chars)
                 }
             }
     }

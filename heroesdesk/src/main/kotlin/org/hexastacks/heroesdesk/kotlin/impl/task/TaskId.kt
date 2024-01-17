@@ -2,6 +2,7 @@ package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import org.hexastacks.heroesdesk.kotlin.impl.StringValue
 import org.hexastacks.heroesdesk.kotlin.impl.StringValueError
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 
 sealed interface TaskId : StringValue {
 
@@ -9,6 +10,8 @@ sealed interface TaskId : StringValue {
         const val MIN_LENGTH = 1
         const val MAX_LENGTH = 36
     }
+
+    val scope: Scope
 
     sealed interface TaskIdError : StringValueError
     data class BelowMinLengthError(val string: String) : TaskIdError {

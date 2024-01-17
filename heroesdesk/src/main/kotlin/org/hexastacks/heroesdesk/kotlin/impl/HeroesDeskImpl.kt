@@ -12,11 +12,10 @@ import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
+import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
-import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.ports.*
-import org.hexastacks.heroesdesk.kotlin.ports.UserRepositoryExtensions.canHeroStartWork
 
 class HeroesDeskImpl(private val userRepository: UserRepository, private val taskRepository: TaskRepository) :
     HeroesDesk {
@@ -61,7 +60,10 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                     }
                     .map { _ -> heroes }
             }.flatMap {
-                taskRepository.assignScope(scopeKey, it)
+                println("assigning scope $scopeKey to $it")
+                val assignScope = taskRepository.assignScope(scopeKey, it)
+                assignScope.onRight { println("post assignment scope  ${it.assignees}")}
+                assignScope
             }
 
     override fun updateScopeName(
@@ -100,7 +102,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                     }
                 }
             }
-            .flatMap { hero -> taskRepository.createTask(scopeKey, title, hero,) }
+            .flatMap { hero -> taskRepository.createTask(scopeKey, title, hero) }
 
     override fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>> = taskRepository.getTask(id)
 
@@ -142,7 +144,14 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         author: HeroId
     ): EitherNel<AssignTaskError, Task<*>> =
         userRepository
-            .areAllHeroesAssignable(id, assignees)
+            .getHeroes(assignees)
+            .mapLeft { errors ->
+                errors.map {
+                    when (it) {
+                        is HeroesDoNotExistError -> HeroesDoesNotExistAssignTaskError(it)
+                    }
+                }
+            }
             .flatMap { taskRepository.assign(id, it, author) }
 
     override fun startWork(
@@ -164,40 +173,62 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                     else -> Left(nonEmptyListOf(TaskNotPendingStartWorkError(task, id)))
                 }
             }
-            .flatMap { task: PendingTask ->
-                if (!task.assignees.contains(author)) {
-                    userRepository.canHeroStartWork(task.taskId, author)
-                        .flatMap { hero ->
-                            taskRepository
-                                .assign(id, task.assignees.add(hero), author)
-                                .mapLeft { errors ->
-                                    errors.map {
-                                        when (it) {
-                                            is NonAssignableHeroesAssignTaskError -> NonAllowedToStartWorkError(
-                                                id,
-                                                HeroIds(author)
-                                            )
-
-                                            is TaskDoesNotExistAssignTaskError -> TaskDoesNotExistStartWorkError(id)
-                                        }
-                                    }
-                                }
-                                .flatMap {
-                                    when (it) {
-                                        is PendingTask -> Right(it)
-                                        else -> Left(nonEmptyListOf(TaskNotPendingStartWorkError(it, id)))
-                                    }
-                                }
-                        }
-                } else Right(task)
-            }
-            .flatMap { task: PendingTask ->
+            .flatMap { verifiedTask ->
                 userRepository
-                    .canHeroStartWork(task, author)
-                    .flatMap {
-                        taskRepository.startWork(id, it)
+                    .getHero(author)
+                    .mapLeft { errors ->
+                        errors.map {
+                            when (it) {
+                                is HeroesDoNotExistError -> HeroesDoesNotExistStartWorkError(it.heroIds)
+                            }
+                        }
+                    }
+                    .flatMap { existingAuthor ->
+                        if (verifiedTask.assignees.contains(existingAuthor)) {
+                            Right(existingAuthor)
+                        } else {
+                            assignToTaskIfAssignedToScope(verifiedTask, existingAuthor, id)
+                        }
                     }
             }
+            .flatMap { hero ->
+                taskRepository.startWork(id, hero)
+            }
+
+    private fun assignToTaskIfAssignedToScope(
+        verifiedTask: PendingTask,
+        author: Hero,
+        id: PendingTaskId
+    ): EitherNel<StartWorkError, Hero> =
+        if (verifiedTask.scope.assignees.contains(author))
+            taskRepository
+                .assign(id, verifiedTask.assignees.add(author), author.id)
+                .mapLeft { errors ->
+                    errors.map {
+                        when (it) {
+                            is HeroesDoesNotExistAssignTaskError -> HeroesDoesNotExistStartWorkError(
+                                HeroIds.empty
+                            )
+
+                            is TaskDoesNotExistAssignTaskError -> TaskDoesNotExistStartWorkError(id)
+                        }
+                    }
+                }
+                .flatMap {
+                    when (it) {
+                        is PendingTask -> Right(author)
+                        else -> Left(nonEmptyListOf(TaskNotPendingStartWorkError(it, id)))
+                    }
+                } else {
+            Left(
+                nonEmptyListOf(
+                    HeroNotAssignedToScopeStartWorkError(
+                        author.id,
+                        verifiedTask.scope.key
+                    )
+                )
+            )
+        }
 
     override fun startWork(
         id: DoneTaskId,

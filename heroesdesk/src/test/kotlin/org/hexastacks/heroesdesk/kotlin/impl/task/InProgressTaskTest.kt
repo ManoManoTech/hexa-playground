@@ -16,7 +16,7 @@ class InProgressTaskTest : AbstractTaskTest<InProgressTaskId, InProgressTask>() 
     ) =
         InProgressTask(scope, id, title, description, assignees)
 
-    override fun createTaskIdOrThrow(taskId: String): InProgressTaskId =
-        InProgressTaskId(taskId).getOrElse { throw RuntimeException("$taskId should be valid") }
+    override fun createTaskIdOrThrow(scope: Scope, taskId: String): InProgressTaskId =
+        InProgressTaskId(scope, taskId).getOrElse { throw RuntimeException("$taskId should be valid") }
 
 }

@@ -8,7 +8,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
-import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
+import org.hexastacks.heroesdesk.kotlin.ports.HeroesDoNotExistError
 
 interface HeroesDesk {
 
@@ -18,6 +18,7 @@ interface HeroesDesk {
         assignees: HeroIds,
         changeAuthor: AdminId
     ): EitherNel<AssignHeroesOnScopeError, Scope>
+
     fun updateScopeName(scopeKey: ScopeKey, name: Name, changeAuthor: AdminId): EitherNel<UpdateScopeNameError, Scope>
     fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope>
 
@@ -28,6 +29,7 @@ interface HeroesDesk {
         title: Title,
         author: HeroId
     ): EitherNel<UpdateTitleError, TaskId>  // TODO: handle some history and use author here, apply to other methods here too
+
     fun updateDescription(
         id: TaskId, description: Description, author: HeroId
     ): EitherNel<UpdateDescriptionError, TaskId>
@@ -38,7 +40,7 @@ interface HeroesDesk {
      * Adds the author to the assignees if not in already
      */
     fun startWork(
-        id: PendingTaskId, // TODO: add heroStartingWork
+        id: PendingTaskId,
         author: HeroId
     ): EitherNel<StartWorkError, InProgressTask>
 
@@ -61,7 +63,7 @@ interface HeroesDesk {
         override val message = "Scope $name already exists"
     }
 
-    data class ScopeIdAlreadyExistsError(val id: ScopeKey) : CreateScopeError {
+    data class ScopeKeyAlreadyExistsError(val id: ScopeKey) : CreateScopeError {
         override val message = "Scope $id already exists"
     }
 
@@ -155,24 +157,21 @@ interface HeroesDesk {
         override val message = "Task id $taskId invalid: ${error.message}"
     }
 
-    data class HeroDoesNotExistStartWorkError(val heroId: HeroId) : StartWorkError {
-        override val message = "Hero $heroId does not exist"
+    data class HeroNotAssignedToScopeStartWorkError(val heroId: HeroId, val scopeKey: ScopeKey) : StartWorkError {
+        override val message = "Hero $heroId not assigned to scope $scopeKey"
     }
 
-    data class NonAllowedToStartWorkError(
-        val task: TaskId,
-        val nonAssignables: HeroIds
+    data class HeroesDoesNotExistStartWorkError(
+        val heroIds: HeroIds,
     ) : StartWorkError {
-        override val message: String = "Task $task cannot be assigned to ${nonAssignables.value}"
+        override val message: String = "Heroes $heroIds do not exist"
     }
 
     sealed interface AssignTaskError : HeroesDeskError
-    data class NonAssignableHeroesAssignTaskError(
-        val task: TaskId,
-        val candidates: HeroIds,
-        val nonAssignables: HeroIds
+    data class HeroesDoesNotExistAssignTaskError(
+        val heroesDoNotExistError: HeroesDoNotExistError
     ) : AssignTaskError {
-        override val message: String = "Task $task cannot be assigned to ${nonAssignables.value}"
+        override val message: String = heroesDoNotExistError.message
     }
 
     data class TaskDoesNotExistAssignTaskError(val taskId: TaskId) : AssignTaskError {

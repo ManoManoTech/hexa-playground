@@ -14,7 +14,7 @@ object TestUtils {
         Scope(
             Name(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") },
             ScopeKey(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") },
-            Heroes.EMPTY_HEROES
+            Heroes.empty
         )
 
     fun createTitleOrThrow(title: String): Title =

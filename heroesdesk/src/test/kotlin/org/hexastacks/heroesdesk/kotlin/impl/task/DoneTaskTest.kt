@@ -16,7 +16,7 @@ class DoneTaskTest : AbstractTaskTest<DoneTaskId, DoneTask>() {
     ) =
         DoneTask(scope, id, title, description, assignees)
 
-    override fun createTaskIdOrThrow(taskId: String): DoneTaskId =
-        DoneTaskId(taskId).getOrElse { throw RuntimeException("$taskId should be valid") }
+    override fun createTaskIdOrThrow(scope: Scope, taskId: String): DoneTaskId =
+        DoneTaskId(scope, taskId).getOrElse { throw RuntimeException("$taskId should be valid") }
 
 }

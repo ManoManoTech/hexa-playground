@@ -1,7 +1,7 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import arrow.core.getOrElse
-import org.hexastacks.heroesdesk.kotlin.impl.*
+import org.hexastacks.heroesdesk.kotlin.impl.TestUtils
 import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createDescriptionOrThrow
 import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createScopeOrThow
 import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createTitleOrThrow
@@ -23,10 +23,17 @@ abstract class AbstractTaskTest<Id : TaskId, T : Task<Id>> {
         assertEquals(newTitle, updatedTask.title)
     }
 
-    private fun createTaskOrThrow(scopeKey: String, taskId: String, title: String, description: String, creator: String): T =
-        createTaskOrThrow(
-            createScopeOrThow(scopeKey),
-            createTaskIdOrThrow(taskId),
+    private fun createTaskOrThrow(
+        scopeKey: String,
+        taskId: String,
+        title: String,
+        description: String,
+        creator: String
+    ): T {
+        val scope = createScopeOrThow(scopeKey)
+        return createTaskOrThrow(
+            scope,
+            createTaskIdOrThrow(scope, taskId),
             createTitleOrThrow(title),
             createDescriptionOrThrow(description),
             Hero(
@@ -34,8 +41,9 @@ abstract class AbstractTaskTest<Id : TaskId, T : Task<Id>> {
                 TestUtils.createHeroIdOrThrow(creator)
             )
         )
+    }
 
-    abstract fun createTaskIdOrThrow(taskId: String): Id
+    abstract fun createTaskIdOrThrow(scope: Scope, taskId: String): Id
 
     abstract fun createTaskOrThrow(
         scope: Scope,
@@ -43,6 +51,6 @@ abstract class AbstractTaskTest<Id : TaskId, T : Task<Id>> {
         title: Title,
         description: Description,
         creator: Hero,
-        assignees: Heroes = Heroes.EMPTY_HEROES
+        assignees: Heroes = Heroes.empty
     ): T
 }

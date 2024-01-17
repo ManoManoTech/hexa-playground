@@ -8,6 +8,5 @@ data class PendingTask(
     override val taskId: PendingTaskId,
     override val title: Title,
     override val description: Description = Description.EMPTY_DESCRIPTION,
-    override val assignees: Heroes = Heroes.EMPTY_HEROES
-) : Task<PendingTaskId> {
-}
+    override val assignees: Heroes = Heroes.empty
+) : Task<PendingTaskId>

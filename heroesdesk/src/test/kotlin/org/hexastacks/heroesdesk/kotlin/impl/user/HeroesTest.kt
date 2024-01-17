@@ -93,7 +93,7 @@ class HeroesTest {
     @Test
     fun `2 empty heroes instances are equals`() {
         val emptyHeroes1 = Heroes(emptySet())
-        val emptyHeroes2 = Heroes.EMPTY_HEROES
+        val emptyHeroes2 = Heroes.empty
 
         assertEquals(emptyHeroes1, emptyHeroes2)
     }
