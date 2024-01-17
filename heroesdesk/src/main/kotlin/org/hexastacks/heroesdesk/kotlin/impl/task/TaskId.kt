@@ -1,6 +1,6 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
-import org.hexastacks.heroesdesk.kotlin.ErrorMessage
+import org.hexastacks.heroesdesk.kotlin.impl.ErrorMessage
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 
 sealed interface TaskId {

@@ -1,6 +1,7 @@
 package org.hexastacks.heroesdesk.kotlin
 
 import arrow.core.EitherNel
+import org.hexastacks.heroesdesk.kotlin.impl.ErrorMessage
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
@@ -24,15 +25,11 @@ interface HeroesDesk {
 
     fun createTask(scopeKey: ScopeKey, title: Title, creator: HeroId): EitherNel<CreateTaskError, PendingTask>
     fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>>
-    fun updateTitle(
-        id: TaskId,
-        title: Title,
-        author: HeroId
-    ): EitherNel<UpdateTitleError, TaskId>  // TODO: handle some history and use author here, apply to other methods here too
 
+    fun updateTitle(id: TaskId, title: Title, author: HeroId): EitherNel<UpdateTitleError, Task<*>>
     fun updateDescription(
         id: TaskId, description: Description, author: HeroId
-    ): EitherNel<UpdateDescriptionError, TaskId>
+    ): EitherNel<UpdateDescriptionError, Task<*>>
 
     fun assignTask(id: TaskId, assignees: HeroIds, author: HeroId): EitherNel<AssignTaskError, Task<*>>
 
@@ -47,13 +44,13 @@ interface HeroesDesk {
     /**
      * Adds the author to the assignees if not in already
      */
-    fun startWork(id: DoneTaskId, author: HeroId): EitherNel<StartWorkError, InProgressTaskId>
-    fun pauseWork(id: InProgressTaskId, author: HeroId): EitherNel<StopWorkError, PendingTaskId>
-    fun pauseWork(id: DoneTaskId, author: HeroId): EitherNel<StopWorkError, PendingTaskId>
-    fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTaskId>
-    fun endWork(id: InProgressTaskId, author: HeroId): EitherNel<EndWorkError, DoneTaskId>
+    fun startWork(id: DoneTaskId, author: HeroId): EitherNel<StartWorkError, InProgressTask>
+    fun pauseWork(id: InProgressTaskId, author: HeroId): EitherNel<StopWorkError, PendingTask>
+    fun pauseWork(id: DoneTaskId, author: HeroId): EitherNel<StopWorkError, PendingTask>
+    fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTask>
+    fun endWork(id: InProgressTaskId, author: HeroId): EitherNel<EndWorkError, DoneTask>
 
-    sealed interface HeroesDeskError:ErrorMessage {
+    sealed interface HeroesDeskError : ErrorMessage {
 
     }
 
@@ -111,9 +108,6 @@ interface HeroesDesk {
     data class ScopeNotExistCreateTaskError(val scopeKey: ScopeKey) : CreateTaskError {
         override val message = "Scope $scopeKey does not exist"
     }
-
-    data class TaskRepositoryHeroDoesNotExistError(override val message: String, val exception: Exception? = null) :
-        CreateTaskError
 
     sealed interface GetTaskError : HeroesDeskError
 

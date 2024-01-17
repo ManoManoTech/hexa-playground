@@ -361,11 +361,11 @@ abstract class AbstractHeroesDeskTest {
         val createdTask = ensureTaskExisting("title", hero)
         val newTitle = createTitleOrThrow("new title")
 
-        val updatedTaskId =
+        val updatedTask =
             heroesDesk.updateTitle(createdTask.taskId, newTitle, hero.id).getOrElse { throw AssertionError("$it") }
 
-        assertEquals(updatedTaskId, createdTask.taskId)
-        assert(heroesDesk.getTaskOrThrow(updatedTaskId).title == newTitle)
+        assertEquals(updatedTask.taskId, createdTask.taskId)
+        assert(heroesDesk.getTaskOrThrow(updatedTask.taskId).title == newTitle)
     }
 
     @Test
@@ -402,12 +402,12 @@ abstract class AbstractHeroesDeskTest {
         val createdTask = ensureTaskExisting("title", hero)
         val newDescription = createDescriptionOrThrow("new description")
 
-        val updatedTaskId =
+        val updatedTask =
             heroesDesk.updateDescription(createdTask.taskId, newDescription, hero.id)
                 .getOrElse { throw AssertionError("$it") }
 
-        assertEquals(updatedTaskId, createdTask.taskId)
-        assert(heroesDesk.getTaskOrThrow(updatedTaskId).description == newDescription)
+        assertEquals(createdTask.taskId, updatedTask.taskId)
+        assert(heroesDesk.getTaskOrThrow(updatedTask.taskId).description == newDescription)
     }
 
     @Test

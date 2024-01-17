@@ -25,13 +25,13 @@ interface TaskRepository {
         taskId: TaskId,
         title: Title,
         hero: Hero
-    ): EitherNel<UpdateTitleError, TaskId>
+    ): EitherNel<UpdateTitleError, Task<*>>
 
     fun updateDescription(
         taskId: TaskId,
         description: Description,
         hero: Hero
-    ): EitherNel<UpdateDescriptionError, TaskId>
+    ): EitherNel<UpdateDescriptionError, Task<*>>
 
     fun assign(
         taskId: TaskId,

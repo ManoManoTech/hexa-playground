@@ -59,12 +59,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                         }
                     }
                     .map { _ -> heroes }
-            }.flatMap {
-                println("assigning scope $scopeKey to $it")
-                val assignScope = taskRepository.assignScope(scopeKey, it)
-                assignScope.onRight { println("post assignment scope  ${it.assignees}")}
-                assignScope
-            }
+            }.flatMap { taskRepository.assignScope(scopeKey, it) }
 
     override fun updateScopeName(
         scopeKey: ScopeKey,
@@ -110,7 +105,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         id: TaskId,
         title: Title,
         author: HeroId
-    ): EitherNel<UpdateTitleError, TaskId> =
+    ): EitherNel<UpdateTitleError, Task<*>> =
         userRepository
             .getHero(author)
             .mapLeft { errors ->
@@ -126,7 +121,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         id: TaskId,
         description: Description,
         author: HeroId
-    ): EitherNel<UpdateDescriptionError, TaskId> =
+    ): EitherNel<UpdateDescriptionError, Task<*>> =
         userRepository
             .getHero(author)
             .mapLeft { errors ->
@@ -233,32 +228,32 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     override fun startWork(
         id: DoneTaskId,
         author: HeroId
-    ): EitherNel<StartWorkError, InProgressTaskId> {
+    ): EitherNel<StartWorkError, InProgressTask> {
         TODO("Not yet implemented")
     }
 
     override fun pauseWork(
         id: InProgressTaskId,
         author: HeroId
-    ): EitherNel<StopWorkError, PendingTaskId> {
+    ): EitherNel<StopWorkError, PendingTask> {
         TODO("Not yet implemented")
     }
 
     override fun pauseWork(
         id: DoneTaskId,
         author: HeroId
-    ): EitherNel<StopWorkError, PendingTaskId> {
+    ): EitherNel<StopWorkError, PendingTask> {
         TODO("Not yet implemented")
     }
 
-    override fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTaskId> {
+    override fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTask> {
         TODO("Not yet implemented")
     }
 
     override fun endWork(
         id: InProgressTaskId,
         author: HeroId
-    ): EitherNel<EndWorkError, DoneTaskId> {
+    ): EitherNel<EndWorkError, DoneTask> {
         TODO("Not yet implemented")
     }
 }

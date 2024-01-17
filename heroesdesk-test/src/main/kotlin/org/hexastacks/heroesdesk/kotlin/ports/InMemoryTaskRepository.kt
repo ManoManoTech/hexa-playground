@@ -37,7 +37,7 @@ class InMemoryTaskRepository : TaskRepository {
             createdTask.set(task)
             Pair(scope, scopeAndTaskIdsToTask.second.plus(RawTaskId(taskId) to RawTask(task)))
         }
-            ?.let { _ -> Right(createdTask.get()) }
+            ?.let { Right(createdTask.get()) }
             ?: Left(nonEmptyListOf(ScopeNotExistCreateTaskError(scopeKey)))
     }
 
@@ -46,60 +46,57 @@ class InMemoryTaskRepository : TaskRepository {
             ?.let { scopeAndTaskIdsToTask ->
                 val rawTaskId = RawTaskId(taskId)
                 val task = scopeAndTaskIdsToTask.second[rawTaskId]
-                buildTask(rawTaskId, task, scopeAndTaskIdsToTask.first)
+                task?.let { buildTask(rawTaskId, it, scopeAndTaskIdsToTask.first) }
             }
             ?.let { Right(it) }
             ?: Left(nonEmptyListOf(TaskDoesNotExistError(taskId)))
 
     private fun buildTask(
         rawTaskId: RawTaskId,
-        task: RawTask?,
+        task: RawTask,
         scope: Scope
-    ): Task<*>? =
-        task
-            ?.let {
-                when (it.type) {
-                    TaskType.PENDING -> PendingTask(
-                        scope,
-                        PendingTaskId(
-                            scope,
-                            rawTaskId.value
-                        ).getOrElse { throw RuntimeException("taskId ${rawTaskId.value} should be valid") },
-                        task.title,
-                        task.description,
-                        task.assignees
-                    )
+    ): Task<*> =
+        when (task.type) {
+            TaskType.PENDING -> PendingTask(
+                scope,
+                PendingTaskId(
+                    scope,
+                    rawTaskId.value
+                ).getOrElse { throw RuntimeException("taskId ${rawTaskId.value} should be valid") },
+                task.title,
+                task.description,
+                task.assignees
+            )
 
-                    TaskType.DONE -> DoneTask(
-                        scope,
-                        DoneTaskId(
-                            scope,
-                            rawTaskId.value
-                        ).getOrElse { throw RuntimeException("taskId ${rawTaskId.value} should be valid") },
-                        task.title,
-                        task.description,
-                        task.assignees
-                    )
+            TaskType.DONE -> DoneTask(
+                scope,
+                DoneTaskId(
+                    scope,
+                    rawTaskId.value
+                ).getOrElse { throw RuntimeException("taskId ${rawTaskId.value} should be valid") },
+                task.title,
+                task.description,
+                task.assignees
+            )
 
-                    TaskType.IN_PROGRESS -> InProgressTask(
-                        scope,
-                        InProgressTaskId(
-                            scope,
-                            rawTaskId.value
-                        ).getOrElse { throw RuntimeException("taskId ${rawTaskId.value} should be valid") },
-                        task.title,
-                        task.description,
-                        task.assignees
-                    )
-                }
-            }
+            TaskType.IN_PROGRESS -> InProgressTask(
+                scope,
+                InProgressTaskId(
+                    scope,
+                    rawTaskId.value
+                ).getOrElse { throw RuntimeException("taskId ${rawTaskId.value} should be valid") },
+                task.title,
+                task.description,
+                task.assignees
+            )
+        }
 
     override fun updateTitle(
         taskId: TaskId,
         title: Title,
         hero: Hero
-    ): EitherNel<UpdateTitleError, TaskId> =
-        database
+    ): EitherNel<UpdateTitleError, Task<*>> {
+        return database
             .computeIfPresent(taskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
                 val rawTaskId = RawTaskId(taskId)
@@ -108,14 +105,27 @@ class InMemoryTaskRepository : TaskRepository {
                     ?.copy(title = title)
                     ?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(rawTaskId to it)) }
             }
-            ?.let { Right(taskId) }
+            ?.let {
+                Right(buildTask(it, taskId))
+            }
             ?: Left(nonEmptyListOf(TaskDoesNotExistUpdateTitleError(taskId)))
+    }
+
+    private fun buildTask(
+        it: Pair<Scope, Map<RawTaskId, RawTask>>,
+        taskId: TaskId
+    ): Task<*> {
+        val scope = it.first
+        val rawTask: RawTask = it.second[RawTaskId(taskId)]!!
+        val task = buildTask(RawTaskId(taskId), rawTask, scope)
+        return task
+    }
 
     override fun updateDescription(
         taskId: TaskId,
         description: Description,
         hero: Hero
-    ): Either<NonEmptyList<UpdateDescriptionError>, TaskId> =
+    ): Either<NonEmptyList<UpdateDescriptionError>, Task<*>> =
         database
             .computeIfPresent(taskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
@@ -125,7 +135,7 @@ class InMemoryTaskRepository : TaskRepository {
                     ?.copy(description = description)
                     ?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(rawTaskId to it)) }
             }
-            ?.let { Right(taskId) }
+            ?.let { Right(buildTask(it, taskId)) }
             ?: Left(nonEmptyListOf(TaskDoesNotExistUpdateDescriptionError(taskId)))
 
     override fun assign(
@@ -133,17 +143,15 @@ class InMemoryTaskRepository : TaskRepository {
         assignees: Heroes,
         author: HeroId
     ): EitherNel<AssignTaskError, Task<*>> {
-        val change = AtomicReference<Task<*>>()
         return database
             .computeIfPresent(taskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
                 val rawTaskId = RawTaskId(taskId)
                 val task: RawTask? = scopeAndTaskIdsToTask.second[rawTaskId]
                 val updatedTask = task?.copy(assignees = assignees)
-                change.set(buildTask(rawTaskId, updatedTask, scope))
                 updatedTask?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(rawTaskId to updatedTask)) }
             }
-            ?.let { Right(change.get()) }
+            ?.let { Right(buildTask(it, taskId)) }
             ?: Left(nonEmptyListOf(TaskDoesNotExistAssignTaskError(taskId)))
     }
 
@@ -151,7 +159,6 @@ class InMemoryTaskRepository : TaskRepository {
         pendingTaskId: PendingTaskId,
         hero: Hero
     ): EitherNel<StartWorkError, InProgressTask> {
-        val change = AtomicReference<InProgressTask>()
         return database
             .computeIfPresent(pendingTaskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
@@ -168,7 +175,6 @@ class InMemoryTaskRepository : TaskRepository {
                                     task.description,
                                     task.assignees
                                 )
-                            change.set(inProgressTask)
                             Pair(
                                 scope,
                                 scopeAndTaskIdsToTask.second.plus(rawTaskId to RawTask(inProgressTask))
@@ -178,27 +184,22 @@ class InMemoryTaskRepository : TaskRepository {
                 } else
                     null
             }
-            ?.let { Right(change.get()) }
+            ?.let { Right(buildTask(it, pendingTaskId) as InProgressTask) }
             ?: Left(nonEmptyListOf(TaskDoesNotExistStartWorkError(pendingTaskId)))
     }
 
     override fun createScope(scopeKey: ScopeKey, name: Name): EitherNel<CreateScopeError, Scope> {
-        val createdScope = AtomicReference<Scope>()
-
         return if (database.any { it.value.first.name == name }) {
             Left(nonEmptyListOf(ScopeNameAlreadyExistsError(name)))
-        } else {
-            database
-                .computeIfAbsent(scopeKey) { _ ->
-                    createdScope.set(Scope(name, scopeKey, empty))
-                    Pair(createdScope.get(), ConcurrentHashMap<RawTaskId, RawTask>())
-                }
-            if (createdScope.get() != null) {
-                Right(createdScope.get())
-            } else {
-                Left(nonEmptyListOf(ScopeKeyAlreadyExistsError(scopeKey)))
-            }
-        }
+        } else if (database.containsKey(scopeKey)) {
+            Left(nonEmptyListOf(ScopeKeyAlreadyExistsError(scopeKey)))
+        } else
+            Right(
+                database
+                    .computeIfAbsent(scopeKey) { _ ->
+                        Pair(Scope(name, scopeKey, empty), ConcurrentHashMap<RawTaskId, RawTask>())
+                    }.first
+            )
     }
 
     override fun assignScope(
