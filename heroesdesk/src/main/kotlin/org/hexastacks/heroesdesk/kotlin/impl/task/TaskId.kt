@@ -1,10 +1,9 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
-import org.hexastacks.heroesdesk.kotlin.impl.StringValue
-import org.hexastacks.heroesdesk.kotlin.impl.StringValueError
+import org.hexastacks.heroesdesk.kotlin.ErrorMessage
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 
-sealed interface TaskId : StringValue {
+sealed interface TaskId {
 
     companion object {
         const val MIN_LENGTH = 1
@@ -12,8 +11,10 @@ sealed interface TaskId : StringValue {
     }
 
     val scope: Scope
+    val value: String
 
-    sealed interface TaskIdError : StringValueError
+    sealed interface TaskIdError : ErrorMessage
+
     data class BelowMinLengthError(val string: String) : TaskIdError {
         override val message: String = "Task id must be above $MIN_LENGTH characters, got ${string.length} in $string"
     }

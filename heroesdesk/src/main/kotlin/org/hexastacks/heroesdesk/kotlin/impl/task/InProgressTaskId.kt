@@ -11,7 +11,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.*
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.Companion.MAX_LENGTH
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.Companion.MIN_LENGTH
 
-class InProgressTaskId private constructor(override val scope: Scope, value: String) : TaskId, AbstractStringValue(value) {
+class InProgressTaskId private constructor(override val scope: Scope, override val value: String) : AbstractTaskId() {
 
     companion object {
         operator fun invoke(scope: Scope,stringBetween1And36Chars: String): Either<NonEmptyList<TaskIdError>, InProgressTaskId> =

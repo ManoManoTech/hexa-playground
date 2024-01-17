@@ -4,6 +4,7 @@ import arrow.core.*
 import arrow.core.Either.Left
 import arrow.core.Either.Right
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
+import org.hexastacks.heroesdesk.kotlin.impl.AbstractStringValue
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 class InMemoryTaskRepository : TaskRepository {
 
-    private val database = ConcurrentHashMap<ScopeKey, Pair<Scope, Map<TaskId, Task<*>>>>()
+    private val database = ConcurrentHashMap<ScopeKey, Pair<Scope, Map<RawTaskId, RawTask>>>()
 
     override fun createTask(
         scopeKey: ScopeKey,
@@ -34,56 +35,58 @@ class InMemoryTaskRepository : TaskRepository {
             }
             val task = PendingTask(scope, taskId, title)
             createdTask.set(task)
-            Pair(scope, scopeAndTaskIdsToTask.second.plus(taskId to task))
+            Pair(scope, scopeAndTaskIdsToTask.second.plus(RawTaskId(taskId) to RawTask(task)))
         }
-            // the task could have been deleted in between the computeIfPresent and this line: playing it safe with the AtomicReference and caller will have delete scope error on next interaction, so quite the same in the end
             ?.let { _ -> Right(createdTask.get()) }
             ?: Left(nonEmptyListOf(ScopeNotExistCreateTaskError(scopeKey)))
     }
 
     override fun getTask(taskId: TaskId): Either<NonEmptyList<GetTaskError>, Task<*>> =
         database[taskId.scope.key]
-            ?.let { scopeAndTaskIdsToTask: Pair<Scope, Map<TaskId, Task<*>>> ->
-                val task = scopeAndTaskIdsToTask.second[taskId]
-                replaceTaskScopeByLatestScopeValue(task, scopeAndTaskIdsToTask.first)
+            ?.let { scopeAndTaskIdsToTask ->
+                val rawTaskId = RawTaskId(taskId)
+                val task = scopeAndTaskIdsToTask.second[rawTaskId]
+                buildTask(rawTaskId, task, scopeAndTaskIdsToTask.first)
             }
             ?.let { Right(it) }
             ?: Left(nonEmptyListOf(TaskDoesNotExistError(taskId)))
 
-    private fun replaceTaskScopeByLatestScopeValue(
-        task: Task<*>?,
+    private fun buildTask(
+        rawTaskId: RawTaskId,
+        task: RawTask?,
         scope: Scope
     ): Task<*>? =
         task
             ?.let {
-                when (it) {
-                    is PendingTask -> PendingTask(
+                when (it.type) {
+                    TaskType.PENDING -> PendingTask(
                         scope,
-                        task.taskId as PendingTaskId,
+                        PendingTaskId(
+                            scope,
+                            rawTaskId.value
+                        ).getOrElse { throw RuntimeException("taskId ${rawTaskId.value} should be valid") },
                         task.title,
                         task.description,
                         task.assignees
                     )
 
-                    is DeletedTask -> DeletedTask(
+                    TaskType.DONE -> DoneTask(
                         scope,
-                        task.taskId as DeletedTaskId,
+                        DoneTaskId(
+                            scope,
+                            rawTaskId.value
+                        ).getOrElse { throw RuntimeException("taskId ${rawTaskId.value} should be valid") },
                         task.title,
                         task.description,
                         task.assignees
                     )
 
-                    is DoneTask -> DoneTask(
+                    TaskType.IN_PROGRESS -> InProgressTask(
                         scope,
-                        task.taskId as DoneTaskId,
-                        task.title,
-                        task.description,
-                        task.assignees
-                    )
-
-                    is InProgressTask -> InProgressTask(
-                        scope,
-                        task.taskId as InProgressTaskId,
+                        InProgressTaskId(
+                            scope,
+                            rawTaskId.value
+                        ).getOrElse { throw RuntimeException("taskId ${rawTaskId.value} should be valid") },
                         task.title,
                         task.description,
                         task.assignees
@@ -99,9 +102,11 @@ class InMemoryTaskRepository : TaskRepository {
         database
             .computeIfPresent(taskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
-                val task: Task<*>? = scopeAndTaskIdsToTask.second[taskId]
-                val updatedTask = task?.updateTitle(title)
-                updatedTask?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(taskId to updatedTask)) }
+                val rawTaskId = RawTaskId(taskId)
+                scopeAndTaskIdsToTask
+                    .second[rawTaskId]
+                    ?.copy(title = title)
+                    ?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(rawTaskId to it)) }
             }
             ?.let { Right(taskId) }
             ?: Left(nonEmptyListOf(TaskDoesNotExistUpdateTitleError(taskId)))
@@ -114,9 +119,11 @@ class InMemoryTaskRepository : TaskRepository {
         database
             .computeIfPresent(taskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
-                val task: Task<*>? = scopeAndTaskIdsToTask.second[taskId]
-                val updatedTask = task?.updateDescription(description)
-                updatedTask?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(taskId to updatedTask)) }
+                val rawTaskId = RawTaskId(taskId)
+                scopeAndTaskIdsToTask
+                    .second[rawTaskId]
+                    ?.copy(description = description)
+                    ?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(rawTaskId to it)) }
             }
             ?.let { Right(taskId) }
             ?: Left(nonEmptyListOf(TaskDoesNotExistUpdateDescriptionError(taskId)))
@@ -130,10 +137,11 @@ class InMemoryTaskRepository : TaskRepository {
         return database
             .computeIfPresent(taskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
-                val task: Task<*>? = scopeAndTaskIdsToTask.second[taskId]
-                val updatedTask = task?.assign(assignees)
-                change.set(updatedTask)
-                updatedTask?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(taskId to updatedTask)) }
+                val rawTaskId = RawTaskId(taskId)
+                val task: RawTask? = scopeAndTaskIdsToTask.second[rawTaskId]
+                val updatedTask = task?.copy(assignees = assignees)
+                change.set(buildTask(rawTaskId, updatedTask, scope))
+                updatedTask?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(rawTaskId to updatedTask)) }
             }
             ?.let { Right(change.get()) }
             ?: Left(nonEmptyListOf(TaskDoesNotExistAssignTaskError(taskId)))
@@ -147,13 +155,14 @@ class InMemoryTaskRepository : TaskRepository {
         return database
             .computeIfPresent(pendingTaskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
-                val task = scopeAndTaskIdsToTask.second[pendingTaskId]
-                if (task is PendingTask) {
-                    InProgressTaskId(task.scope, task.taskId.value)
+                val rawTaskId = RawTaskId(pendingTaskId)
+                val task = scopeAndTaskIdsToTask.second[rawTaskId]
+                if (task?.type == TaskType.PENDING) {
+                    InProgressTaskId(scope, rawTaskId.value)
                         .map { inProgressTaskId ->
                             val inProgressTask =
                                 InProgressTask(
-                                    task.scope,
+                                    scope,
                                     inProgressTaskId,
                                     task.title,
                                     task.description,
@@ -162,7 +171,7 @@ class InMemoryTaskRepository : TaskRepository {
                             change.set(inProgressTask)
                             Pair(
                                 scope,
-                                scopeAndTaskIdsToTask.second.plus(inProgressTaskId to inProgressTask)
+                                scopeAndTaskIdsToTask.second.plus(rawTaskId to RawTask(inProgressTask))
                             )
                         }
                         .getOrNull()
@@ -182,7 +191,7 @@ class InMemoryTaskRepository : TaskRepository {
             database
                 .computeIfAbsent(scopeKey) { _ ->
                     createdScope.set(Scope(name, scopeKey, empty))
-                    Pair(createdScope.get(), ConcurrentHashMap<TaskId, Task<*>>())
+                    Pair(createdScope.get(), ConcurrentHashMap<RawTaskId, RawTask>())
                 }
             if (createdScope.get() != null) {
                 Right(createdScope.get())
@@ -226,4 +235,35 @@ class InMemoryTaskRepository : TaskRepository {
         const val NON_EXISTING_TASK_ID: String = "nonExistingTask"
     }
 
+}
+
+data class RawTask(
+    val type: TaskType,
+    val title: Title,
+    val description: Description,
+    val assignees: Heroes,
+) {
+    constructor(pendingTask: PendingTask) : this(
+        TaskType.PENDING,
+        pendingTask.title,
+        pendingTask.description,
+        pendingTask.assignees
+    )
+
+    constructor(pendingTask: InProgressTask) : this(
+        TaskType.IN_PROGRESS,
+        pendingTask.title,
+        pendingTask.description,
+        pendingTask.assignees
+    )
+}
+
+enum class TaskType {
+    PENDING,
+    IN_PROGRESS,
+    DONE
+}
+
+class RawTaskId(value: String) : AbstractStringValue(value) {
+    constructor(taskId: TaskId) : this(taskId.value)
 }

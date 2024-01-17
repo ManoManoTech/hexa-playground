@@ -1,8 +1,11 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import arrow.core.EitherNel
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
+import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.TaskIdError
 
 class DoneTaskIdTest : AbstractTaskIdTest<DoneTaskId>() {
-    override fun createStringValue(value: String): EitherNel<TaskId.TaskIdError, DoneTaskId> = DoneTaskId(value)
+    override fun createTaskId(scope: Scope, value: String): EitherNel<TaskIdError, DoneTaskId> =
+        DoneTaskId(scope, value)
 
 }

@@ -501,7 +501,7 @@ abstract class AbstractHeroesDeskTest {
         val taskId = createdTask.taskId
         val hero = ensureHeroExisting("heroId1")
         val heroes = Heroes(hero)
-        val update = assignScope(createdTask, heroes)
+        assignScope(createdTask, heroes)
         heroesDesk.assignTask(taskId, HeroIds(hero), hero.id).getOrElse { throw AssertionError("$it") }
 
         val updatedTaskId =
@@ -586,7 +586,7 @@ abstract class AbstractHeroesDeskTest {
 
 
     private fun ensureScopeExisting(scopeKey: String): Scope {
-        val scopeId = createScopeKeyOrThrow("scopeKey")
+        val scopeId = createScopeKeyOrThrow(scopeKey)
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
         val name = createNameOrThrow("name")
         return heroesDesk.createScope(scopeId, name, admin.id).getOrElse { throw AssertionError("$it") }

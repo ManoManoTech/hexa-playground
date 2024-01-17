@@ -11,7 +11,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.*
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.Companion.MAX_LENGTH
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.Companion.MIN_LENGTH
 
-class PendingTaskId private constructor(override val scope: Scope, value: String) : TaskId, AbstractStringValue(value) {
+class PendingTaskId private constructor(override val scope: Scope, override val value: String) : AbstractTaskId() {
 
     companion object {
 

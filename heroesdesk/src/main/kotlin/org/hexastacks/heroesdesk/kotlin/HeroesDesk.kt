@@ -53,8 +53,8 @@ interface HeroesDesk {
     fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTaskId>
     fun endWork(id: InProgressTaskId, author: HeroId): EitherNel<EndWorkError, DoneTaskId>
 
-    sealed interface HeroesDeskError {
-        val message: String
+    sealed interface HeroesDeskError:ErrorMessage {
+
     }
 
     sealed interface CreateScopeError : HeroesDeskError
