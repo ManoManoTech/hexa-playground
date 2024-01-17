@@ -65,10 +65,24 @@ class HeroesTest {
     }
 
     @Test
+    fun `isNotEmpty returns true non empty heroes`() {
+        val heroes = Heroes(createHeroOrThrow("name1", "id1"))
+
+        assertTrue(heroes.isNotEmpty())
+    }
+
+    @Test
     fun `isEmpty returns true on empty heroes`() {
         val heroes = Heroes(emptySet())
 
         assertTrue(heroes.isEmpty())
+    }
+
+    @Test
+    fun `isNotEmpty returns false on empty heroes`() {
+        val heroes = Heroes(emptySet())
+
+        assertFalse(heroes.isNotEmpty())
     }
 
     @Test
@@ -173,4 +187,45 @@ class HeroesTest {
         assertTrue(containsId1)
     }
 
+    @Test
+    fun `containsNot on empty heroes return true`(){
+        val heroes = Heroes(emptySet())
+        val hero = createHeroOrThrow("name1", "id1")
+
+        val containsId1 = heroes.containsNot(hero)
+
+        assertTrue(containsId1)
+    }
+
+    @Test
+    fun `containsNot on heroes with hero return false`(){
+        val hero = createHeroOrThrow("name1", "id1")
+        val heroes = Heroes(hero, createHeroOrThrow("name2","id2"))
+
+        val containsId1 = heroes.containsNot(hero)
+
+        assertFalse(containsId1)
+    }
+
+    @Test
+    fun `map iterates all heroes`(){
+        val hero1 = createHeroOrThrow("name1", "id1")
+        val hero2 = createHeroOrThrow("name2", "id2")
+        val heroes = Heroes(hero1, hero2)
+        val counter = AtomicInteger(0)
+
+        val result = heroes.map { counter.incrementAndGet()}
+
+        assertEquals(heroes.size, counter.get())
+    }
+
+    @Test
+    fun `map works over empty heroes`(){
+        val heroes = Heroes.empty
+        val counter = AtomicInteger(0)
+
+        val result = heroes.map { counter.incrementAndGet()}
+
+        assertEquals(heroes.size, counter.get())
+    }
 }

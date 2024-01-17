@@ -14,8 +14,11 @@ data class Heroes(val value: Set<Hero>) {
 
     fun contains(heroId: HeroId): Boolean =
         value
-            .map { it.id }
-            .contains(heroId)
+            .any { it.id  == heroId }
+
+    fun containsNot(hero: Hero): Boolean =
+        value
+            .none { it == hero }
 
     fun add(hero: Hero): Heroes = Heroes(value + hero)
 
@@ -26,6 +29,8 @@ data class Heroes(val value: Set<Hero>) {
             .firstOrNull { it.id == author }
 
     fun isEmpty(): Boolean = value.isEmpty()
+
+    fun isNotEmpty(): Boolean = value.isNotEmpty()
 
     fun firstOrNone(): Option<Hero> = value.firstOrNone()
     fun <R> map(transform: (Hero) -> R): List<R> = value.map { transform(it) }

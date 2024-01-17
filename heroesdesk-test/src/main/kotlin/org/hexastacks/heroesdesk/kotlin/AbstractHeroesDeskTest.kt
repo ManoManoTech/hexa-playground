@@ -508,11 +508,11 @@ abstract class AbstractHeroesDeskTest {
             heroesDesk.startWork(taskId, hero.id)
                 .getOrElse { throw AssertionError("$it") }
 
-        assertEquals(updatedTaskId.taskId.value, taskId.value)//TODO: handle at TaskId level
+        assertEquals(updatedTaskId.taskId, taskId)
     }
 
     @Test
-    fun `start work assigns hero starting work to task`() {
+    fun `start work assigns hero starting work to task if no other assignee is present`() {
         val createdTask = ensureTaskExisting("title", "randomHeroId")
         val taskId = createdTask.taskId
         val hero = ensureHeroExisting("heroId1")
@@ -555,7 +555,7 @@ abstract class AbstractHeroesDeskTest {
     }
 
     @Test
-    fun `start work fails with hero lacking the right to`() {
+    fun `start work fails when hero not in the scope`() {
         val createdTask = ensureTaskExisting("title", "heroId")
 
         val updatedTaskId =
@@ -584,7 +584,6 @@ abstract class AbstractHeroesDeskTest {
 
     private fun ensureHeroExisting(rawHeroId: String) = userRepo.ensureHeroExistingOrThrow(rawHeroId)
 
-
     private fun ensureScopeExisting(scopeKey: String): Scope {
         val scopeId = createScopeKeyOrThrow(scopeKey)
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
@@ -594,7 +593,6 @@ abstract class AbstractHeroesDeskTest {
     }
 
     private fun nonExistingPendingTaskId(): PendingTaskId = createPendingTaskIdOrThrow("nonExistingScope", nonExistingRawTaskId())
-
 
     abstract fun instrumentedHeroRepository(): InstrumentedUserRepository
 

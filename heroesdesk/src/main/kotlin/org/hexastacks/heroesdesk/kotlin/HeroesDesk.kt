@@ -50,9 +50,7 @@ interface HeroesDesk {
     fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTask>
     fun endWork(id: InProgressTaskId, author: HeroId): EitherNel<EndWorkError, DoneTask>
 
-    sealed interface HeroesDeskError : ErrorMessage {
-
-    }
+    sealed interface HeroesDeskError : ErrorMessage
 
     sealed interface CreateScopeError : HeroesDeskError
 
