@@ -134,6 +134,18 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
             .flatMap { taskRepository.updateDescription(id, description, it) }
 
     override fun assignTask(
+        id: PendingTaskId,
+        assignees: HeroIds,
+        author: HeroId
+    ): EitherNel<AssignTaskError, Task<*>> = doAssignTask(id, assignees, author)
+
+    override fun assignTask(
+        id: InProgressTaskId,
+        assignees: HeroIds,
+        author: HeroId
+    ): EitherNel<AssignTaskError, Task<*>> = doAssignTask(id, assignees, author)
+
+    private fun doAssignTask(
         id: TaskId,
         assignees: HeroIds,
         author: HeroId
@@ -147,7 +159,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                     }
                 }
             }
-            .flatMap { taskRepository.assign(id, it, author) }
+            .flatMap { taskRepository.assignTask(id, it, author) }
 
     override fun startWork(
         id: PendingTaskId,
@@ -206,7 +218,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         id: PendingTaskId
     ): EitherNel<StartWorkError, Hero> =
         taskRepository
-            .assign(id, verifiedTask.assignees.add(author), author.id)
+            .assignTask(id, verifiedTask.assignees.add(author), author.id)
             .mapLeft { errors ->
                 errors.map {
                     when (it) {
@@ -235,20 +247,20 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     override fun pauseWork(
         id: InProgressTaskId,
         author: HeroId
-    ): EitherNel<StopWorkError, PendingTask> =
+    ): EitherNel<PauseWorkError, PendingTask> =
         taskRepository
             .getTask(id)
             .mapLeft { errors ->
                 errors.map {
                     when (it) {
-                        is TaskDoesNotExistError -> TaskDoesNotExistStopWorkError(id)
+                        is TaskDoesNotExistError -> TaskDoesNotExistPauseWorkError(id)
                     }
                 }
             }
             .flatMap { task ->
                 when (task) {
                     is InProgressTask -> Right(task)
-                    else -> Left(nonEmptyListOf(TaskNotInProgressStopWorkError(task, id)))
+                    else -> Left(nonEmptyListOf(TaskNotInProgressPauseWorkError(task, id)))
                 }
             }
             .flatMap { verifiedTask ->
@@ -257,7 +269,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                     .mapLeft { errors ->
                         errors.map {
                             when (it) {
-                                is HeroesDoNotExistError -> HeroesDoesNotExistStopWorkError(it.heroIds)
+                                is HeroesDoNotExistError -> HeroesDoesNotExistPauseWorkError(it.heroIds)
                             }
                         }
                     }
@@ -265,7 +277,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                         if (verifiedTask.scope.assignees.containsNot(existingAuthor)) {
                             Left(
                                 nonEmptyListOf(
-                                    HeroNotAssignedToScopeStopWorkError(
+                                    HeroNotAssignedToScopePauseWorkError(
                                         author,
                                         verifiedTask.scope.key
                                     )
@@ -276,13 +288,13 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                     }
             }
             .flatMap { hero ->
-                taskRepository.stopWork(id, hero)
+                taskRepository.pauseWork(id, hero)
             }
 
     override fun pauseWork(
         id: DoneTaskId,
         author: HeroId
-    ): EitherNel<StopWorkError, PendingTask> {
+    ): EitherNel<PauseWorkError, PendingTask> {
         TODO("Not yet implemented")
     }
 
@@ -293,7 +305,48 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     override fun endWork(
         id: InProgressTaskId,
         author: HeroId
-    ): EitherNel<EndWorkError, DoneTask> {
-        TODO("Not yet implemented")
-    }
+    ): EitherNel<EndWorkError, DoneTask> =
+        taskRepository
+            .getTask(id)
+            .mapLeft { errors ->
+                errors.map {
+                    when (it) {
+                        is TaskDoesNotExistError -> TaskDoesNotExistEndWorkError(id)
+                    }
+                }
+            }
+            .flatMap { task ->
+                when (task) {
+                    is InProgressTask -> Right(task)
+                    else -> Left(nonEmptyListOf(TaskNotInProgressEndWorkError(task, id)))
+                }
+            }
+            .flatMap { verifiedTask ->
+                userRepository
+                    .getHero(author)
+                    .mapLeft { errors ->
+                        errors.map {
+                            when (it) {
+                                is HeroesDoNotExistError -> HeroesDoesNotExistEndWorkError(it.heroIds)
+                            }
+                        }
+                    }
+                    .flatMap { existingAuthor ->
+                        if (verifiedTask.scope.assignees.containsNot(existingAuthor)) {
+                            Left(
+                                nonEmptyListOf(
+                                    HeroNotAssignedToScopeEndWorkError(
+                                        author,
+                                        verifiedTask.scope.key
+                                    )
+                                )
+                            )
+                        } else
+                            Right(existingAuthor)
+                    }
+            }
+            .flatMap { hero ->
+                taskRepository.endWork(id, hero)
+            }
+
 }

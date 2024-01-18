@@ -12,10 +12,19 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 interface TaskRepository {
     fun createScope(scopeKey: ScopeKey, name: Name): EitherNel<CreateScopeError, Scope>
+
+    fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope>
+
+    fun updateScopeName(
+        scopeKey: ScopeKey,
+        name: Name
+    ): EitherNel<UpdateScopeNameError, Scope>
+
     fun assignScope(
         scopeKey: ScopeKey,
         assignees: Heroes
     ): EitherNel<AssignHeroesOnScopeError, Scope>
+
 
     fun createTask(scopeKey: ScopeKey, title: Title, hero: Hero): EitherNel<CreateTaskError, PendingTask>
 
@@ -33,7 +42,7 @@ interface TaskRepository {
         hero: Hero
     ): EitherNel<UpdateDescriptionError, Task<*>>
 
-    fun assign(
+    fun assignTask(
         taskId: TaskId,
         assignees: Heroes,
         author: HeroId
@@ -41,12 +50,8 @@ interface TaskRepository {
 
     fun startWork(pendingTaskId: PendingTaskId, hero: Hero): EitherNel<StartWorkError, InProgressTask>
 
-    fun updateScopeName(
-        scopeKey: ScopeKey,
-        name: Name
-    ): EitherNel<UpdateScopeNameError, Scope>
+    fun pauseWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<PauseWorkError, PendingTask>
 
-    fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope>
-    fun stopWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<StopWorkError, PendingTask>
+    fun endWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<EndWorkError, DoneTask>
 
 }

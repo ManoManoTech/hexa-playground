@@ -75,8 +75,7 @@ class InMemoryTaskRepository : TaskRepository {
                     rawTaskId.value
                 ).getOrElse { throw RuntimeException("taskId ${rawTaskId.value} should be valid") },
                 task.title,
-                task.description,
-                task.assignees
+                task.description
             )
 
             TaskType.IN_PROGRESS -> InProgressTask(
@@ -138,7 +137,7 @@ class InMemoryTaskRepository : TaskRepository {
             ?.let { Right(buildTask(it, taskId)) }
             ?: Left(nonEmptyListOf(TaskDoesNotExistUpdateDescriptionError(taskId)))
 
-    override fun assign(
+    override fun assignTask(
         taskId: TaskId,
         assignees: Heroes,
         author: HeroId
@@ -231,7 +230,7 @@ class InMemoryTaskRepository : TaskRepository {
             ?.let { Right(it.first) }
             ?: Left(nonEmptyListOf(ScopeNotExistingGetScopeError(scopeKey)))
 
-    override fun stopWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<StopWorkError, PendingTask> =
+    override fun pauseWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<PauseWorkError, PendingTask> =
         database
             .computeIfPresent(inProgressTaskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
@@ -258,7 +257,35 @@ class InMemoryTaskRepository : TaskRepository {
                     null
             }
             ?.let { Right(buildTask(it, inProgressTaskId) as PendingTask) }
-            ?: Left(nonEmptyListOf(TaskDoesNotExistStopWorkError(inProgressTaskId)))
+            ?: Left(nonEmptyListOf(TaskDoesNotExistPauseWorkError(inProgressTaskId)))
+
+    override fun endWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<EndWorkError, DoneTask>  =
+        database
+            .computeIfPresent(inProgressTaskId.scope.key) { _, scopeAndTaskIdsToTask ->
+                val scope = scopeAndTaskIdsToTask.first
+                val rawTaskId = RawTaskId(inProgressTaskId)
+                val task = scopeAndTaskIdsToTask.second[rawTaskId]
+                if (task?.type == TaskType.IN_PROGRESS) {
+                    DoneTaskId(scope, rawTaskId.value)
+                        .map { doneTaskId ->
+                            val doneTask =
+                                DoneTask(
+                                    scope,
+                                    doneTaskId,
+                                    task.title,
+                                    task.description
+                                )
+                            Pair(
+                                scope,
+                                scopeAndTaskIdsToTask.second.plus(rawTaskId to RawTask(doneTask))
+                            )
+                        }
+                        .getOrNull()
+                } else
+                    null
+            }
+            ?.let { Right(buildTask(it, inProgressTaskId) as DoneTask) }
+            ?: Left(nonEmptyListOf(TaskDoesNotExistEndWorkError(inProgressTaskId)))
 
     companion object {
         const val NON_EXISTING_TASK_ID: String = "nonExistingTask"
@@ -279,11 +306,18 @@ data class RawTask(
         pendingTask.assignees
     )
 
-    constructor(pendingTask: InProgressTask) : this(
+    constructor(inProgressTask: InProgressTask) : this(
         TaskType.IN_PROGRESS,
-        pendingTask.title,
-        pendingTask.description,
-        pendingTask.assignees
+        inProgressTask.title,
+        inProgressTask.description,
+        inProgressTask.assignees
+    )
+
+    constructor(doneTask: DoneTask) : this(
+        TaskType.DONE,
+        doneTask.title,
+        doneTask.description,
+        doneTask.assignees
     )
 }
 

@@ -20,7 +20,7 @@ sealed interface Task<T : TaskId> {
     fun assign(assignees: Heroes): Task<out TaskId> = when (this) {
         is PendingTask -> copy(assignees = assignees)
         is InProgressTask -> copy(assignees = assignees)
-        is DoneTask -> copy(assignees = assignees)
+        is DoneTask -> this
     }
 
     val scope: Scope

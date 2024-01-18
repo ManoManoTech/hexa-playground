@@ -8,5 +8,6 @@ data class DoneTask(
     override val taskId: DoneTaskId,
     override val title: Title,
     override val description: Description,
-    override val assignees: Heroes
-) : Task<DoneTaskId>
+) : Task<DoneTaskId> {
+    override val assignees: Heroes = Heroes.empty
+}

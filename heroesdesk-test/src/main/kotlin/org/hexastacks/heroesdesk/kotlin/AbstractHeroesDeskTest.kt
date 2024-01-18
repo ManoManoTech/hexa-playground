@@ -19,13 +19,17 @@ import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createScopeKeyOrThro
 import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createTitleOrThrow
 import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.getTaskOrThrow
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.task.*
+import org.hexastacks.heroesdesk.kotlin.impl.task.InProgressTaskId
+import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTask
+import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
+import org.hexastacks.heroesdesk.kotlin.impl.task.Task
 import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes.Companion.empty
 import org.hexastacks.heroesdesk.kotlin.ports.InstrumentedUserRepository
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.concurrent.ConcurrentHashMap
@@ -568,7 +572,8 @@ abstract class AbstractHeroesDeskTest {
         val (taskId, assignedHero) = createAssignedPendingTask()
         val inProgressTask = heroesDesk.startWork(taskId, assignedHero.id).getOrElse { throw AssertionError("$it") }
 
-        val pausedTask = heroesDesk.pauseWork(inProgressTask.taskId, assignedHero.id).getOrElse { throw AssertionError("$it") }
+        val pausedTask =
+            heroesDesk.pauseWork(inProgressTask.taskId, assignedHero.id).getOrElse { throw AssertionError("$it") }
 
         assertEquals(taskId, pausedTask.taskId)
     }
@@ -583,7 +588,7 @@ abstract class AbstractHeroesDeskTest {
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId
             .onLeft {
-                assertTrue(it.head is TaskDoesNotExistStopWorkError)
+                assertTrue(it.head is TaskDoesNotExistPauseWorkError)
             }
     }
 
@@ -593,11 +598,11 @@ abstract class AbstractHeroesDeskTest {
         val updatedTask =
             heroesDesk.startWork(pendingTaskId, hero.id).getOrElse { throw AssertionError("$it") }
 
-        val pauseWorkResult =   heroesDesk.pauseWork(updatedTask.taskId, createHeroOrThrow("nonExistingHero").id)
+        val pauseWorkResult = heroesDesk.pauseWork(updatedTask.taskId, createHeroOrThrow("nonExistingHero").id)
 
         assertTrue(pauseWorkResult.isLeft())
         pauseWorkResult.onLeft {
-            assertTrue(it.head is HeroesDoesNotExistStopWorkError, "$it")
+            assertTrue(it.head is HeroesDoesNotExistPauseWorkError, "$it")
         }
     }
 
@@ -612,76 +617,68 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(pauseWorkResult.isLeft())
         pauseWorkResult.onLeft {
-            assertTrue(it.head is HeroNotAssignedToScopeStopWorkError, "$it")
+            assertTrue(it.head is HeroNotAssignedToScopePauseWorkError, "$it")
         }
     }
 
     @Test
-//    fun `stop work on in progress task works`() {
-//        val (taskId, hero) = createAssignedPendingTask()
-//        val inProgressTask = heroesDesk.startWork(taskId, hero.id)
-//                .getOrElse { throw AssertionError("$it") }
-//
-//        val doneTask = heroesDesk.endWork(inProgressTask.taskId, hero.id).getOrElse { throw AssertionError("$it") }
-//
-//        assertEquals(inProgressTask.taskId, doneTask)
-//    }
+    fun `end work on in progress task works, removing all assignees on the way`() {
+        val (taskId, hero) = createAssignedInProgressTask()
 
-//    @Test
-//    fun `start work assigns hero starting work to task if no other assignee is present`() {
-//        val createdTask = ensureTaskExisting("title", "randomHeroId")
-//        val taskId = createdTask.taskId
-//        val hero = ensureHeroExisting("heroId1")
-//        val heroes = Heroes(hero)
-//        assignScope(createdTask, heroes)
-//
-//        val updatedTaskId =
-//            heroesDesk.startWork(taskId, hero.id).getOrElse { throw AssertionError("$it") }
-//
-//        assertEquals(taskId.value, updatedTaskId.taskId.value)
-//        assertTrue(updatedTaskId.assignees.contains(hero.id))
-//    }
-//
-//    @Test
-//    fun `start work fails with non existing TaskId`() {
-//        val hero = createHeroOrThrow("heroId")
-//
-//        val updatedTaskId =
-//            heroesDesk.startWork(nonExistingPendingTaskId(), hero.id)
-//
-//        assertTrue(updatedTaskId.isLeft())
-//        updatedTaskId
-//            .onLeft {
-//                assertTrue(it.head is TaskDoesNotExistStartWorkError)
-//            }
-//    }
-//
-//    @Test
-//    fun `start work fails with non existing hero`() {
-//        val createdTask = ensureTaskExisting("title", "heroId")
-//        assignScope(createdTask, empty)
-//
-//        val updatedTaskId =
-//            heroesDesk.startWork(createdTask.taskId, createHeroOrThrow("nonExistingHero").id)
-//
-//        assertTrue(updatedTaskId.isLeft())
-//        updatedTaskId.onLeft {
-//            assertTrue(it.head is HeroesDoesNotExistStartWorkError, "$it")
-//        }
-//    }
-//
-//    @Test
-//    fun `start work fails when hero not in the scope`() {
-//        val createdTask = ensureTaskExisting("title", "heroId")
-//
-//        val updatedTaskId =
-//            heroesDesk.startWork(createdTask.taskId, ensureHeroExisting("heroId1").id)
-//
-//        assertTrue(updatedTaskId.isLeft())
-//        updatedTaskId.onLeft {
-//            assertTrue(it.head is HeroNotAssignedToScopeStartWorkError, "$it")
-//        }
-//    }
+
+        val doneTask = heroesDesk.endWork(taskId, hero.id).getOrElse { throw AssertionError("$it") }
+
+        assertEquals(taskId, doneTask.taskId)
+        assertTrue(doneTask.assignees.isEmpty())
+    }
+
+    @Test
+    fun `end work fails with non existing TaskId`() {
+        val hero = createHeroOrThrow("heroId")
+
+        val updatedTaskId =
+            heroesDesk.endWork(nonExistingWorkInProgressTaskId(), hero.id)
+
+        assertTrue(updatedTaskId.isLeft())
+        updatedTaskId
+            .onLeft {
+                assertTrue(it.head is TaskDoesNotExistEndWorkError)
+            }
+    }
+
+    @Test
+    fun `end work fails with non existing hero`() {
+        val (inProgressTaskId, hero) = createAssignedInProgressTask()
+
+        val updatedTaskId =
+            heroesDesk.endWork(inProgressTaskId, createHeroOrThrow("nonExistingHero").id)
+
+        assertTrue(updatedTaskId.isLeft())
+        updatedTaskId.onLeft {
+            assertTrue(it.head is HeroesDoesNotExistEndWorkError, "$it")
+        }
+    }
+
+    @Test
+    fun `end work fails when hero not in the scope`() {
+        val (inProgressTaskId, hero) = createAssignedInProgressTask()
+
+        val updatedTaskId =
+            heroesDesk.endWork(inProgressTaskId, ensureHeroExisting("${hero.id.value}AndMore").id)
+
+        assertTrue(updatedTaskId.isLeft())
+        updatedTaskId.onLeft {
+            assertTrue(it.head is HeroNotAssignedToScopeEndWorkError, "$it")
+        }
+    }
+
+    private fun createAssignedInProgressTask(): Pair<InProgressTaskId, Hero> {
+        val (taskId, hero) = createAssignedPendingTask()
+        return Pair(
+            heroesDesk.startWork(taskId, hero.id).getOrElse { throw AssertionError("$it") }.taskId,
+            hero
+        )
+    }
 
     private fun createAssignedPendingTask(): Pair<PendingTaskId, Hero> {
         val createdTask = ensureTaskExisting("title", "randomHeroId")

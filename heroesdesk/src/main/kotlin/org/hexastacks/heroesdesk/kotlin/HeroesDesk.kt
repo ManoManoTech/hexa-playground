@@ -31,23 +31,30 @@ interface HeroesDesk {
         id: TaskId, description: Description, author: HeroId
     ): EitherNel<UpdateDescriptionError, Task<*>>
 
-    fun assignTask(id: TaskId, assignees: HeroIds, author: HeroId): EitherNel<AssignTaskError, Task<*>>
+    fun assignTask(id: PendingTaskId, assignees: HeroIds, author: HeroId): EitherNel<AssignTaskError, Task<*>>
+    fun assignTask(id: InProgressTaskId, assignees: HeroIds, author: HeroId): EitherNel<AssignTaskError, Task<*>>
 
     /**
      * Adds the author to the assignees if not in already
      */
-    fun startWork(
-        id: PendingTaskId,
-        author: HeroId
-    ): EitherNel<StartWorkError, InProgressTask>
+    fun startWork(id: PendingTaskId, author: HeroId): EitherNel<StartWorkError, InProgressTask>
 
     /**
      * Adds the author to the assignees if not in already
      */
     fun startWork(id: DoneTaskId, author: HeroId): EitherNel<StartWorkError, InProgressTask>
-    fun pauseWork(id: InProgressTaskId, author: HeroId): EitherNel<StopWorkError, PendingTask>
-    fun pauseWork(id: DoneTaskId, author: HeroId): EitherNel<StopWorkError, PendingTask>
+
+    fun pauseWork(id: InProgressTaskId, author: HeroId): EitherNel<PauseWorkError, PendingTask>
+    fun pauseWork(id: DoneTaskId, author: HeroId): EitherNel<PauseWorkError, PendingTask>
+
+    /**
+     * Clears assignees
+     */
     fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTask>
+
+    /**
+     * Clears assignees
+     */
     fun endWork(id: InProgressTaskId, author: HeroId): EitherNel<EndWorkError, DoneTask>
 
     sealed interface HeroesDeskError : ErrorMessage
@@ -134,21 +141,38 @@ interface HeroesDesk {
     }
 
     sealed interface EndWorkError : HeroesDeskError
-    sealed interface StopWorkError : HeroesDeskError
 
-    data class TaskDoesNotExistStopWorkError(val taskId: TaskId) : StopWorkError {
+    data class TaskDoesNotExistEndWorkError(val taskId: TaskId) : EndWorkError {
         override val message = "Task $taskId does not exist"
     }
 
-    data class TaskNotInProgressStopWorkError(val task: Task<*>, val taskId: InProgressTaskId) : StopWorkError {
+    data class TaskNotInProgressEndWorkError(val task: Task<*>, val taskId: InProgressTaskId) : EndWorkError {
         override val message = "Task $task not a pending one, despite being $taskId"
     }
 
-    data class HeroesDoesNotExistStopWorkError(val heroIds: HeroIds) : StopWorkError {
+    data class HeroesDoesNotExistEndWorkError(val heroIds: HeroIds) : EndWorkError {
         override val message: String = "Heroes $heroIds do not exist"
     }
 
-    data class HeroNotAssignedToScopeStopWorkError(val heroId: HeroId, val scopeKey: ScopeKey) : StopWorkError {
+    data class HeroNotAssignedToScopeEndWorkError(val heroId: HeroId, val scopeKey: ScopeKey) : EndWorkError {
+        override val message = "Hero $heroId not assigned to scope $scopeKey"
+    }
+
+    sealed interface PauseWorkError : HeroesDeskError
+
+    data class TaskDoesNotExistPauseWorkError(val taskId: TaskId) : PauseWorkError {
+        override val message = "Task $taskId does not exist"
+    }
+
+    data class TaskNotInProgressPauseWorkError(val task: Task<*>, val taskId: InProgressTaskId) : PauseWorkError {
+        override val message = "Task $task not a pending one, despite being $taskId"
+    }
+
+    data class HeroesDoesNotExistPauseWorkError(val heroIds: HeroIds) : PauseWorkError {
+        override val message: String = "Heroes $heroIds do not exist"
+    }
+
+    data class HeroNotAssignedToScopePauseWorkError(val heroId: HeroId, val scopeKey: ScopeKey) : PauseWorkError {
         override val message = "Hero $heroId not assigned to scope $scopeKey"
     }
 

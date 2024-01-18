@@ -96,7 +96,7 @@ There are the following user types:
 
 - users: able to see all and create tasks (title and description)
 - heroes: as users plus ability to modify all in tasks in their scopes
-- admin: define scopes, used for tasks, as well as heroes allowed to work on each scope 
+- admin: define scopes, used for tasks, as well as heroes allowed to work on each scope
 
 A task is made of:
 
@@ -105,7 +105,7 @@ A task is made of:
 - description: optional, updatable, multi line, up to 1024 chars
 - creator: mandatory, fixed at creation
 - id: unique among all tasks, fixed at creation, made of the scope key, a dash and a unique number, 2 to 73 chars
-- assignees: can be empty, updatable
+- assignees: can be empty, updatable. Always empty for done task.
 - a task can be pending, in progress or done: default to pending
     - each state can be moved to any of the 2 others
     - if a task without assigned is set to in progress, the hero doing the action is automatically added as assignee
