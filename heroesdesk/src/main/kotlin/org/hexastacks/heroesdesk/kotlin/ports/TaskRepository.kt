@@ -47,5 +47,6 @@ interface TaskRepository {
     ): EitherNel<UpdateScopeNameError, Scope>
 
     fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope>
+    fun stopWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<StopWorkError, PendingTask>
 
 }

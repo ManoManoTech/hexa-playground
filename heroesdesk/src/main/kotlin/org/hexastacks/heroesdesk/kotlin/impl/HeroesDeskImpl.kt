@@ -235,9 +235,49 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     override fun pauseWork(
         id: InProgressTaskId,
         author: HeroId
-    ): EitherNel<StopWorkError, PendingTask> {
-        TODO("Not yet implemented")
-    }
+    ): EitherNel<StopWorkError, PendingTask> =
+        taskRepository
+            .getTask(id)
+            .mapLeft { errors ->
+                errors.map {
+                    when (it) {
+                        is TaskDoesNotExistError -> TaskDoesNotExistStopWorkError(id)
+                    }
+                }
+            }
+            .flatMap { task ->
+                when (task) {
+                    is InProgressTask -> Right(task)
+                    else -> Left(nonEmptyListOf(TaskNotInProgressStopWorkError(task, id)))
+                }
+            }
+            .flatMap { verifiedTask ->
+                userRepository
+                    .getHero(author)
+                    .mapLeft { errors ->
+                        errors.map {
+                            when (it) {
+                                is HeroesDoNotExistError -> HeroesDoesNotExistStopWorkError(it.heroIds)
+                            }
+                        }
+                    }
+                    .flatMap { existingAuthor ->
+                        if (verifiedTask.scope.assignees.containsNot(existingAuthor)) {
+                            Left(
+                                nonEmptyListOf(
+                                    HeroNotAssignedToScopeStopWorkError(
+                                        author,
+                                        verifiedTask.scope.key
+                                    )
+                                )
+                            )
+                        } else
+                            Right(existingAuthor)
+                    }
+            }
+            .flatMap { hero ->
+                taskRepository.stopWork(id, hero)
+            }
 
     override fun pauseWork(
         id: DoneTaskId,

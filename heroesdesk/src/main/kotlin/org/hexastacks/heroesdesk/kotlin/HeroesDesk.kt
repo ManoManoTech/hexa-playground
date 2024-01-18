@@ -135,6 +135,23 @@ interface HeroesDesk {
 
     sealed interface EndWorkError : HeroesDeskError
     sealed interface StopWorkError : HeroesDeskError
+
+    data class TaskDoesNotExistStopWorkError(val taskId: TaskId) : StopWorkError {
+        override val message = "Task $taskId does not exist"
+    }
+
+    data class TaskNotInProgressStopWorkError(val task: Task<*>, val taskId: InProgressTaskId) : StopWorkError {
+        override val message = "Task $task not a pending one, despite being $taskId"
+    }
+
+    data class HeroesDoesNotExistStopWorkError(val heroIds: HeroIds) : StopWorkError {
+        override val message: String = "Heroes $heroIds do not exist"
+    }
+
+    data class HeroNotAssignedToScopeStopWorkError(val heroId: HeroId, val scopeKey: ScopeKey) : StopWorkError {
+        override val message = "Hero $heroId not assigned to scope $scopeKey"
+    }
+
     sealed interface StartWorkError : HeroesDeskError
 
     data class TaskDoesNotExistStartWorkError(val taskId: TaskId) : StartWorkError {
@@ -145,17 +162,11 @@ interface HeroesDesk {
         override val message = "Task $task not a pending one, despite being $taskId"
     }
 
-    data class InvalidTaskIdStartWorkError(val taskId: PendingTaskId, val error: TaskId.TaskIdError) : StartWorkError {
-        override val message = "Task id $taskId invalid: ${error.message}"
-    }
-
     data class HeroNotAssignedToScopeStartWorkError(val heroId: HeroId, val scopeKey: ScopeKey) : StartWorkError {
         override val message = "Hero $heroId not assigned to scope $scopeKey"
     }
 
-    data class HeroesDoesNotExistStartWorkError(
-        val heroIds: HeroIds,
-    ) : StartWorkError {
+    data class HeroesDoesNotExistStartWorkError(val heroIds: HeroIds) : StartWorkError {
         override val message: String = "Heroes $heroIds do not exist"
     }
 

@@ -22,6 +22,8 @@ object HeroesDeskTestUtils {
 
     fun createPendingTaskIdOrThrow(scopeKey: String, id: String) = PendingTaskId(Scope(createNameOrThrow(scopeKey), createScopeKeyOrThrow(scopeKey)), id).getOrElse { throw AssertionError() }
 
+    fun createInProgressTaskIdOrThrow(scopeKey: String, id: String): InProgressTaskId = InProgressTaskId(Scope(createNameOrThrow(scopeKey), createScopeKeyOrThrow(scopeKey)), id).getOrElse { throw AssertionError() }
+
     fun HeroesDesk.getTaskOrThrow(id: TaskId): Task<*> = this.getTask(id).getOrElse { throw AssertionError() }
     fun createAdminIdOrThrow(adminId: String): AdminId = AdminId(adminId).getOrElse { throw AssertionError() }
     fun createAdminOrThrow(adminId: String): Admin =

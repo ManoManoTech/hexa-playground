@@ -158,8 +158,8 @@ class InMemoryTaskRepository : TaskRepository {
     override fun startWork(
         pendingTaskId: PendingTaskId,
         hero: Hero
-    ): EitherNel<StartWorkError, InProgressTask> {
-        return database
+    ): EitherNel<StartWorkError, InProgressTask> =
+        database
             .computeIfPresent(pendingTaskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
                 val rawTaskId = RawTaskId(pendingTaskId)
@@ -186,7 +186,6 @@ class InMemoryTaskRepository : TaskRepository {
             }
             ?.let { Right(buildTask(it, pendingTaskId) as InProgressTask) }
             ?: Left(nonEmptyListOf(TaskDoesNotExistStartWorkError(pendingTaskId)))
-    }
 
     override fun createScope(scopeKey: ScopeKey, name: Name): EitherNel<CreateScopeError, Scope> {
         return if (database.any { it.value.first.name == name }) {
@@ -231,6 +230,35 @@ class InMemoryTaskRepository : TaskRepository {
         database[scopeKey]
             ?.let { Right(it.first) }
             ?: Left(nonEmptyListOf(ScopeNotExistingGetScopeError(scopeKey)))
+
+    override fun stopWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<StopWorkError, PendingTask> =
+        database
+            .computeIfPresent(inProgressTaskId.scope.key) { _, scopeAndTaskIdsToTask ->
+                val scope = scopeAndTaskIdsToTask.first
+                val rawTaskId = RawTaskId(inProgressTaskId)
+                val task = scopeAndTaskIdsToTask.second[rawTaskId]
+                if (task?.type == TaskType.IN_PROGRESS) {
+                    PendingTaskId(scope, rawTaskId.value)
+                        .map { inProgressTaskId ->
+                            val pendingTask =
+                                PendingTask(
+                                    scope,
+                                    inProgressTaskId,
+                                    task.title,
+                                    task.description,
+                                    task.assignees
+                                )
+                            Pair(
+                                scope,
+                                scopeAndTaskIdsToTask.second.plus(rawTaskId to RawTask(pendingTask))
+                            )
+                        }
+                        .getOrNull()
+                } else
+                    null
+            }
+            ?.let { Right(buildTask(it, inProgressTaskId) as PendingTask) }
+            ?: Left(nonEmptyListOf(TaskDoesNotExistStopWorkError(inProgressTaskId)))
 
     companion object {
         const val NON_EXISTING_TASK_ID: String = "nonExistingTask"
