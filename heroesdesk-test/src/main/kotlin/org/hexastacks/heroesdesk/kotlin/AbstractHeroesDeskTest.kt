@@ -648,7 +648,7 @@ abstract class AbstractHeroesDeskTest {
 
     @Test
     fun `end work fails with non existing hero`() {
-        val (inProgressTaskId, hero) = createAssignedInProgressTask()
+        val (inProgressTaskId, _) = createAssignedInProgressTask()
 
         val updatedTaskId =
             heroesDesk.endWork(inProgressTaskId, createHeroOrThrow("nonExistingHero").id)

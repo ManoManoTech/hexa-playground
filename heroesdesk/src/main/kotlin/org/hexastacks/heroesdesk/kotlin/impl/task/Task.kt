@@ -1,7 +1,6 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 sealed interface Task<T : TaskId> {
