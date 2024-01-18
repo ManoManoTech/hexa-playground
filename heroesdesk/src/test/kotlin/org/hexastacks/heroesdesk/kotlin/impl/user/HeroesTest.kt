@@ -214,7 +214,7 @@ class HeroesTest {
         val heroes = Heroes(hero1, hero2)
         val counter = AtomicInteger(0)
 
-        val result = heroes.map { counter.incrementAndGet()}
+        heroes.map { counter.incrementAndGet()}
 
         assertEquals(heroes.size, counter.get())
     }
@@ -224,7 +224,7 @@ class HeroesTest {
         val heroes = Heroes.empty
         val counter = AtomicInteger(0)
 
-        val result = heroes.map { counter.incrementAndGet()}
+        heroes.map { counter.incrementAndGet()}
 
         assertEquals(heroes.size, counter.get())
     }
