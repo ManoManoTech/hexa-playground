@@ -1,4 +1,4 @@
-package org.hexastacks.heroesdesk.kotlin
+package org.hexastacks.heroesdesk.kotlin.test
 
 import arrow.core.EitherNel
 import arrow.core.flatMap
@@ -7,17 +7,19 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.hexastacks.heroesdesk.kotlin.HeroesDesk
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createAdminIdOrThrow
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createDescriptionOrThrow
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createHeroIdOrThrow
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createHeroOrThrow
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createInProgressTaskIdOrThrow
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createNameOrThrow
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createPendingTaskIdOrThrow
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createScopeKeyOrThrow
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createTitleOrThrow
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.getTaskOrThrow
+import org.hexastacks.heroesdesk.kotlin.adapters.InstrumentedUserRepository
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createAdminIdOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createDescriptionOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createHeroIdOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createHeroOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createInProgressTaskIdOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createNameOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createPendingTaskIdOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createScopeKeyOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createTitleOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.getTaskOrThrow
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
@@ -25,7 +27,6 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes.Companion.empty
-import org.hexastacks.heroesdesk.kotlin.ports.InstrumentedUserRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach

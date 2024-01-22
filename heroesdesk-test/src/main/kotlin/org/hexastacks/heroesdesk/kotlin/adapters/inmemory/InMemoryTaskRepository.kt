@@ -1,4 +1,4 @@
-package org.hexastacks.heroesdesk.kotlin.ports
+package org.hexastacks.heroesdesk.kotlin.ports.inmemory
 
 import arrow.core.*
 import arrow.core.Either.Left
@@ -13,6 +13,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes.Companion.empty
+import org.hexastacks.heroesdesk.kotlin.ports.TaskRepository
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference

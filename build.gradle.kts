@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.9.21"
+    id("test-report-aggregation")
 }
 
 group = "org.hexastacks"
@@ -25,8 +26,13 @@ subprojects {
         jvmToolchain(21)
     }
 
-    tasks.test {
+    tasks.named<Test>("test") {
         useJUnitPlatform()
     }
+
+    tasks.check {
+        dependsOn(tasks.named<TestReport>("testAggregateTestReport"))
+    }
+
 }
 

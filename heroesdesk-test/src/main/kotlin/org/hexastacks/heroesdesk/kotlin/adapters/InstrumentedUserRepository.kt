@@ -1,12 +1,11 @@
-package org.hexastacks.heroesdesk.kotlin.ports
+package org.hexastacks.heroesdesk.kotlin.adapters
 
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createAdminOrThrow
-import org.hexastacks.heroesdesk.kotlin.HeroesDeskTestUtils.createHeroOrThrow
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
-import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createAdminOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createHeroOrThrow
 import org.hexastacks.heroesdesk.kotlin.impl.user.Admin
 import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
+import org.hexastacks.heroesdesk.kotlin.ports.UserRepository
 
 interface InstrumentedUserRepository : UserRepository {
 

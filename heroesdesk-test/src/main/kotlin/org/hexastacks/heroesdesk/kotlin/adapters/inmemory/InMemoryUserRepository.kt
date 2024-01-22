@@ -1,15 +1,14 @@
-package org.hexastacks.heroesdesk.kotlin.ports
+package org.hexastacks.heroesdesk.kotlin.ports.inmemory
 
 import arrow.core.*
 import arrow.core.Either.Left
 import arrow.core.Either.Right
-import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
-import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
-import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
+import org.hexastacks.heroesdesk.kotlin.adapters.InstrumentedUserRepository
 import org.hexastacks.heroesdesk.kotlin.impl.user.*
+import org.hexastacks.heroesdesk.kotlin.ports.*
 import java.util.concurrent.ConcurrentHashMap
 
-class FakeUserRepository : InstrumentedUserRepository {
+class InMemoryUserRepository : InstrumentedUserRepository {
 
     private val users = ConcurrentHashMap.newKeySet<User<*>>()
 

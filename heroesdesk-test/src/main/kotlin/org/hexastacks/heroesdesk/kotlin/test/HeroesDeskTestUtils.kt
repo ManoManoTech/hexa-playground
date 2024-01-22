@@ -1,12 +1,12 @@
-package org.hexastacks.heroesdesk.kotlin
+package org.hexastacks.heroesdesk.kotlin.test
 
 import arrow.core.getOrElse
+import org.hexastacks.heroesdesk.kotlin.HeroesDesk
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.*
-import org.hexastacks.heroesdesk.kotlin.ports.InstrumentedUserRepository
 
 object HeroesDeskTestUtils {
 
@@ -22,7 +22,9 @@ object HeroesDeskTestUtils {
 
     fun createPendingTaskIdOrThrow(scopeKey: String, id: String) = PendingTaskId(Scope(createNameOrThrow(scopeKey), createScopeKeyOrThrow(scopeKey)), id).getOrElse { throw AssertionError() }
 
-    fun createInProgressTaskIdOrThrow(scopeKey: String, id: String): InProgressTaskId = InProgressTaskId(Scope(createNameOrThrow(scopeKey), createScopeKeyOrThrow(scopeKey)), id).getOrElse { throw AssertionError() }
+    fun createInProgressTaskIdOrThrow(scopeKey: String, id: String): InProgressTaskId = InProgressTaskId(Scope(
+        createNameOrThrow(scopeKey), createScopeKeyOrThrow(scopeKey)
+    ), id).getOrElse { throw AssertionError() }
 
     fun HeroesDesk.getTaskOrThrow(id: TaskId): Task<*> = this.getTask(id).getOrElse { throw AssertionError() }
     fun createAdminIdOrThrow(adminId: String): AdminId = AdminId(adminId).getOrElse { throw AssertionError() }
