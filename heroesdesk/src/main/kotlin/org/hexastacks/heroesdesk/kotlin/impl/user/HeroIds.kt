@@ -8,9 +8,12 @@ data class HeroIds(val value: Set<HeroId>) {
     constructor(hero: Hero) : this(hero.id)
 
     fun size(): Int = value.size
+
     fun contains(id: UserId): Boolean = value.any { it.value == id.value }
 
     fun <R> map(transform: (HeroId) -> R): List<R> = value.map { transform(it) }
+
+    operator fun plus(heroId: HeroId): HeroIds = HeroIds(value + heroId)
 
 
     companion object {

@@ -22,23 +22,23 @@ class InMemoryTaskRepository : TaskRepository {
     private val database = ConcurrentHashMap<ScopeKey, Pair<Scope, Map<RawTaskId, RawTask>>>()
 
     override fun createTask(
-        scopeKey: ScopeKey,
+        scope: Scope,
         title: Title,
         hero: Hero
     ): Either<NonEmptyList<CreateTaskError>, PendingTask> {
         val createdTask = AtomicReference<PendingTask>()
-        return database.computeIfPresent(scopeKey) { _, scopeAndTaskIdsToTask ->
-            val scope = scopeAndTaskIdsToTask.first
+        return database.computeIfPresent(scope.key) { _, scopeAndTaskIdsToTask ->
+            val retrievedScope = scopeAndTaskIdsToTask.first
             val uuid = UUID.randomUUID().toString()
-            val taskId = PendingTaskId(scope, uuid).getOrElse {
+            val taskId = PendingTaskId(retrievedScope, uuid).getOrElse {
                 throw RuntimeException("taskId $uuid should be valid")
             }
-            val task = PendingTask(scope, taskId, title)
+            val task = PendingTask(retrievedScope, taskId, title)
             createdTask.set(task)
-            Pair(scope, scopeAndTaskIdsToTask.second.plus(RawTaskId(taskId) to RawTask(task)))
+            Pair(retrievedScope, scopeAndTaskIdsToTask.second.plus(RawTaskId(taskId) to RawTask(task)))
         }
             ?.let { Right(createdTask.get()) }
-            ?: Left(nonEmptyListOf(ScopeNotExistCreateTaskError(scopeKey)))
+            ?: Left(nonEmptyListOf(ScopeNotExistCreateTaskError(scope.key)))
     }
 
     override fun getTask(taskId: TaskId): Either<NonEmptyList<GetTaskError>, Task<*>> =

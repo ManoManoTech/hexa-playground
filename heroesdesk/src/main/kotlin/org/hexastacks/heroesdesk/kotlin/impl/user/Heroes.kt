@@ -33,7 +33,13 @@ data class Heroes(val value: Set<Hero>) {
     fun isNotEmpty(): Boolean = value.isNotEmpty()
 
     fun firstOrNone(): Option<Hero> = value.firstOrNone()
+
     fun <R> map(transform: (Hero) -> R): List<R> = value.map { transform(it) }
+
+    fun intersect(authorAndAssignees: Heroes) : Heroes = Heroes(value.intersect(authorAndAssignees.value))
+
+    fun subtract(heroes: Heroes) : Heroes = Heroes(value.subtract(heroes.value))
+
 
     companion object {
         val empty: Heroes = Heroes(emptySet())

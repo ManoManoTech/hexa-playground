@@ -9,6 +9,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.ports.HeroesDoNotExistError
 
 interface HeroesDesk {
@@ -114,6 +115,10 @@ interface HeroesDesk {
         override val message = "Scope $scopeKey does not exist"
     }
 
+    data class CreatorNotInScopeCreateTaskError(val creator: HeroId, val scopeKey: ScopeKey) : CreateTaskError {
+        override val message = "${creator} not in $scopeKey scope"
+    }
+
     sealed interface GetTaskError : HeroesDeskError
 
     data class TaskDoesNotExistError(val taskId: TaskId) : GetTaskError {
@@ -204,4 +209,9 @@ interface HeroesDesk {
     data class TaskDoesNotExistAssignTaskError(val taskId: TaskId) : AssignTaskError {
         override val message = "Task $taskId does not exist"
     }
+
+    data class HeroesNotAssignedToScopeAssignTaskError(val heroes: Heroes, val scopeKey: ScopeKey) : AssignTaskError {
+        override val message = "Heroes $heroes not assigned to scope $scopeKey"
+    }
+
 }

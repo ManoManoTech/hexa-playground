@@ -26,7 +26,7 @@ interface TaskRepository {
     ): EitherNel<AssignHeroesOnScopeError, Scope>
 
 
-    fun createTask(scopeKey: ScopeKey, title: Title, hero: Hero): EitherNel<CreateTaskError, PendingTask>
+    fun createTask(scope: Scope, title: Title, hero: Hero): EitherNel<CreateTaskError, PendingTask>
 
     fun getTask(taskId: TaskId): EitherNel<GetTaskError, Task<*>>
 

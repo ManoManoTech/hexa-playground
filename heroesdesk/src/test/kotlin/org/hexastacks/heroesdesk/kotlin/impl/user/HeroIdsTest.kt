@@ -2,6 +2,7 @@ package org.hexastacks.heroesdesk.kotlin.impl.user
 
 import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createHeroIdOrThrow
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -53,6 +54,26 @@ class HeroIdsTest {
 
         val containsId1 = heroes.contains(hero)
 
-        Assertions.assertTrue(containsId1)
+        assertTrue(containsId1)
+    }
+
+    @Test
+    fun `plus works on empty heroIds`() {
+        val hero = createHeroIdOrThrow("id1")
+
+        val heroes = HeroIds.empty + hero
+
+        assertEquals(1, heroes.size())
+        assertTrue(heroes.contains(hero))
+    }
+
+    @Test
+    fun `plus works on non empty heroIds`() {
+        val hero = createHeroIdOrThrow("id1")
+
+        val heroes = HeroIds(createHeroIdOrThrow("id2")) + hero
+
+        assertEquals(2, heroes.size())
+        assertTrue(heroes.contains(hero))
     }
 }

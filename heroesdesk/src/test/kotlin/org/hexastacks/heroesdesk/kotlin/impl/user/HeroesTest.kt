@@ -228,4 +228,68 @@ class HeroesTest {
 
         assertEquals(heroes.size, counter.get())
     }
+
+    @Test
+    fun `intersect works on empty heroes`(){
+        val heroes = Heroes.empty
+        val heroes2 = Heroes(createHeroOrThrow("name1", "id1"))
+
+        val intersect = heroes.intersect(heroes2)
+
+        assertTrue(intersect.isEmpty(), "intersect should be empty")
+    }
+
+    @Test
+    fun `intersect works on heroes with a common element`(){
+        val commonHero = createHeroOrThrow("nameCommon", "nameCommon")
+        val heroes1 = Heroes(createHeroOrThrow("name1", "id1"), commonHero)
+        val heroes2 = Heroes(createHeroOrThrow("name2", "id2"), commonHero)
+
+        val intersect = heroes1.intersect(heroes2)
+
+        assertEquals(1, intersect.size, "$intersect should have 1 element")
+    }
+
+    @Test
+    fun `intersect works on non empty heroes without common element`(){
+        val heroes1 = Heroes(createHeroOrThrow("name1", "id1"), createHeroOrThrow("name2", "id2"))
+        val heroes2 = Heroes(createHeroOrThrow("name3", "id3"), createHeroOrThrow("name4", "id4"))
+
+        val intersect = heroes1.intersect(heroes2)
+
+        assertEquals(0, intersect.size, "$intersect should have 0 element")
+    }
+
+    @Test
+    fun `subtract works on empty heroes`(){
+        val heroes = Heroes.empty
+        val heroes2 = Heroes(createHeroOrThrow("name1", "id1"))
+
+        val subtract = heroes.subtract(heroes2)
+
+        assertTrue(subtract.isEmpty(), "subtract should be empty")
+    }
+
+    @Test
+    fun `subtract works on heroes with a common element`(){
+        val commonHero = createHeroOrThrow("nameCommon", "nameCommon")
+        val heroes1DistinctHero = createHeroOrThrow("name1", "id1")
+        val heroes1 = Heroes(heroes1DistinctHero, commonHero)
+        val heroes2 = Heroes(createHeroOrThrow("name2", "id2"), commonHero)
+
+        val subtract = heroes1.subtract(heroes2)
+
+        assertEquals(1, subtract.size, "$subtract should have 1 element")
+        assertEquals(heroes1DistinctHero, subtract.firstOrNone().getOrNull())
+    }
+
+    @Test
+    fun `subtract works on non empty heroes without common element`(){
+        val heroes1 = Heroes(createHeroOrThrow("name1", "id1"), createHeroOrThrow("name2", "id2"))
+        val heroes2 = Heroes(createHeroOrThrow("name3", "id3"), createHeroOrThrow("name4", "id4"))
+
+        val subtract = heroes1.subtract(heroes2)
+
+        assertEquals(heroes1.size, subtract.size, "$subtract should have ${heroes1.size} elements")
+    }
 }
