@@ -9,9 +9,9 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.*
 import java.util.concurrent.ConcurrentHashMap
 import org.hexastacks.heroesdesk.kotlin.errors.*
 
-class InMemoryUserRepository : InstrumentedUserRepository {
+open class InMemoryUserRepository : UserRepository {
 
-    private val users = ConcurrentHashMap.newKeySet<User<*>>()
+    internal val users = ConcurrentHashMap.newKeySet<User<*>>()
 
     override fun getHeroes(heroIds: HeroIds): EitherNel<GetHeroError, Heroes> {
         val userRawIds = users.map { it.id.value }
@@ -48,20 +48,5 @@ class InMemoryUserRepository : InstrumentedUserRepository {
             ?.asAdmin()
             ?.let { Right(it) }
             ?: Left(nonEmptyListOf(AdminNotExistingError(adminId)))
-
-    override fun ensureExisting(heroes: Heroes): Heroes {
-        heroes.forEach { ensureExisting(it) }
-        return heroes
-    }
-
-    override fun ensureExisting(hero: Hero): Hero {
-        users.add(hero)
-        return hero
-    }
-
-    override fun ensureExisting(admin: Admin): Admin {
-        users.add(admin)
-        return admin
-    }
 
 }

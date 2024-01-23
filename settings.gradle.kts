@@ -2,7 +2,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.7.0"
 }
 rootProject.name = "hexa-playground"
-include("heroesdesk", "heroesdesk-test")
+include("heroesdesk", "heroesdesk-test", "heroesdesk-inmemory-adapters")
 
 dependencyResolutionManagement {
     versionCatalogs {

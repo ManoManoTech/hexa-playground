@@ -1,4 +1,4 @@
-package org.hexastacks.heroesdesk.kotlin
+package org.hexastacks.heroesdesk.kotlin.ports.inmemory
 
 import org.hexastacks.heroesdesk.kotlin.adapters.InstrumentedUserRepository
 import org.hexastacks.heroesdesk.kotlin.adapters.inmemory.InMemoryUserRepository
@@ -11,7 +11,7 @@ class HeroesDeskImplTest : AbstractHeroesDeskTest() {
     override fun createHeroesDesk(userRepo: InstrumentedUserRepository): HeroesDesk =
         HeroesDeskImpl(userRepo, InMemoryTaskRepository())
 
-    override fun instrumentedHeroRepository(): InstrumentedUserRepository = InMemoryUserRepository()
+    override fun instrumentedHeroRepository(): InstrumentedUserRepository = InstrumentedInMemoryUserRepository()
 
     override fun nonExistingRawTaskId(): String = InMemoryTaskRepository.NON_EXISTING_TASK_ID
 
