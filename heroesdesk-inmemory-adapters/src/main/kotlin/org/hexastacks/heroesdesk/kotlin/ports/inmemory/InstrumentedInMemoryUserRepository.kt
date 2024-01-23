@@ -6,7 +6,6 @@ import org.hexastacks.heroesdesk.kotlin.test.InstrumentedUserRepository
 
 class InstrumentedInMemoryUserRepository : InMemoryUserRepository(), InstrumentedUserRepository {
 
-
     override fun ensureExisting(hero: Hero): Hero {
         users.add(hero)
         return hero

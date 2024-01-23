@@ -11,7 +11,7 @@ class HeroesDeskImplTest : AbstractHeroesDeskTest() {
     override fun createHeroesDesk(userRepo: InstrumentedUserRepository): HeroesDesk =
         HeroesDeskImpl(userRepo, InMemoryTaskRepository())
 
-    override fun instrumentedHeroRepository(): InstrumentedUserRepository = InstrumentedInMemoryUserRepository()
+    override fun instrumentedUserRepository(): InstrumentedUserRepository = InstrumentedInMemoryUserRepository()
 
     override fun nonExistingRawTaskId(): String = InMemoryTaskRepository.NON_EXISTING_TASK_ID
 

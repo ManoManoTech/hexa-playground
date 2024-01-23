@@ -810,7 +810,7 @@ abstract class AbstractHeroesDeskTest {
     private fun nonExistingWorkInProgressTaskId(): InProgressTaskId =
         createInProgressTaskIdOrThrow("nonExistingInProgressTaskId", nonExistingRawTaskId())
 
-    abstract fun instrumentedHeroRepository(): InstrumentedUserRepository
+    abstract fun instrumentedUserRepository(): InstrumentedUserRepository
 
     abstract fun createHeroesDesk(userRepo: InstrumentedUserRepository): HeroesDesk
 
@@ -818,7 +818,7 @@ abstract class AbstractHeroesDeskTest {
 
     @BeforeEach
     fun beforeEach() {
-        userRepo = instrumentedHeroRepository()
+        userRepo = instrumentedUserRepository()
         heroesDesk = createHeroesDesk(userRepo)
     }
 
