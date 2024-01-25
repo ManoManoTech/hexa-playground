@@ -9,7 +9,7 @@ Beware though:
 
 # Build
 
-First install a Java Development Kit (JDK) version 8 or higher, for example
+First install a Java Development Kit (JDK) version 21 or higher, for example
 from [Eclipse Temurin](https://adoptium.net/temurin/releases/?package=jdk&version=21)
 
 Then build with:
