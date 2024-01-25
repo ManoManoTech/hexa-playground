@@ -1,7 +1,7 @@
 package org.hexastacks.heroesdesk.kotlin.ports
 
 import arrow.core.EitherNel
-import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
+import org.hexastacks.heroesdesk.kotlin.errors.*
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey

@@ -6,7 +6,7 @@ import arrow.core.EitherNel
 import arrow.core.flatMap
 import arrow.core.nonEmptyListOf
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
-import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
+import org.hexastacks.heroesdesk.kotlin.errors.*
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
@@ -15,20 +15,15 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
 import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
-import org.hexastacks.heroesdesk.kotlin.ports.*
+import org.hexastacks.heroesdesk.kotlin.ports.TaskRepository
+import org.hexastacks.heroesdesk.kotlin.ports.UserRepository
+
 
 class HeroesDeskImpl(private val userRepository: UserRepository, private val taskRepository: TaskRepository) :
     HeroesDesk {
     override fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope> =
         userRepository
             .getAdmin(creator)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is AdminDoesNotExistError -> AdminDoesNotExistCreateScopeError(creator)
-                    }
-                }
-            }
             .flatMap {
                 taskRepository.createScope(scopeKey, name)
             }
@@ -40,26 +35,14 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     ): EitherNel<AssignHeroesOnScopeError, Scope> =
         userRepository
             .getHeroes(assignees)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is HeroesDoNotExistError ->
-                            AssignedHeroIdsNotExistAssignHeroesOnScopeError(it.heroIds, assignees)
-                    }
-                }
-            }
             .flatMap { heroes ->
                 userRepository
                     .getAdmin(changeAuthor)
-                    .mapLeft { errors ->
-                        errors.map { it: GetAdminError ->
-                            when (it) {
-                                is AdminDoesNotExistError -> AdminIdNotExistingAssignHeroesOnScopeError(it.adminId)
-                            }
-                        }
-                    }
                     .map { _ -> heroes }
-            }.flatMap { taskRepository.assignScope(scopeKey, it) }
+            }
+            .flatMap {
+                taskRepository.assignScope(scopeKey, it)
+            }
 
     override fun updateScopeName(
         scopeKey: ScopeKey,
@@ -68,14 +51,6 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     ): EitherNel<UpdateScopeNameError, Scope> =
         userRepository
             .getAdmin(changeAuthor)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is AdminDoesNotExistError ->
-                            AdminIdNotExistingUpdateScopeNameError(changeAuthor)
-                    }
-                }
-            }
             .flatMap {
                 taskRepository.updateScopeName(scopeKey, name)
             }
@@ -90,26 +65,12 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     ): EitherNel<CreateTaskError, PendingTask> =
         userRepository
             .getHero(creator)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is HeroesDoNotExistError -> HeroDoesNotExistCreateTaskError(creator)
-                    }
-                }
-            }
             .flatMap { hero ->
                 taskRepository
                     .getScope(scopeKey)
-                    .mapLeft { errors ->
-                        errors.map {
-                            when (it) {
-                                is ScopeNotExistingGetScopeError -> ScopeNotExistCreateTaskError(scopeKey)
-                            }
-                        }
-                    }
                     .flatMap { scope ->
                         if (scope.assignees.containsNot(hero))
-                            Left(nonEmptyListOf(CreatorNotInScopeCreateTaskError(creator, scopeKey)))
+                            Left(nonEmptyListOf(HeroesNotInScopeError(creator, scopeKey)))
                         else
                             Right(Pair(scope, hero))
                     }
@@ -125,13 +86,6 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     ): EitherNel<UpdateTitleError, Task<*>> =
         userRepository
             .getHero(author)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is HeroesDoNotExistError -> HeroDoesNotExistUpdateTitleError(author)
-                    }
-                }
-            }
             .flatMap { hero -> taskRepository.updateTitle(id, title, hero) }
 
     override fun updateDescription(
@@ -141,13 +95,6 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     ): EitherNel<UpdateDescriptionError, Task<*>> =
         userRepository
             .getHero(author)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is HeroesDoNotExistError -> HeroDoesNotExistUpdateDescriptionError(author)
-                    }
-                }
-            }
             .flatMap { taskRepository.updateDescription(id, description, it) }
 
     override fun assignTask(
@@ -168,30 +115,16 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         author: HeroId
     ): EitherNel<AssignTaskError, Task<*>> =
         taskRepository.getTask(id)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is TaskDoesNotExistError -> TaskDoesNotExistAssignTaskError(id)
-                    }
-                }
-            }
             .flatMap { task ->
                 userRepository
                     .getHeroes(assignees + author)
-                    .mapLeft { errors ->
-                        errors.map {
-                            when (it) {
-                                is HeroesDoNotExistError -> HeroesDoesNotExistAssignTaskError(it)
-                            }
-                        }
-                    }
                     .flatMap { authorAndAssignees ->
                         // i know this implementation is weak, should be a method to the TaskRepo.getTaskIfAllHeroesInItsScope(taskId, heroIds): to be done later
                         val nonScopeAssignedHeroes = authorAndAssignees.subtract(task.scope.assignees)
                         if (nonScopeAssignedHeroes.isNotEmpty()) {
                             Left(
                                 nonEmptyListOf(
-                                    HeroesNotAssignedToScopeAssignTaskError(
+                                    HeroesNotInScopeError(
                                         nonScopeAssignedHeroes,
                                         task.scope.key
                                     )
@@ -211,34 +144,20 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     ): EitherNel<StartWorkError, InProgressTask> =
         taskRepository
             .getTask(id)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is TaskDoesNotExistError -> TaskDoesNotExistStartWorkError(id)
-                    }
-                }
-            }
             .flatMap { task ->
                 when (task) {
                     is PendingTask -> Right(task)
-                    else -> Left(nonEmptyListOf(TaskNotPendingStartWorkError(task, id)))
+                    else -> Left(nonEmptyListOf(TaskNotPendingError(task, id)))
                 }
             }
             .flatMap { verifiedTask ->
                 userRepository
                     .getHero(author)
-                    .mapLeft { errors ->
-                        errors.map {
-                            when (it) {
-                                is HeroesDoNotExistError -> HeroesDoesNotExistStartWorkError(it.heroIds)
-                            }
-                        }
-                    }
                     .flatMap { existingAuthor ->
                         if (verifiedTask.scope.assignees.containsNot(existingAuthor)) {
                             Left(
                                 nonEmptyListOf(
-                                    HeroNotAssignedToScopeStartWorkError(
+                                    HeroesNotInScopeError(
                                         author,
                                         verifiedTask.scope.key
                                     )
@@ -263,24 +182,10 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     ): EitherNel<StartWorkError, Hero> =
         taskRepository
             .assignTask(id, verifiedTask.assignees.add(author), author.id)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is HeroesDoesNotExistAssignTaskError -> HeroesDoesNotExistStartWorkError(
-                            HeroIds.empty
-                        )
-                        is TaskDoesNotExistAssignTaskError -> TaskDoesNotExistStartWorkError(id)
-                        is HeroesNotAssignedToScopeAssignTaskError -> HeroNotAssignedToScopeStartWorkError(
-                            author.id,
-                            verifiedTask.scope.key
-                        )
-                    }
-                }
-            }
             .flatMap {
                 when (it) {
                     is PendingTask -> Right(author)
-                    else -> Left(nonEmptyListOf(TaskNotPendingStartWorkError(it, id)))
+                    else -> Left(nonEmptyListOf(TaskNotPendingError(it, id)))
                 }
             }
 
@@ -297,34 +202,20 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     ): EitherNel<PauseWorkError, PendingTask> =
         taskRepository
             .getTask(id)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is TaskDoesNotExistError -> TaskDoesNotExistPauseWorkError(id)
-                    }
-                }
-            }
             .flatMap { task ->
                 when (task) {
                     is InProgressTask -> Right(task)
-                    else -> Left(nonEmptyListOf(TaskNotInProgressPauseWorkError(task, id)))
+                    else -> Left(nonEmptyListOf(TaskNotInProgressError(task, id)))
                 }
             }
             .flatMap { verifiedTask ->
                 userRepository
                     .getHero(author)
-                    .mapLeft { errors ->
-                        errors.map {
-                            when (it) {
-                                is HeroesDoNotExistError -> HeroesDoesNotExistPauseWorkError(it.heroIds)
-                            }
-                        }
-                    }
                     .flatMap { existingAuthor ->
                         if (verifiedTask.scope.assignees.containsNot(existingAuthor)) {
                             Left(
                                 nonEmptyListOf(
-                                    HeroNotAssignedToScopePauseWorkError(
+                                    HeroesNotInScopeError(
                                         author,
                                         verifiedTask.scope.key
                                     )
@@ -355,34 +246,20 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
     ): EitherNel<EndWorkError, DoneTask> =
         taskRepository
             .getTask(id)
-            .mapLeft { errors ->
-                errors.map {
-                    when (it) {
-                        is TaskDoesNotExistError -> TaskDoesNotExistEndWorkError(id)
-                    }
-                }
-            }
             .flatMap { task ->
                 when (task) {
                     is InProgressTask -> Right(task)
-                    else -> Left(nonEmptyListOf(TaskNotInProgressEndWorkError(task, id)))
+                    else -> Left(nonEmptyListOf(TaskNotInProgressError(task, id)))
                 }
             }
             .flatMap { verifiedTask ->
                 userRepository
                     .getHero(author)
-                    .mapLeft { errors ->
-                        errors.map {
-                            when (it) {
-                                is HeroesDoNotExistError -> HeroesDoesNotExistEndWorkError(it.heroIds)
-                            }
-                        }
-                    }
                     .flatMap { existingAuthor ->
                         if (verifiedTask.scope.assignees.containsNot(existingAuthor)) {
                             Left(
                                 nonEmptyListOf(
-                                    HeroNotAssignedToScopeEndWorkError(
+                                    HeroesNotInScopeError(
                                         author,
                                         verifiedTask.scope.key
                                     )

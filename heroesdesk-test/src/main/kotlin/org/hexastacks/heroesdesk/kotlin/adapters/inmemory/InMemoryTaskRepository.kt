@@ -3,7 +3,7 @@ package org.hexastacks.heroesdesk.kotlin.ports.inmemory
 import arrow.core.*
 import arrow.core.Either.Left
 import arrow.core.Either.Right
-import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
+import org.hexastacks.heroesdesk.kotlin.errors.*
 import org.hexastacks.heroesdesk.kotlin.impl.AbstractStringValue
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
@@ -39,7 +39,7 @@ class InMemoryTaskRepository : TaskRepository {
             Pair(retrievedScope, scopeAndTaskIdsToTask.second.plus(RawTaskId(taskId) to RawTask(task)))
         }
             ?.let { Right(createdTask.get()) }
-            ?: Left(nonEmptyListOf(ScopeNotExistCreateTaskError(scope.key)))
+            ?: Left(nonEmptyListOf(ScopeNotExistingError(scope.key)))
     }
 
     override fun getTask(taskId: TaskId): Either<NonEmptyList<GetTaskError>, Task<*>> =
@@ -50,7 +50,7 @@ class InMemoryTaskRepository : TaskRepository {
                 task?.let { buildTask(rawTaskId, it, scopeAndTaskIdsToTask.first) }
             }
             ?.let { Right(it) }
-            ?: Left(nonEmptyListOf(TaskDoesNotExistError(taskId)))
+            ?: Left(nonEmptyListOf(TaskNotExistingError(taskId)))
 
     private fun buildTask(
         rawTaskId: RawTaskId,
@@ -108,7 +108,7 @@ class InMemoryTaskRepository : TaskRepository {
             ?.let {
                 Right(buildTask(it, taskId))
             }
-            ?: Left(nonEmptyListOf(TaskDoesNotExistUpdateTitleError(taskId)))
+            ?: Left(nonEmptyListOf(TaskNotExistingError(taskId)))
     }
 
     private fun buildTask(
@@ -136,7 +136,7 @@ class InMemoryTaskRepository : TaskRepository {
                     ?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(rawTaskId to it)) }
             }
             ?.let { Right(buildTask(it, taskId)) }
-            ?: Left(nonEmptyListOf(TaskDoesNotExistUpdateDescriptionError(taskId)))
+            ?: Left(nonEmptyListOf(TaskNotExistingError(taskId)))
 
     override fun assignTask(
         taskId: TaskId,
@@ -152,7 +152,7 @@ class InMemoryTaskRepository : TaskRepository {
                 updatedTask?.let { Pair(scope, scopeAndTaskIdsToTask.second.plus(rawTaskId to updatedTask)) }
             }
             ?.let { Right(buildTask(it, taskId)) }
-            ?: Left(nonEmptyListOf(TaskDoesNotExistAssignTaskError(taskId)))
+            ?: Left(nonEmptyListOf(TaskNotExistingError(taskId)))
     }
 
     override fun startWork(
@@ -185,13 +185,13 @@ class InMemoryTaskRepository : TaskRepository {
                     null
             }
             ?.let { Right(buildTask(it, pendingTaskId) as InProgressTask) }
-            ?: Left(nonEmptyListOf(TaskDoesNotExistStartWorkError(pendingTaskId)))
+            ?: Left(nonEmptyListOf(TaskNotExistingError(pendingTaskId)))
 
     override fun createScope(scopeKey: ScopeKey, name: Name): EitherNel<CreateScopeError, Scope> {
         return if (database.any { it.value.first.name == name }) {
-            Left(nonEmptyListOf(ScopeNameAlreadyExistsError(name)))
+            Left(nonEmptyListOf(ScopeNameAlreadyExistingError(name)))
         } else if (database.containsKey(scopeKey)) {
-            Left(nonEmptyListOf(ScopeKeyAlreadyExistsError(scopeKey)))
+            Left(nonEmptyListOf(ScopeKeyAlreadyExistingError(scopeKey)))
         } else
             Right(
                 database
@@ -211,7 +211,7 @@ class InMemoryTaskRepository : TaskRepository {
             Pair(newScope, scopeAndTaskIdsToTask.second)
         }
             ?.let { Right(it.first) }
-            ?: Left(nonEmptyListOf(ScopeDoesNotExistAssignHeroesOnScopeError(scopeKey)))
+            ?: Left(nonEmptyListOf(ScopeNotExistingError(scopeKey)))
 
     override fun updateScopeName(
         scopeKey: ScopeKey,
@@ -223,13 +223,13 @@ class InMemoryTaskRepository : TaskRepository {
             Pair(newScope, scopeAndTaskIdsToTask.second)
         }
             ?.let { Right(it.first) }
-            ?: Left(nonEmptyListOf(ScopeNotExistingUpdateScopeNameError(scopeKey)))
+            ?: Left(nonEmptyListOf(ScopeNotExistingError(scopeKey)))
 
 
     override fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope> =
         database[scopeKey]
             ?.let { Right(it.first) }
-            ?: Left(nonEmptyListOf(ScopeNotExistingGetScopeError(scopeKey)))
+            ?: Left(nonEmptyListOf(ScopeNotExistingError(scopeKey)))
 
     override fun pauseWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<PauseWorkError, PendingTask> =
         database
@@ -258,9 +258,9 @@ class InMemoryTaskRepository : TaskRepository {
                     null
             }
             ?.let { Right(buildTask(it, inProgressTaskId) as PendingTask) }
-            ?: Left(nonEmptyListOf(TaskDoesNotExistPauseWorkError(inProgressTaskId)))
+            ?: Left(nonEmptyListOf(TaskNotExistingError(inProgressTaskId)))
 
-    override fun endWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<EndWorkError, DoneTask>  =
+    override fun endWork(inProgressTaskId: InProgressTaskId, hero: Hero): EitherNel<EndWorkError, DoneTask> =
         database
             .computeIfPresent(inProgressTaskId.scope.key) { _, scopeAndTaskIdsToTask ->
                 val scope = scopeAndTaskIdsToTask.first
@@ -286,7 +286,7 @@ class InMemoryTaskRepository : TaskRepository {
                     null
             }
             ?.let { Right(buildTask(it, inProgressTaskId) as DoneTask) }
-            ?: Left(nonEmptyListOf(TaskDoesNotExistEndWorkError(inProgressTaskId)))
+            ?: Left(nonEmptyListOf(TaskNotExistingError(inProgressTaskId)))
 
     companion object {
         const val NON_EXISTING_TASK_ID: String = "nonExistingTask"

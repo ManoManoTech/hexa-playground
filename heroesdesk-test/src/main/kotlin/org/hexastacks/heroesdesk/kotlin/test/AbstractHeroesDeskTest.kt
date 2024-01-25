@@ -8,7 +8,6 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
-import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.adapters.InstrumentedUserRepository
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createAdminIdOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createDescriptionOrThrow
@@ -33,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
+import org.hexastacks.heroesdesk.kotlin.errors.*
 
 abstract class AbstractHeroesDeskTest {
 
@@ -65,7 +65,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(creationFailure.isLeft())
         creationFailure.onLeft {
-            assertTrue(it.head is AdminDoesNotExistCreateScopeError)
+            assertTrue(it.head is AdminNotExistingError)
         }
     }
 
@@ -87,7 +87,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(creationFailure.isLeft())
         creationFailure.onLeft {
-            assertTrue(it.head is ScopeNameAlreadyExistsError)
+            assertTrue(it.head is ScopeNameAlreadyExistingError)
         }
     }
 
@@ -110,7 +110,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(creationFailure.isLeft())
         creationFailure.onLeft {
-            assertTrue(it.head is ScopeKeyAlreadyExistsError)
+            assertTrue(it.head is ScopeKeyAlreadyExistingError)
         }
     }
 
@@ -183,7 +183,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(assignedScope.isLeft())
         assignedScope.onLeft {
-            assertTrue(it.head is ScopeDoesNotExistAssignHeroesOnScopeError)
+            assertTrue(it.head is ScopeNotExistingError)
         }
     }
 
@@ -198,7 +198,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(assignedScope.isLeft())
         assignedScope.onLeft {
-            assertTrue(it.head is AssignedHeroIdsNotExistAssignHeroesOnScopeError)
+            assertTrue(it.head is HeroesNotExistingError, "$it")
         }
     }
 
@@ -213,7 +213,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(assignedScope.isLeft())
         assignedScope.onLeft {
-            assertTrue(it.head is AdminIdNotExistingAssignHeroesOnScopeError)
+            assertTrue(it.head is AdminNotExistingError)
         }
     }
 
@@ -228,7 +228,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(assignedScope.isLeft())
         assignedScope.onLeft {
-            assertTrue(it.head is AdminIdNotExistingUpdateScopeNameError)
+            assertTrue(it.head is AdminNotExistingError)
         }
     }
 
@@ -241,7 +241,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(assignedScope.isLeft())
         assignedScope.onLeft {
-            assertTrue(it.head is ScopeNotExistingUpdateScopeNameError)
+            assertTrue(it.head is ScopeNotExistingError)
         }
     }
 
@@ -266,7 +266,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(scope.isLeft())
         scope.onLeft {
-            assertTrue(it.head is ScopeNotExistingGetScopeError)
+            assertTrue(it.head is ScopeNotExistingError)
         }
     }
 
@@ -326,7 +326,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(task.isLeft())
         task.onLeft {
-            assertTrue(it.head is HeroDoesNotExistCreateTaskError)
+            assertTrue(it.head is HeroesNotExistingError, "$it")
         }
     }
 
@@ -340,7 +340,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(task.isLeft())
         task.onLeft {
-            assertTrue(it.head is CreatorNotInScopeCreateTaskError, "$it")
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
@@ -354,7 +354,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(task.isLeft())
         task.onLeft {
-            assertTrue(it.head is ScopeNotExistCreateTaskError)
+            assertTrue(it.head is ScopeNotExistingError)
         }
     }
 
@@ -374,7 +374,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(task.isLeft())
         task.onLeft {
-            assertTrue(it.head is TaskDoesNotExistError)
+            assertTrue(it.head is TaskNotExistingError)
         }
     }
 
@@ -401,7 +401,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is TaskDoesNotExistUpdateTitleError)
+            assertTrue(it.head is TaskNotExistingError)
         }
     }
 
@@ -415,7 +415,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroDoesNotExistUpdateTitleError)
+            assertTrue(it.head is HeroesNotExistingError, "$it")
         }
     }
 
@@ -443,7 +443,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is TaskDoesNotExistUpdateDescriptionError)
+            assertTrue(it.head is TaskNotExistingError)
         }
     }
 
@@ -457,7 +457,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroDoesNotExistUpdateDescriptionError)
+            assertTrue(it.head is HeroesNotExistingError, "$it")
         }
     }
 
@@ -533,7 +533,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(assignedTask.isLeft())
         assignedTask.onLeft {
-            assertTrue(it.head is TaskDoesNotExistAssignTaskError, "$it")
+            assertTrue(it.head is TaskNotExistingError, "$it")
         }
     }
 
@@ -571,7 +571,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(assignedTask.isLeft())
         assignedTask.onLeft {
-            assertTrue(it.head is HeroesNotAssignedToScopeAssignTaskError, "$it")
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
@@ -611,7 +611,7 @@ abstract class AbstractHeroesDeskTest {
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId
             .onLeft {
-                assertTrue(it.head is TaskDoesNotExistStartWorkError)
+                assertTrue(it.head is TaskNotExistingError, "$it")
             }
     }
 
@@ -625,7 +625,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroesDoesNotExistStartWorkError, "$it")
+            assertTrue(it.head is HeroesNotExistingError, "$it")
         }
     }
 
@@ -638,7 +638,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroNotAssignedToScopeStartWorkError, "$it")
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
@@ -663,7 +663,7 @@ abstract class AbstractHeroesDeskTest {
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId
             .onLeft {
-                assertTrue(it.head is TaskDoesNotExistPauseWorkError)
+                assertTrue(it.head is TaskNotExistingError, "$it")
             }
     }
 
@@ -677,7 +677,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(pauseWorkResult.isLeft())
         pauseWorkResult.onLeft {
-            assertTrue(it.head is HeroesDoesNotExistPauseWorkError, "$it")
+            assertTrue(it.head is HeroesNotExistingError, "$it")
         }
     }
 
@@ -692,7 +692,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(pauseWorkResult.isLeft())
         pauseWorkResult.onLeft {
-            assertTrue(it.head is HeroNotAssignedToScopePauseWorkError, "$it")
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
@@ -717,7 +717,7 @@ abstract class AbstractHeroesDeskTest {
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId
             .onLeft {
-                assertTrue(it.head is TaskDoesNotExistEndWorkError)
+                assertTrue(it.head is TaskNotExistingError, "$it")
             }
     }
 
@@ -730,7 +730,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroesDoesNotExistEndWorkError, "$it")
+            assertTrue(it.head is HeroesNotExistingError, "$it")
         }
     }
 
@@ -743,7 +743,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroNotAssignedToScopeEndWorkError, "$it")
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
