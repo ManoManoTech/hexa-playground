@@ -18,6 +18,4 @@ open class AbstractStringValue(override val value: String) : StringValue {
     }
 }
 
-interface StringValueError {
-    val message: String
-}
+interface StringValueError: ValidationError

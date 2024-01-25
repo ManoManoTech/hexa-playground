@@ -1,12 +1,13 @@
-package org.hexastacks.heroesdesk.kotlin.ports.inmemory
+package org.hexastacks.heroesdesk.kotlin.adapters.inmemory
 
-import arrow.core.*
 import arrow.core.Either.Left
 import arrow.core.Either.Right
+import arrow.core.EitherNel
+import arrow.core.nonEmptyListOf
 import org.hexastacks.heroesdesk.kotlin.adapters.InstrumentedUserRepository
 import org.hexastacks.heroesdesk.kotlin.impl.user.*
-import org.hexastacks.heroesdesk.kotlin.ports.*
 import java.util.concurrent.ConcurrentHashMap
+import org.hexastacks.heroesdesk.kotlin.errors.*
 
 class InMemoryUserRepository : InstrumentedUserRepository {
 
@@ -35,7 +36,7 @@ class InMemoryUserRepository : InstrumentedUserRepository {
         } else {
             Left(
                 nonEmptyListOf(
-                    HeroesDoNotExistError(heroIds)
+                    HeroesNotExistingError(heroIds)
                 )
             )
         }
@@ -46,7 +47,7 @@ class InMemoryUserRepository : InstrumentedUserRepository {
             .firstOrNull { it.id == adminId }
             ?.asAdmin()
             ?.let { Right(it) }
-            ?: Left(nonEmptyListOf(AdminDoesNotExistError(adminId)))
+            ?: Left(nonEmptyListOf(AdminNotExistingError(adminId)))
 
     override fun ensureExisting(heroes: Heroes): Heroes {
         heroes.forEach { ensureExisting(it) }
