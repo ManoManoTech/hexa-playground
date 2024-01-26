@@ -8,7 +8,7 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
-import org.hexastacks.heroesdesk.kotlin.adapters.InstrumentedUserRepository
+import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createAdminIdOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createDescriptionOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createHeroIdOrThrow
@@ -266,16 +266,30 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(scope.isLeft())
         scope.onLeft {
-            assertTrue(it.head is ScopeNotExistingError)
+            assertTrue(it.head is ScopeNotExistingError, "$it")
         }
     }
 
     @Test
-    fun `getScope works`() {
+    fun `getScope works on scope without assignee`() {
         val scopeId = createScopeKeyOrThrow("scopeKey")
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
         val name = createNameOrThrow("name")
         heroesDesk.createScope(scopeId, name, admin.id).getOrElse { throw AssertionError("$it") }
+
+        val scope = heroesDesk.getScope(scopeId).getOrElse { throw AssertionError("$it") }
+
+        assertEquals(name, scope.name)
+    }
+
+    @Test
+    fun `getScope works on scope with assignee`() {
+        val scopeId = createScopeKeyOrThrow("scopeKey")
+        val admin = userRepo.ensureAdminExistingOrThrow("adminId")
+        val name = createNameOrThrow("name")
+        heroesDesk.createScope(scopeId, name, admin.id).getOrElse { throw AssertionError("$it") }
+        heroesDesk.assignScope(scopeId, HeroIds(ensureHeroExisting("heroId")), admin.id)
+            .getOrElse { throw AssertionError("$it") }
 
         val scope = heroesDesk.getScope(scopeId).getOrElse { throw AssertionError("$it") }
 

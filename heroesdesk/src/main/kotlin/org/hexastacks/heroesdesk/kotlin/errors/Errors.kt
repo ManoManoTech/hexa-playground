@@ -84,3 +84,9 @@ sealed interface GetAdminError : UserRepositoryError, UpdateScopeNameError, Crea
 data class AdminNotExistingError(val adminId: AdminId) : GetAdminError {
     override val message = "Admin $adminId does not exist"
 }
+
+data class TaskRepositoryError(override val message: String, val exception: Exception? = null, val error: ErrorMessage? = null) : HeroesDeskError,
+    CreateScopeError, GetScopeError, UpdateScopeNameError {
+    constructor(exception: Exception) : this(exception.message ?: "Unknown error", exception)
+    constructor(error: ErrorMessage) : this(error.message, error = error)
+}

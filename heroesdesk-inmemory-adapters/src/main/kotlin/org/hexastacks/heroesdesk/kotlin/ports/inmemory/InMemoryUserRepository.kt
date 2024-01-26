@@ -4,10 +4,10 @@ import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.core.EitherNel
 import arrow.core.nonEmptyListOf
-import org.hexastacks.heroesdesk.kotlin.adapters.InstrumentedUserRepository
 import org.hexastacks.heroesdesk.kotlin.impl.user.*
 import java.util.concurrent.ConcurrentHashMap
 import org.hexastacks.heroesdesk.kotlin.errors.*
+import org.hexastacks.heroesdesk.kotlin.ports.UserRepository
 
 open class InMemoryUserRepository : UserRepository {
 

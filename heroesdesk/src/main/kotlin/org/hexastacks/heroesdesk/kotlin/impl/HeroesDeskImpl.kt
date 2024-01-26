@@ -119,7 +119,6 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                 userRepository
                     .getHeroes(assignees + author)
                     .flatMap { authorAndAssignees ->
-                        // i know this implementation is weak, should be a method to the TaskRepo.getTaskIfAllHeroesInItsScope(taskId, heroIds): to be done later
                         val nonScopeAssignedHeroes = authorAndAssignees.subtract(task.scope.assignees)
                         if (nonScopeAssignedHeroes.isNotEmpty()) {
                             Left(

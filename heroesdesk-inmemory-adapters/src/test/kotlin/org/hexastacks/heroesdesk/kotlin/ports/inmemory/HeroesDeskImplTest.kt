@@ -1,10 +1,9 @@
 package org.hexastacks.heroesdesk.kotlin.ports.inmemory
 
-import org.hexastacks.heroesdesk.kotlin.adapters.InstrumentedUserRepository
-import org.hexastacks.heroesdesk.kotlin.adapters.inmemory.InMemoryUserRepository
+import org.hexastacks.heroesdesk.kotlin.HeroesDesk
 import org.hexastacks.heroesdesk.kotlin.impl.HeroesDeskImpl
-import org.hexastacks.heroesdesk.kotlin.ports.inmemory.InMemoryTaskRepository
 import org.hexastacks.heroesdesk.kotlin.test.AbstractHeroesDeskTest
+import org.hexastacks.heroesdesk.kotlin.test.InstrumentedUserRepository
 
 class HeroesDeskImplTest : AbstractHeroesDeskTest() {
 

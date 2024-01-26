@@ -13,3 +13,12 @@ dependencies {
     testImplementation(libs.testcontainer.jupiter)
     testImplementation(libs.testcontainer.postgresql)
 }
+
+sourceSets {
+    val generated = sourceSets.create("generated") {
+        java.srcDirs("src/main/generated")
+    }
+    main {
+        java.srcDirs(generated.java.srcDirs)
+    }
+}
