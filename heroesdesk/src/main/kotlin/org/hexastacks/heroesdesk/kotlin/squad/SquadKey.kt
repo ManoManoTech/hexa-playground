@@ -4,8 +4,8 @@ import arrow.core.EitherNel
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.zipOrAccumulate
-import org.hexastacks.heroesdesk.kotlin.impl.AbstractStringValue
-import org.hexastacks.heroesdesk.kotlin.impl.StringValueError
+import org.hexastacks.heroesdesk.kotlin.misc.AbstractStringValue
+import org.hexastacks.heroesdesk.kotlin.misc.StringValueError
 
 class SquadKey private constructor(value: String) : AbstractStringValue(value) {
 

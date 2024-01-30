@@ -5,7 +5,7 @@ import arrow.core.Either.Right
 import org.hexastacks.heroesdesk.kotlin.errors.GetAdminError
 import org.hexastacks.heroesdesk.kotlin.errors.GetHeroError
 import org.hexastacks.heroesdesk.kotlin.errors.HeroesNotExistingError
-import org.hexastacks.heroesdesk.kotlin.impl.user.*
+import org.hexastacks.heroesdesk.kotlin.user.*
 
 interface UserRepository {
     fun getHero(heroId: HeroId): EitherNel<GetHeroError, Hero> =
