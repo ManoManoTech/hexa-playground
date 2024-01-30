@@ -1,4 +1,4 @@
-package org.hexastacks.heroesdesk.kotlin.adapters.inmemory
+package org.hexastacks.heroesdesk.kotlin.ports.inmemory
 
 import arrow.core.Either.Left
 import arrow.core.Either.Right

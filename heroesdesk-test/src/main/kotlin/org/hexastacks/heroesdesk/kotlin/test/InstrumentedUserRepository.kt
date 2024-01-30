@@ -9,6 +9,7 @@ import org.hexastacks.heroesdesk.kotlin.ports.UserRepository
 interface InstrumentedUserRepository : UserRepository {
 
     fun ensureExisting(hero: Hero): Hero
+
     fun ensureAdminExistingOrThrow(adminId: String): Admin = ensureExisting(createAdminOrThrow(adminId))
 
     fun ensureExisting(admin: Admin): Admin

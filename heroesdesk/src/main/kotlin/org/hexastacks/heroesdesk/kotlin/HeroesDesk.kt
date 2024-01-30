@@ -2,10 +2,10 @@ package org.hexastacks.heroesdesk.kotlin
 
 import arrow.core.EitherNel
 import org.hexastacks.heroesdesk.kotlin.errors.*
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeMembers
+import org.hexastacks.heroesdesk.kotlin.squad.Name
+import org.hexastacks.heroesdesk.kotlin.squad.Squad
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
+import org.hexastacks.heroesdesk.kotlin.squad.SquadMembers
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
@@ -13,18 +13,18 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 
 interface HeroesDesk {
 
-    fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope>
-    fun assignScope(
-        scopeKey: ScopeKey,
+    fun createSquad(squadKey: SquadKey, name: Name, creator: AdminId): EitherNel<CreateSquadError, Squad>
+    fun assignSquad(
+        squadKey: SquadKey,
         assignees: HeroIds,
         changeAuthor: AdminId
-    ): EitherNel<AssignHeroesOnScopeError, ScopeMembers>
+    ): EitherNel<AssignHeroesOnSquadError, SquadMembers>
 
-    fun updateScopeName(scopeKey: ScopeKey, name: Name, changeAuthor: AdminId): EitherNel<UpdateScopeNameError, Scope>
-    fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope>
-    fun getScopeMembers(scopeKey: ScopeKey): EitherNel<GetScopeMembersError, ScopeMembers>
+    fun updateSquadName(squadKey: SquadKey, name: Name, changeAuthor: AdminId): EitherNel<UpdateSquadNameError, Squad>
+    fun getSquad(squadKey: SquadKey): EitherNel<GetSquadError, Squad>
+    fun getSquadMembers(squadKey: SquadKey): EitherNel<GetSquadMembersError, SquadMembers>
 
-    fun createTask(scopeKey: ScopeKey, title: Title, creator: HeroId): EitherNel<CreateTaskError, PendingTask>
+    fun createTask(squadKey: SquadKey, title: Title, creator: HeroId): EitherNel<CreateTaskError, PendingTask>
     fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>>
 
     fun updateTitle(id: TaskId, title: Title, author: HeroId): EitherNel<UpdateTitleError, Task<*>>

@@ -59,9 +59,9 @@ public class Task extends TableImpl<TaskRecord> {
     public final TableField<TaskRecord, String> ID = createField(DSL.name("id"), SQLDataType.VARCHAR(36).nullable(false), this, "");
 
     /**
-     * The column <code>heroesdeskschema.Task.scope_key</code>.
+     * The column <code>heroesdeskschema.Task.squad_key</code>.
      */
-    public final TableField<TaskRecord, String> SCOPE_KEY = createField(DSL.name("scope_key"), SQLDataType.VARCHAR(36).nullable(false), this, "");
+    public final TableField<TaskRecord, String> SQUAD_KEY = createField(DSL.name("squad_key"), SQLDataType.VARCHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>heroesdeskschema.Task.title</code>.
@@ -123,20 +123,20 @@ public class Task extends TableImpl<TaskRecord> {
 
     @Override
     public List<ForeignKey<TaskRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.TASK__FK_SCOPE_KEY);
+        return Arrays.asList(Keys.TASK__FK_SQUAD_KEY);
     }
 
-    private transient Scope _scope;
+    private transient Squad _squad;
 
     /**
-     * Get the implicit join path to the <code>heroesdeskschema.Scope</code>
+     * Get the implicit join path to the <code>heroesdeskschema.Squad</code>
      * table.
      */
-    public Scope scope() {
-        if (_scope == null)
-            _scope = new Scope(this, Keys.TASK__FK_SCOPE_KEY);
+    public Squad squad() {
+        if (_squad == null)
+            _squad = new Squad(this, Keys.TASK__FK_SQUAD_KEY);
 
-        return _scope;
+        return _squad;
     }
 
     @Override

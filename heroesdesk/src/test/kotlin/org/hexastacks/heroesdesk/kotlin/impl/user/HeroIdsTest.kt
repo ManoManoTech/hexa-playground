@@ -147,14 +147,14 @@ class HeroIdsTest {
 
 
     @Test
-    fun `containsAll(empty) returns true on empty scope members`(){
+    fun `containsAll(empty) returns true on empty squad members`(){
         val ids = HeroIds.empty
 
         assertTrue(ids.containsAll(HeroIds.empty))
     }
 
     @Test
-    fun `containsAll(element) returns false on empty scope members`(){
+    fun `containsAll(element) returns false on empty squad members`(){
         val ids = HeroIds.empty
 
         val containsAll = ids.containsAll(HeroIds(createHeroIdOrThrow("heroId")))
@@ -163,7 +163,7 @@ class HeroIdsTest {
     }
 
     @Test
-    fun `containsAll(element) returns true on scope members with element`(){
+    fun `containsAll(element) returns true on squad members with element`(){
         val heroId = createHeroIdOrThrow("heroId")
         val ids = HeroIds(heroId)
 
@@ -173,7 +173,7 @@ class HeroIdsTest {
     }
 
     @Test
-    fun `containsAll(elements) returns true on scope members all elements`(){
+    fun `containsAll(elements) returns true on squad members all elements`(){
         val heroId1 = createHeroIdOrThrow("heroId1")
         val heroId2 = createHeroIdOrThrow("heroId2")
         val ids = HeroIds(heroId1, heroId2)

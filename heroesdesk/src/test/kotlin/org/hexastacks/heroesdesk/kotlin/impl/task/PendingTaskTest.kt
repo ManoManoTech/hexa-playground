@@ -1,10 +1,8 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import arrow.core.getOrElse
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
-import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 class PendingTaskTest : AbstractTaskTest<PendingTaskId, PendingTask>() {
     override fun createTaskOrThrow(
@@ -15,7 +13,7 @@ class PendingTaskTest : AbstractTaskTest<PendingTaskId, PendingTask>() {
     ) =
         PendingTask(id, title, description, assignees)
 
-    override fun createTaskIdOrThrow(scope: ScopeKey, taskId: String): PendingTaskId =
-        PendingTaskId(scope, taskId).getOrElse { throw RuntimeException("$taskId should be valid") }
+    override fun createTaskIdOrThrow(squadKey: SquadKey, taskId: String): PendingTaskId =
+        PendingTaskId(squadKey, taskId).getOrElse { throw RuntimeException("$taskId should be valid") }
 
 }

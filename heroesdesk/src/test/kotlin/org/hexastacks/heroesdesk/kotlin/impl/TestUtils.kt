@@ -1,9 +1,7 @@
 package org.hexastacks.heroesdesk.kotlin.impl
 
 import arrow.core.getOrElse
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.Description
 import org.hexastacks.heroesdesk.kotlin.impl.task.Title
 import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
@@ -12,14 +10,8 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.UserName
 
 object TestUtils {
 
-    fun createScopeOrThrow(scopeKey: String): Scope =
-        Scope(
-            Name(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") },
-            createScopeKeyOrThrow(scopeKey)
-        )
-
-    fun createScopeKeyOrThrow(scopeKey: String): ScopeKey =
-        ScopeKey(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") }
+    fun createSquadKeyOrThrow(squadKey: String): SquadKey =
+        SquadKey(squadKey).getOrElse { throw RuntimeException("squad key should be valid: $it") }
 
 
     fun createTitleOrThrow(title: String): Title =

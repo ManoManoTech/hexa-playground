@@ -9,9 +9,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
 import org.hexastacks.heroesdesk.kotlin.errors.*
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeMembers
+import org.hexastacks.heroesdesk.kotlin.squad.Squad
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
+import org.hexastacks.heroesdesk.kotlin.squad.SquadMembers
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
@@ -24,7 +24,7 @@ import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createHeroOrThr
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createInProgressTaskIdOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createNameOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createPendingTaskIdOrThrow
-import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createScopeKeyOrThrow
+import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createSquadKeyOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createTitleOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.getTaskOrThrow
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -40,25 +40,25 @@ abstract class AbstractHeroesDeskTest {
     private lateinit var userRepo: InstrumentedUserRepository
 
     @Test
-    fun `createScope returns a scope`() {
-        val id = createScopeKeyOrThrow("id")
+    fun `createSquad returns a squad`() {
+        val id = createSquadKeyOrThrow("id")
         val name = createNameOrThrow("name")
         val creator = userRepo.ensureAdminExistingOrThrow("adminId")
 
-        val scope = heroesDesk.createScope(
+        val squad = heroesDesk.createSquad(
             id,
             name,
             creator.id
         ).getOrElse { throw AssertionError("$it") }
 
-        assertEquals(name, scope.name)
+        assertEquals(name, squad.name)
     }
 
     @Test
-    fun `createScope fails on non existing admin`() {
+    fun `createSquad fails on non existing admin`() {
         val creationFailure =
-            heroesDesk.createScope(
-                createScopeKeyOrThrow("id2"),
+            heroesDesk.createSquad(
+                createSquadKeyOrThrow("id2"),
                 createNameOrThrow("name"),
                 createAdminIdOrThrow("adminId2")
             )
@@ -70,39 +70,39 @@ abstract class AbstractHeroesDeskTest {
     }
 
     @Test
-    fun `createScope fails on pre existing scope with same name`() {
+    fun `createSquad fails on pre existing squad with same name`() {
         val name = createNameOrThrow("name")
-        heroesDesk.createScope(
-            createScopeKeyOrThrow("id1"),
+        heroesDesk.createSquad(
+            createSquadKeyOrThrow("id1"),
             name,
             userRepo.ensureAdminExistingOrThrow("adminId1").id
         )
 
         val creationFailure =
-            heroesDesk.createScope(
-                createScopeKeyOrThrow("id2"),
+            heroesDesk.createSquad(
+                createSquadKeyOrThrow("id2"),
                 name,
                 userRepo.ensureAdminExistingOrThrow("adminId2").id
             )
 
         assertTrue(creationFailure.isLeft())
         creationFailure.onLeft {
-            assertTrue(it.head is ScopeNameAlreadyExistingError, "$it")
+            assertTrue(it.head is SquadNameAlreadyExistingError, "$it")
         }
     }
 
     @Test
-    fun `createScope fails on pre existing scope with same id`() {
+    fun `createSquad fails on pre existing squad with same id`() {
         val nameCommonStart = "startEnding"
-        val id = createScopeKeyOrThrow("id")
-        heroesDesk.createScope(
+        val id = createSquadKeyOrThrow("id")
+        heroesDesk.createSquad(
             id,
             createNameOrThrow("${nameCommonStart}1"),
             userRepo.ensureAdminExistingOrThrow("adminId1").id
         )
 
         val creationFailure =
-            heroesDesk.createScope(
+            heroesDesk.createSquad(
                 id,
                 createNameOrThrow("${nameCommonStart}2"),
                 userRepo.ensureAdminExistingOrThrow("adminId2").id
@@ -110,16 +110,16 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(creationFailure.isLeft())
         creationFailure.onLeft {
-            assertTrue(it.head is ScopeKeyAlreadyExistingError, "$it")
+            assertTrue(it.head is SquadKeyAlreadyExistingError, "$it")
         }
     }
 
     @Test
-    fun `createScope works on many parallel creations`() {
+    fun `createSquad works on many parallel creations`() {
         if (Runtime.getRuntime().availableProcessors() < 4)
             return // not running on github actions
 
-        val results = ConcurrentHashMap<Int, EitherNel<CreateScopeError, Scope>>()
+        val results = ConcurrentHashMap<Int, EitherNel<CreateSquadError, Squad>>()
         val executor = Executors.newFixedThreadPool(10)
         val dispatcher = executor.asCoroutineDispatcher()
         val runNb = 1000
@@ -131,8 +131,8 @@ abstract class AbstractHeroesDeskTest {
                 launch(dispatcher) {
                     val suffix = it % createdTaskTarget
                     results[it] = heroesDesk
-                        .createScope(
-                            createScopeKeyOrThrow("id$suffix"),
+                        .createSquad(
+                            createSquadKeyOrThrow("id$suffix"),
                             createNameOrThrow("${suffix}name"),
                             admin.id
                         )
@@ -154,175 +154,175 @@ abstract class AbstractHeroesDeskTest {
     }
 
     @Test
-    fun `assignScope works`() {
-        val scopeId = createScopeKeyOrThrow("scopeId")
+    fun `assignSquad works`() {
+        val squadId = createSquadKeyOrThrow("squadId")
         val heroes = Heroes(ensureHeroExisting("heroId"))
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
-        val scope =
-            heroesDesk.createScope(scopeId, createNameOrThrow("name"), admin.id)
+        val squad =
+            heroesDesk.createSquad(squadId, createNameOrThrow("name"), admin.id)
                 .getOrElse { throw AssertionError("$it") }
 
-        val scopeMembers =
-            heroesDesk.assignScope(scopeId, HeroIds(heroes), admin.id).getOrElse { throw AssertionError(it.toString()) }
+        val squadMembers =
+            heroesDesk.assignSquad(squadId, HeroIds(heroes), admin.id).getOrElse { throw AssertionError(it.toString()) }
 
-        assertEquals(scope.key, scopeMembers.scopeKey)
-        val storedScope = heroesDesk.getScope(scopeId).getOrElse { throw AssertionError("$it") }
-        assertEquals(scope, storedScope)
+        assertEquals(squad.key, squadMembers.squadKey)
+        val storedSquad = heroesDesk.getSquad(squadId).getOrElse { throw AssertionError("$it") }
+        assertEquals(squad, storedSquad)
     }
 
     @Test
-    fun `assignScope fails on inexisting scope`() {
-        val scopeId = createScopeKeyOrThrow("scopeId")
+    fun `assignSquad fails on inexisting squad`() {
+        val squadId = createSquadKeyOrThrow("squadId")
         val heroIds = HeroIds(ensureHeroExisting("heroId"))
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
 
-        val assignedScope = heroesDesk.assignScope(scopeId, heroIds, admin.id)
+        val assignedSquad = heroesDesk.assignSquad(squadId, heroIds, admin.id)
 
-        assertTrue(assignedScope.isLeft())
-        assignedScope.onLeft {
-            assertTrue(it.head is ScopeNotExistingError)
+        assertTrue(assignedSquad.isLeft())
+        assignedSquad.onLeft {
+            assertTrue(it.head is SquadNotExistingError)
         }
     }
 
     @Test
-    fun `assignScope fails on inexisting heroIds`() {
-        val scopeId = createScopeKeyOrThrow("scopeId")
+    fun `assignSquad fails on inexisting heroIds`() {
+        val squadId = createSquadKeyOrThrow("squadId")
         val heroIds = HeroIds(createHeroIdOrThrow("heroId"))
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
-        heroesDesk.createScope(scopeId, createNameOrThrow("name"), admin.id).getOrElse { throw AssertionError("$it") }
+        heroesDesk.createSquad(squadId, createNameOrThrow("name"), admin.id).getOrElse { throw AssertionError("$it") }
 
-        val assignedScope = heroesDesk.assignScope(scopeId, heroIds, admin.id)
+        val assignedSquad = heroesDesk.assignSquad(squadId, heroIds, admin.id)
 
-        assertTrue(assignedScope.isLeft())
-        assignedScope.onLeft {
+        assertTrue(assignedSquad.isLeft())
+        assignedSquad.onLeft {
             assertTrue(it.head is HeroesNotExistingError, "$it")
         }
     }
 
     @Test
-    fun `assignScope fails on inexisting admin`() {
-        val scopeId = createScopeKeyOrThrow("scopeId")
+    fun `assignSquad fails on inexisting admin`() {
+        val squadId = createSquadKeyOrThrow("squadId")
         val heroIds = HeroIds(ensureHeroExisting("heroId"))
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
-        heroesDesk.createScope(scopeId, createNameOrThrow("name"), admin.id).getOrElse { throw AssertionError("$it") }
+        heroesDesk.createSquad(squadId, createNameOrThrow("name"), admin.id).getOrElse { throw AssertionError("$it") }
 
-        val assignedScope = heroesDesk.assignScope(scopeId, heroIds, createAdminIdOrThrow("anotherAdminId"))
+        val assignedSquad = heroesDesk.assignSquad(squadId, heroIds, createAdminIdOrThrow("anotherAdminId"))
 
-        assertTrue(assignedScope.isLeft())
-        assignedScope.onLeft {
+        assertTrue(assignedSquad.isLeft())
+        assignedSquad.onLeft {
             assertTrue(it.head is AdminNotExistingError)
         }
     }
 
     @Test
-    fun `updateScopeName fails on inexisting admin`() {
-        val scopeId = createScopeKeyOrThrow("scopeKey")
+    fun `updateSquadName fails on inexisting admin`() {
+        val squadId = createSquadKeyOrThrow("squadKey")
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
-        heroesDesk.createScope(scopeId, createNameOrThrow("name"), admin.id).getOrElse { throw AssertionError("$it") }
+        heroesDesk.createSquad(squadId, createNameOrThrow("name"), admin.id).getOrElse { throw AssertionError("$it") }
 
-        val assignedScope =
-            heroesDesk.updateScopeName(scopeId, createNameOrThrow("new name"), createAdminIdOrThrow("anotherAdminId"))
+        val assignedSquad =
+            heroesDesk.updateSquadName(squadId, createNameOrThrow("new name"), createAdminIdOrThrow("anotherAdminId"))
 
-        assertTrue(assignedScope.isLeft())
-        assignedScope.onLeft {
+        assertTrue(assignedSquad.isLeft())
+        assignedSquad.onLeft {
             assertTrue(it.head is AdminNotExistingError)
         }
     }
 
     @Test
-    fun `updateScopeName fails on inexisting scope`() {
-        val scopeId = createScopeKeyOrThrow("scopeKey")
+    fun `updateSquadName fails on inexisting squad`() {
+        val squadId = createSquadKeyOrThrow("squadKey")
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
 
-        val assignedScope = heroesDesk.updateScopeName(scopeId, createNameOrThrow("new name"), admin.id)
+        val assignedSquad = heroesDesk.updateSquadName(squadId, createNameOrThrow("new name"), admin.id)
 
-        assertTrue(assignedScope.isLeft())
-        assignedScope.onLeft {
-            assertTrue(it.head is ScopeNotExistingError)
+        assertTrue(assignedSquad.isLeft())
+        assignedSquad.onLeft {
+            assertTrue(it.head is SquadNotExistingError)
         }
     }
 
     @Test
-    fun `updateScopeName works`() {
-        val scopeId = createScopeKeyOrThrow("scopeKey")
+    fun `updateSquadName works`() {
+        val squadId = createSquadKeyOrThrow("squadKey")
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
-        heroesDesk.createScope(scopeId, createNameOrThrow("name"), admin.id).getOrElse { throw AssertionError("$it") }
+        heroesDesk.createSquad(squadId, createNameOrThrow("name"), admin.id).getOrElse { throw AssertionError("$it") }
         val newName = createNameOrThrow("new name")
 
-        val assignedScope =
-            heroesDesk.updateScopeName(scopeId, newName, admin.id).getOrElse { throw AssertionError("$it") }
+        val assignedSquad =
+            heroesDesk.updateSquadName(squadId, newName, admin.id).getOrElse { throw AssertionError("$it") }
 
-        assertEquals(newName, assignedScope.name)
+        assertEquals(newName, assignedSquad.name)
     }
 
     @Test
-    fun `getScope fails on inexisting scope`() {
-        val scopeId = createScopeKeyOrThrow("scopeKey")
+    fun `getSquad fails on inexisting squad`() {
+        val squadId = createSquadKeyOrThrow("squadKey")
 
-        val scope = heroesDesk.getScope(scopeId)
+        val squad = heroesDesk.getSquad(squadId)
 
-        assertTrue(scope.isLeft())
-        scope.onLeft {
-            assertTrue(it.head is ScopeNotExistingError, "$it")
+        assertTrue(squad.isLeft())
+        squad.onLeft {
+            assertTrue(it.head is SquadNotExistingError, "$it")
         }
     }
 
     @Test
-    fun `getScopeMembers works on scope without assignee`() {
-        val scopeId = createScopeKeyOrThrow("scopeKey")
+    fun `getSquadMembers works on squad without assignee`() {
+        val squadId = createSquadKeyOrThrow("squadKey")
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
         val name = createNameOrThrow("name")
-        val scope = heroesDesk.createScope(scopeId, name, admin.id).getOrElse { throw AssertionError("$it") }
+        val squad = heroesDesk.createSquad(squadId, name, admin.id).getOrElse { throw AssertionError("$it") }
 
-        val scopeMembers =
-            heroesDesk.getScopeMembers(scopeId)
+        val squadMembers =
+            heroesDesk.getSquadMembers(squadId)
                 .getOrElse { throw AssertionError("$it") }
 
-        assertEquals(scopeId, scopeMembers.scopeKey)
-        assertEquals(HeroIds.empty, scopeMembers.heroes)
+        assertEquals(squadId, squadMembers.squadKey)
+        assertEquals(HeroIds.empty, squadMembers.heroes)
 
     }
 
     @Test
-    fun `getScopeMembers works on scope with assignee`() {
-        val scopeId = createScopeKeyOrThrow("scopeKey")
+    fun `getSquadMembers works on squad with assignee`() {
+        val squadId = createSquadKeyOrThrow("squadKey")
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
         val name = createNameOrThrow("name")
-        heroesDesk.createScope(scopeId, name, admin.id).getOrElse { throw AssertionError("$it") }
+        heroesDesk.createSquad(squadId, name, admin.id).getOrElse { throw AssertionError("$it") }
         val assignees = HeroIds(ensureHeroExisting("heroId"))
-        heroesDesk.assignScope(scopeId, assignees, admin.id)
+        heroesDesk.assignSquad(squadId, assignees, admin.id)
             .getOrElse { throw AssertionError("$it") }
 
-        val scopeMembers = heroesDesk.getScopeMembers(scopeId).getOrElse { throw AssertionError("$it") }
+        val squadMembers = heroesDesk.getSquadMembers(squadId).getOrElse { throw AssertionError("$it") }
 
-        assertEquals(scopeId, scopeMembers.scopeKey)
-        assertEquals(assignees, scopeMembers.heroes)
+        assertEquals(squadId, squadMembers.squadKey)
+        assertEquals(assignees, squadMembers.heroes)
     }
 
     @Test
     fun `createTask returns a task`() {
         val currentHero = ensureHeroExisting("heroId")
-        val scope = ensureScopeExisting("scopeKey")
+        val squad = ensureSquadExisting("squadKey")
         val title = createTitleOrThrow("title")
-        assignScope(scope.key, Heroes(currentHero))
+        assignSquad(squad.key, Heroes(currentHero))
 
-        val task = heroesDesk.createTask(scope.key, title, currentHero.id).getOrElse { throw AssertionError("$it") }
+        val task = heroesDesk.createTask(squad.key, title, currentHero.id).getOrElse { throw AssertionError("$it") }
 
         assertEquals(title, task.title)
-        assertEquals(scope.key, task.scopeKey())
+        assertEquals(squad.key, task.squadKey())
     }
 
 
     @Test
     fun `2 tasks creation with same title and creator returns 2 distinct tasks`() {
         val currentHero = ensureHeroExisting("heroId")
-        val scope = ensureScopeExisting("scopeKey")
+        val squad = ensureSquadExisting("squadKey")
         val rawTitle = "title"
-        assignScope(scope.key, Heroes(currentHero))
+        assignSquad(squad.key, Heroes(currentHero))
 
 
-        val task1 = heroesDesk.createTask(scope.key, createTitleOrThrow(rawTitle), currentHero.id)
-        val task2 = heroesDesk.createTask(scope.key, createTitleOrThrow(rawTitle), currentHero.id)
+        val task1 = heroesDesk.createTask(squad.key, createTitleOrThrow(rawTitle), currentHero.id)
+        val task2 = heroesDesk.createTask(squad.key, createTitleOrThrow(rawTitle), currentHero.id)
 
         assertTrue(task1.isRight(), "$task1")
         assertTrue(task2.isRight(), "$task2")
@@ -339,39 +339,39 @@ abstract class AbstractHeroesDeskTest {
         val rawTitle = "title"
 
         val task =
-            heroesDesk.createTask(ensureScopeExisting("scopeKey").key, createTitleOrThrow(rawTitle), currentHero.id)
+            heroesDesk.createTask(ensureSquadExisting("squadKey").key, createTitleOrThrow(rawTitle), currentHero.id)
 
         assertTrue(task.isLeft())
         task.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is HeroesNotInSquadError, "$it")
         }
     }
 
     @Test
-    fun `createTask with a non existing scope fails`() {
+    fun `createTask with a non existing squad fails`() {
         val currentHero = ensureHeroExisting("heroId")
         val rawTitle = "title"
 
         val task =
-            heroesDesk.createTask(createScopeKeyOrThrow("scopeKey"), createTitleOrThrow(rawTitle), currentHero.id)
+            heroesDesk.createTask(createSquadKeyOrThrow("squadKey"), createTitleOrThrow(rawTitle), currentHero.id)
 
         assertTrue(task.isLeft())
         task.onLeft {
-            assertTrue(it.head is ScopeNotExistingError, "$it")
+            assertTrue(it.head is SquadNotExistingError, "$it")
         }
     }
 
     @Test
-    fun `createTask with a creator not assigned to scope fails`() {
+    fun `createTask with a creator not assigned to squad fails`() {
         val currentHero = ensureHeroExisting("heroId")
         val rawTitle = "title"
 
         val task =
-            heroesDesk.createTask(ensureScopeExisting("scopeKey").key, createTitleOrThrow(rawTitle), currentHero.id)
+            heroesDesk.createTask(ensureSquadExisting("squadKey").key, createTitleOrThrow(rawTitle), currentHero.id)
 
         assertTrue(task.isLeft())
         task.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is HeroesNotInSquadError, "$it")
         }
     }
 
@@ -432,7 +432,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is HeroesNotInSquadError, "$it")
         }
     }
 
@@ -549,38 +549,38 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(assignedTask.isLeft())
         assignedTask.onLeft {
-            assertTrue(it.head is ScopeNotExistingError, "$it")
+            assertTrue(it.head is SquadNotExistingError, "$it")
         }
     }
 
     @Test
-    fun `assign task on pending task id fails when assigned hero not assigned to scope`() {
-        assertAssignTaskFailsWhenAssignedHeroNotAssignedToScope(createAssignedPendingTask().first)
+    fun `assign task on pending task id fails when assigned hero not assigned to squad`() {
+        assertAssignTaskFailsWhenAssignedHeroNotAssignedToSquad(createAssignedPendingTask().first)
     }
 
     @Test
-    fun `assign task on in progress task id fails when assigned hero not assigned to scope`() {
-        assertAssignTaskFailsWhenAssignedHeroNotAssignedToScope(createAssignedInProgressTask().first)
+    fun `assign task on in progress task id fails when assigned hero not assigned to squad`() {
+        assertAssignTaskFailsWhenAssignedHeroNotAssignedToSquad(createAssignedInProgressTask().first)
     }
 
-    private fun assertAssignTaskFailsWhenAssignedHeroNotAssignedToScope(
+    private fun assertAssignTaskFailsWhenAssignedHeroNotAssignedToSquad(
         taskId: TaskId
     ) {
-        val nonScopeAssignedHeroes = ensureHeroExisting("nonScopeAssignedHero")
+        val nonSquadAssignedHeroes = ensureHeroExisting("nonSquadAssignedHero")
         val assignmentAuthor = ensureHeroExisting("assignmentAuthor").id
 
         val assignedTask = when (taskId) {
             is PendingTaskId ->
                 heroesDesk.assignTask(
                     taskId,
-                    HeroIds(nonScopeAssignedHeroes),
+                    HeroIds(nonSquadAssignedHeroes),
                     assignmentAuthor
                 )
 
             is InProgressTaskId ->
                 heroesDesk.assignTask(
                     taskId,
-                    HeroIds(nonScopeAssignedHeroes),
+                    HeroIds(nonSquadAssignedHeroes),
                     assignmentAuthor
                 )
 
@@ -589,7 +589,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(assignedTask.isLeft())
         assignedTask.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is HeroesNotInSquadError, "$it")
         }
     }
 
@@ -610,7 +610,7 @@ abstract class AbstractHeroesDeskTest {
         val taskId = createdTask.taskId
         val hero = ensureHeroExisting("heroId1")
         val heroes = Heroes(hero)
-        assignScope(createdTask, heroes)
+        assignSquad(createdTask, heroes)
 
         val updatedTaskId =
             heroesDesk.startWork(taskId, hero.id).getOrElse { throw AssertionError("$it") }
@@ -636,19 +636,19 @@ abstract class AbstractHeroesDeskTest {
     @Test
     fun `start work fails with non existing hero`() {
         val createdTask = ensureTaskExisting("title", "heroId")
-        assignScope(createdTask, empty)
+        assignSquad(createdTask, empty)
 
         val updatedTaskId =
             heroesDesk.startWork(createdTask.taskId, createHeroOrThrow("nonExistingHero").id)
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is HeroesNotInSquadError, "$it")
         }
     }
 
     @Test
-    fun `start work fails when hero not in the scope`() {
+    fun `start work fails when hero not in the squad`() {
         val createdTask = ensureTaskExisting("title", "heroId")
 
         val updatedTaskId =
@@ -656,7 +656,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is HeroesNotInSquadError, "$it")
         }
     }
 
@@ -695,12 +695,12 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(pauseWorkResult.isLeft())
         pauseWorkResult.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is HeroesNotInSquadError, "$it")
         }
     }
 
     @Test
-    fun `pause work fails when hero not in the scope`() {
+    fun `pause work fails when hero not in the squad`() {
         val (pendingTaskId, hero) = createAssignedPendingTask()
         val updatedTask =
             heroesDesk.startWork(pendingTaskId, hero.id).getOrElse { throw AssertionError("$it") }
@@ -710,7 +710,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(pauseWorkResult.isLeft())
         pauseWorkResult.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is HeroesNotInSquadError, "$it")
         }
     }
 
@@ -748,12 +748,12 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is HeroesNotInSquadError, "$it")
         }
     }
 
     @Test
-    fun `end work fails when hero not in the scope`() {
+    fun `end work fails when hero not in the squad`() {
         val (inProgressTaskId, hero) = createAssignedInProgressTask()
 
         val updatedTaskId =
@@ -761,7 +761,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is HeroesNotInSquadError, "$it")
         }
     }
 
@@ -778,23 +778,23 @@ abstract class AbstractHeroesDeskTest {
         val taskId = createdTask.taskId
         val hero = ensureHeroExisting("heroId1")
         val heroes = Heroes(hero)
-        assignScope(createdTask, heroes)
+        assignSquad(createdTask, heroes)
         heroesDesk.assignTask(taskId, HeroIds(hero), hero.id).getOrElse { throw AssertionError("$it") }
         return Pair(taskId, hero)
     }
 
-    private fun assignScope(task: Task<*>, heroes: Heroes): ScopeMembers {
-        return assignScope(task.scopeKey(), heroes)
+    private fun assignSquad(task: Task<*>, heroes: Heroes): SquadMembers {
+        return assignSquad(task.squadKey(), heroes)
     }
 
-    private fun assignScope(
-        scopeKey: ScopeKey,
+    private fun assignSquad(
+        squadKey: SquadKey,
         heroes: Heroes
-    ): ScopeMembers {
-        return heroesDesk.assignScope(
-            scopeKey,
+    ): SquadMembers {
+        return heroesDesk.assignSquad(
+            squadKey,
             HeroIds(heroes),
-            userRepo.ensureAdminExistingOrThrow("scopeAdminId").id
+            userRepo.ensureAdminExistingOrThrow("squadAdminId").id
         )
             .getOrElse { throw AssertionError("$it") }
     }
@@ -803,22 +803,22 @@ abstract class AbstractHeroesDeskTest {
         ensureTaskExisting(title, ensureHeroExisting(hero))
 
     private fun ensureTaskExisting(title: String, hero: Hero): PendingTask {
-        val scope = ensureScopeExisting("scopeKey")
-        assignScope(scope.key, Heroes(hero))
+        val squad = ensureSquadExisting("squadKey")
+        assignSquad(squad.key, Heroes(hero))
         return heroesDesk
             .createTask(
-                scope.key, createTitleOrThrow(title), hero.id
+                squad.key, createTitleOrThrow(title), hero.id
             )
             .getOrElse { throw AssertionError("$it") }
     }
 
     private fun ensureHeroExisting(rawHeroId: String) = userRepo.ensureHeroExistingOrThrow(rawHeroId)
 
-    private fun ensureScopeExisting(scopeKey: String): Scope {
-        val scopeId = createScopeKeyOrThrow(scopeKey)
+    private fun ensureSquadExisting(squadKey: String): Squad {
+        val squadId = createSquadKeyOrThrow(squadKey)
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
         val name = createNameOrThrow("name")
-        return heroesDesk.createScope(scopeId, name, admin.id).getOrElse { throw AssertionError("$it") }
+        return heroesDesk.createSquad(squadId, name, admin.id).getOrElse { throw AssertionError("$it") }
 
     }
 

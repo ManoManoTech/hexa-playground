@@ -1,8 +1,7 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import org.hexastacks.heroesdesk.kotlin.impl.ErrorMessage
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
 
 sealed interface TaskId {
 
@@ -11,7 +10,7 @@ sealed interface TaskId {
         const val MAX_LENGTH = 36
     }
 
-    val scope: ScopeKey
+    val squadKey: SquadKey
     val value: String
 
     sealed interface TaskIdError : ErrorMessage

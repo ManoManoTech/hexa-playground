@@ -2,9 +2,8 @@ package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import arrow.core.EitherNel
 import arrow.core.getOrElse
-import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createScopeKeyOrThrow
-import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createScopeOrThrow
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createSquadKeyOrThrow
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.TaskIdError
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -102,13 +101,13 @@ abstract class AbstractTaskIdTest<Id : TaskId> {
         assertEquals(description1.hashCode(), description2.hashCode())
     }
 
-    abstract fun createTaskId(scope: ScopeKey, value: String): EitherNel<TaskIdError, Id>
+    abstract fun createTaskId(squad: SquadKey, value: String): EitherNel<TaskIdError, Id>
 
     private fun createTaskId(value: String) =
-        createTaskId(createScopeKeyOrThrow("randomScope"), value)
+        createTaskId(createSquadKeyOrThrow("randomSquad"), value)
 
     private fun createTaskIdOrThrow(value: String) =
-        createTaskId(createScopeKeyOrThrow("randomScope"), value).getOrElse { throw IllegalStateException() }
+        createTaskId(createSquadKeyOrThrow("randomSquad"), value).getOrElse { throw IllegalStateException() }
 
     private val minLength: Int = TaskId.MIN_LENGTH
     private val maxLength: Int = TaskId.MAX_LENGTH

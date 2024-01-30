@@ -1,8 +1,9 @@
-package org.hexastacks.heroesdesk.kotlin.impl.scope
+package org.hexastacks.heroesdesk.kotlin.impl.squad
 
 import arrow.core.EitherNel
 import org.hexastacks.heroesdesk.kotlin.impl.AbstractStringValueTest
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Name.NameError
+import org.hexastacks.heroesdesk.kotlin.squad.Name
+import org.hexastacks.heroesdesk.kotlin.squad.Name.NameError
 
 class NameTest : AbstractStringValueTest<Name, NameError>() {
     override fun createStringValue(value: String): EitherNel<NameError, Name> = Name(value)

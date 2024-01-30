@@ -7,10 +7,10 @@ import arrow.core.nonEmptyListOf
 import arrow.core.raise.either
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
 import org.hexastacks.heroesdesk.kotlin.errors.*
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeMembers
+import org.hexastacks.heroesdesk.kotlin.squad.Name
+import org.hexastacks.heroesdesk.kotlin.squad.Squad
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
+import org.hexastacks.heroesdesk.kotlin.squad.SquadMembers
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
@@ -21,47 +21,47 @@ import org.hexastacks.heroesdesk.kotlin.ports.UserRepository
 
 class HeroesDeskImpl(private val userRepository: UserRepository, private val taskRepository: TaskRepository) :
     HeroesDesk {
-    override fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope> =
+    override fun createSquad(squadKey: SquadKey, name: Name, creator: AdminId): EitherNel<CreateSquadError, Squad> =
         either {
             userRepository.getAdmin(creator).bind()
-            taskRepository.createScope(scopeKey, name).bind()
+            taskRepository.createSquad(squadKey, name).bind()
         }
 
-    override fun assignScope(
-        scopeKey: ScopeKey,
+    override fun assignSquad(
+        squadKey: SquadKey,
         assignees: HeroIds,
         changeAuthor: AdminId
-    ): EitherNel<AssignHeroesOnScopeError, ScopeMembers> =
+    ): EitherNel<AssignHeroesOnSquadError, SquadMembers> =
         either {
             val heroes = userRepository.getHeroes(assignees).bind()
             userRepository.getAdmin(changeAuthor).bind()
-            taskRepository.assignScope(scopeKey, heroes).bind()
+            taskRepository.assignSquad(squadKey, heroes).bind()
         }
 
-    override fun updateScopeName(
-        scopeKey: ScopeKey,
+    override fun updateSquadName(
+        squadKey: SquadKey,
         name: Name,
         changeAuthor: AdminId
-    ): EitherNel<UpdateScopeNameError, Scope> =
+    ): EitherNel<UpdateSquadNameError, Squad> =
         either {
             userRepository.getAdmin(changeAuthor).bind()
-            taskRepository.updateScopeName(scopeKey, name).bind()
+            taskRepository.updateSquadName(squadKey, name).bind()
         }
 
-    override fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope> =
-        taskRepository.getScope(scopeKey)
+    override fun getSquad(squadKey: SquadKey): EitherNel<GetSquadError, Squad> =
+        taskRepository.getSquad(squadKey)
 
-    override fun getScopeMembers(scopeKey: ScopeKey): EitherNel<GetScopeMembersError, ScopeMembers> =
-        taskRepository.getScopeMembers(scopeKey)
+    override fun getSquadMembers(squadKey: SquadKey): EitherNel<GetSquadMembersError, SquadMembers> =
+        taskRepository.getSquadMembers(squadKey)
 
     override fun createTask(
-        scopeKey: ScopeKey,
+        squadKey: SquadKey,
         title: Title,
         creator: HeroId
     ): EitherNel<CreateTaskError, PendingTask> =
         either {
-            taskRepository.areHeroesInScope(HeroIds(creator), scopeKey).bind()
-            taskRepository.createTask(scopeKey, title).bind()
+            taskRepository.areHeroesInSquad(HeroIds(creator), squadKey).bind()
+            taskRepository.createTask(squadKey, title).bind()
         }
 
     override fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>> = taskRepository.getTask(id)
@@ -72,7 +72,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         author: HeroId
     ): EitherNel<UpdateTitleError, Task<*>> =
         either {
-            taskRepository.areHeroesInScope(HeroIds(author), id).bind()
+            taskRepository.areHeroesInSquad(HeroIds(author), id).bind()
             taskRepository.updateTitle(id, title).bind()
         }
 
@@ -106,7 +106,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         author: HeroId
     ): EitherNel<AssignTaskError, Task<*>> =
         either {
-            taskRepository.areHeroesInScope(assignees + author, id.scope).bind()
+            taskRepository.areHeroesInSquad(assignees + author, id.squadKey).bind()
             taskRepository.assignTask(id, assignees).bind()
         }
 
@@ -115,7 +115,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         author: HeroId
     ): EitherNel<StartWorkError, InProgressTask> =
         either {
-            val task = taskRepository.areHeroesInScope(HeroIds(author), id).bind()
+            val task = taskRepository.areHeroesInSquad(HeroIds(author), id).bind()
             val verifiedTask = when (task) {
                 is PendingTask -> Right(task)
                 else -> Left(nonEmptyListOf(TaskNotPendingError(task, id)))
@@ -154,7 +154,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                 is InProgressTask -> Right(task)
                 else -> Left(nonEmptyListOf(TaskNotInProgressError(task, id)))
             }.bind()
-            taskRepository.areHeroesInScope(HeroIds(author), verifiedTask.scopeKey()).bind()
+            taskRepository.areHeroesInSquad(HeroIds(author), verifiedTask.squadKey()).bind()
             taskRepository.pauseWork(id).bind()
         }
 
@@ -179,7 +179,7 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
                 is InProgressTask -> Right(task)
                 else -> Left(nonEmptyListOf(TaskNotInProgressError(task, id)))
             }.bind()
-            taskRepository.areHeroesInScope(HeroIds(author), verifiedTask.scopeKey()).bind()
+            taskRepository.areHeroesInSquad(HeroIds(author), verifiedTask.squadKey()).bind()
             taskRepository.endWork(id).bind()
         }
 }
