@@ -2,21 +2,20 @@ package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import arrow.core.getOrElse
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 class InProgressTaskTest : AbstractTaskTest<InProgressTaskId, InProgressTask>() {
     override fun createTaskOrThrow(
-        scope: Scope,
         id: InProgressTaskId,
         title: Title,
         description: Description,
-        creator: Hero,
-        assignees: Heroes
+        assignees: HeroIds
     ) =
-        InProgressTask(scope, id, title, description, assignees)
+        InProgressTask(id, title, description, assignees)
 
-    override fun createTaskIdOrThrow(scope: Scope, taskId: String): InProgressTaskId =
+    override fun createTaskIdOrThrow(scope: ScopeKey, taskId: String): InProgressTaskId =
         InProgressTaskId(scope, taskId).getOrElse { throw RuntimeException("$taskId should be valid") }
 
 }

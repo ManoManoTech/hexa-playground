@@ -10,8 +10,8 @@ class ScopeTest {
     @Test
     fun `scopes with same keys and different content are equals`() {
         val scopeKey = scopeKey("COD")
-        val scope1 = Scope(name("Write code"), scopeKey, Heroes.empty)
-        val scope2 = Scope(name("Read coode"), scopeKey, Heroes(hero()))
+        val scope1 = Scope(name("Write code"), scopeKey)
+        val scope2 = Scope(name("Read coode"), scopeKey)
 
         assertEquals(scope1, scope2)
     }
@@ -20,8 +20,8 @@ class ScopeTest {
     fun `scopes with different ids and same content aren't equals`() {
         val name = name("Write code")
         val assignees = Heroes.empty
-        val scope1 = Scope(name, scopeKey("COD"), assignees)
-        val scope2 = Scope(name, scopeKey("WRI"), assignees)
+        val scope1 = Scope(name, scopeKey("COD"))
+        val scope2 = Scope(name, scopeKey("WRI"))
 
         assertNotEquals(scope1, scope2)
     }
@@ -29,8 +29,8 @@ class ScopeTest {
     @Test
     fun `scopes with same ids and different content have same hashcode`() {
         val scopeKey = scopeKey("COD")
-        val scope1 = Scope(name("Write code"), scopeKey, Heroes.empty).hashCode()
-        val scope2 = Scope(name("Read coode"), scopeKey, Heroes(hero())).hashCode()
+        val scope1 = Scope(name("Write code"), scopeKey).hashCode()
+        val scope2 = Scope(name("Read coode"), scopeKey).hashCode()
 
         assertEquals(scope1, scope2)
     }

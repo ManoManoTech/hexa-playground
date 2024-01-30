@@ -1,6 +1,8 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 sealed interface Task<T : TaskId> {
@@ -16,15 +18,16 @@ sealed interface Task<T : TaskId> {
         is DoneTask -> copy(description = description)
     }
 
-    fun assign(assignees: Heroes): Task<out TaskId> = when (this) {
+    fun assign(assignees: HeroIds): Task<out TaskId> = when (this) {
         is PendingTask -> copy(assignees = assignees)
         is InProgressTask -> copy(assignees = assignees)
         is DoneTask -> this
     }
 
-    val scope: Scope
     val taskId: T
     val title: Title
     val description: Description
-    val assignees: Heroes
+    val assignees: HeroIds
+
+    fun scopeKey(): ScopeKey = taskId.scope
 }

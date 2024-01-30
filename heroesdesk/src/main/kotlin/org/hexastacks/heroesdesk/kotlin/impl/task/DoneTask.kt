@@ -1,13 +1,11 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 
 data class DoneTask(
-    override val scope: Scope,
     override val taskId: DoneTaskId,
     override val title: Title,
     override val description: Description,
 ) : Task<DoneTaskId> {
-    override val assignees: Heroes = Heroes.empty
+    override val assignees: HeroIds = HeroIds.empty
 }

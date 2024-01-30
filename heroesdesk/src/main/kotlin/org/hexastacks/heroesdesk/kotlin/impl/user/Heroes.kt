@@ -39,7 +39,9 @@ data class Heroes(val value: Set<Hero>) {
     fun intersect(authorAndAssignees: Heroes) : Heroes = Heroes(value.intersect(authorAndAssignees.value))
 
     fun subtract(heroes: Heroes) : Heroes = Heroes(value.subtract(heroes.value))
+    fun subtract(heroesId: HeroIds): Heroes = value.filter { !heroesId.contains(it.id) }.let { Heroes(it) }
 
+    fun toHeroIds(): HeroIds = HeroIds(value.map { it.id })
 
     companion object {
         val empty: Heroes = Heroes(emptySet())
