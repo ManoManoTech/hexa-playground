@@ -1,21 +1,21 @@
 package org.hexastacks.heroesdesk.kotlin.errors
 
-import org.hexastacks.heroesdesk.kotlin.impl.ErrorMessage
+import org.hexastacks.heroesdesk.kotlin.misc.ErrorMessage
 import org.hexastacks.heroesdesk.kotlin.squad.Name
 import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
-import org.hexastacks.heroesdesk.kotlin.impl.task.InProgressTaskId
-import org.hexastacks.heroesdesk.kotlin.impl.task.PendingTaskId
-import org.hexastacks.heroesdesk.kotlin.impl.task.Task
-import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
-import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
-import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
-import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
-import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
+import org.hexastacks.heroesdesk.kotlin.mission.InProgressMissionId
+import org.hexastacks.heroesdesk.kotlin.mission.PendingMissionId
+import org.hexastacks.heroesdesk.kotlin.mission.Mission
+import org.hexastacks.heroesdesk.kotlin.mission.MissionId
+import org.hexastacks.heroesdesk.kotlin.user.AdminId
+import org.hexastacks.heroesdesk.kotlin.user.HeroId
+import org.hexastacks.heroesdesk.kotlin.user.HeroIds
+import org.hexastacks.heroesdesk.kotlin.user.Heroes
 
 sealed interface HeroesDeskError : ErrorMessage
 
 sealed interface CreateSquadError : HeroesDeskError
-sealed interface AreHeroesInSquadError : HeroesDeskError, CreateTaskError, AssignTaskError, PauseWorkError, EndWorkError,UpdateTitleError
+sealed interface AreHeroesInSquadError : HeroesDeskError, CreateMissionError, AssignMissionError, PauseWorkError, EndWorkError,UpdateTitleError
 
 data class SquadNameAlreadyExistingError(val name: Name) : CreateSquadError {
     override val message = "Squad $name already exists"
@@ -33,26 +33,26 @@ data class SquadNotExistingError(val squadKey: SquadKey) : GetSquadError, GetSqu
 
 sealed interface UpdateSquadNameError : HeroesDeskError
 
-sealed interface GetSquadError : HeroesDeskError, AssignHeroesOnSquadError, UpdateSquadNameError, CreateTaskError,
+sealed interface GetSquadError : HeroesDeskError, AssignHeroesOnSquadError, UpdateSquadNameError, CreateMissionError,
     AreHeroesInSquadError
 
 sealed interface GetSquadMembersError : HeroesDeskError
 
-sealed interface CreateTaskError : HeroesDeskError
+sealed interface CreateMissionError : HeroesDeskError
 
-data class HeroesNotInSquadError(val heroIds: HeroIds, val squadKey: SquadKey) : CreateTaskError, EndWorkError,
-    PauseWorkError, StartWorkError, AssignTaskError, AreHeroesInSquadError {
+data class HeroesNotInSquadError(val heroIds: HeroIds, val squadKey: SquadKey) : CreateMissionError, EndWorkError,
+    PauseWorkError, StartWorkError, AssignMissionError, AreHeroesInSquadError {
     constructor(heroId: HeroId, squadKey: SquadKey) : this(HeroIds(heroId), squadKey)
     constructor(heroes: Heroes, squadKey: SquadKey) : this(HeroIds(heroes), squadKey)
 
     override val message = "${heroIds} not in $squadKey squad"
 }
 
-sealed interface GetTaskError : HeroesDeskError, AssignTaskError, PauseWorkError, EndWorkError, UpdateTitleError,
+sealed interface GetMissionError : HeroesDeskError, AssignMissionError, PauseWorkError, EndWorkError, UpdateTitleError,
     UpdateDescriptionError, AreHeroesInSquadError, StartWorkError
 
-data class TaskNotExistingError(val taskId: TaskId) : GetTaskError {
-    override val message = "Task $taskId does not exist"
+data class MissionNotExistingError(val missionId: MissionId) : GetMissionError {
+    override val message = "Mission $missionId does not exist"
 }
 
 sealed interface UpdateTitleError : HeroesDeskError
@@ -61,23 +61,23 @@ sealed interface UpdateDescriptionError : HeroesDeskError
 
 sealed interface EndWorkError : HeroesDeskError
 
-data class TaskNotInProgressError(val task: Task<*>, val taskId: InProgressTaskId) : EndWorkError, PauseWorkError {
-    override val message = "Task $task not a pending one, despite being $taskId"
+data class MissionNotInProgressError(val mission: Mission<*>, val missionIdId: InProgressMissionId) : EndWorkError, PauseWorkError {
+    override val message = "Mission $mission not a pending one, despite being $missionIdId"
 }
 
 sealed interface PauseWorkError : HeroesDeskError
 
 sealed interface StartWorkError : HeroesDeskError
 
-data class TaskNotPendingError(val task: Task<*>, val taskId: PendingTaskId) : StartWorkError {
-    override val message = "Task $task not a pending one, despite being $taskId"
+data class MissionNotPendingError(val mission: Mission<*>, val missionId: PendingMissionId) : StartWorkError {
+    override val message = "Mission $mission not a pending one, despite being $missionId"
 }
 
-sealed interface AssignTaskError : HeroesDeskError, StartWorkError
+sealed interface AssignMissionError : HeroesDeskError, StartWorkError
 
 sealed interface UserRepositoryError : HeroesDeskError
-sealed interface GetHeroError : UserRepositoryError, AssignHeroesOnSquadError, CreateTaskError, UpdateTitleError,
-    UpdateDescriptionError, AssignTaskError, PauseWorkError, EndWorkError
+sealed interface GetHeroError : UserRepositoryError, AssignHeroesOnSquadError, CreateMissionError, UpdateTitleError,
+    UpdateDescriptionError, AssignMissionError, PauseWorkError, EndWorkError
 
 data class HeroesNotExistingError(val heroIds: HeroIds) : GetHeroError {
     override val message = "Heroes $heroIds do not exist"
@@ -89,12 +89,12 @@ data class AdminNotExistingError(val adminId: AdminId) : GetAdminError {
     override val message = "Admin $adminId does not exist"
 }
 
-data class TaskRepositoryError(
+data class MissionRepositoryError(
     override val message: String,
     val exception: Exception? = null,
     val error: ErrorMessage? = null
 ) : HeroesDeskError,
-    CreateSquadError, GetSquadError, UpdateSquadNameError, GetSquadMembersError, CreateTaskError, GetTaskError {
+    CreateSquadError, GetSquadError, UpdateSquadNameError, GetSquadMembersError, CreateMissionError, GetMissionError {
     constructor(exception: Exception) : this(exception.message ?: "Unknown error", exception)
     constructor(error: ErrorMessage) : this(error.message, error = error)
 }

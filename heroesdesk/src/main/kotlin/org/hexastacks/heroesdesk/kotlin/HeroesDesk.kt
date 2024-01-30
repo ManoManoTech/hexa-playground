@@ -6,10 +6,10 @@ import org.hexastacks.heroesdesk.kotlin.squad.Name
 import org.hexastacks.heroesdesk.kotlin.squad.Squad
 import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
 import org.hexastacks.heroesdesk.kotlin.squad.SquadMembers
-import org.hexastacks.heroesdesk.kotlin.impl.task.*
-import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
-import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
-import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
+import org.hexastacks.heroesdesk.kotlin.user.AdminId
+import org.hexastacks.heroesdesk.kotlin.user.HeroId
+import org.hexastacks.heroesdesk.kotlin.user.HeroIds
+import org.hexastacks.heroesdesk.kotlin.mission.*
 
 interface HeroesDesk {
 
@@ -24,38 +24,38 @@ interface HeroesDesk {
     fun getSquad(squadKey: SquadKey): EitherNel<GetSquadError, Squad>
     fun getSquadMembers(squadKey: SquadKey): EitherNel<GetSquadMembersError, SquadMembers>
 
-    fun createTask(squadKey: SquadKey, title: Title, creator: HeroId): EitherNel<CreateTaskError, PendingTask>
-    fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>>
+    fun createMission(squadKey: SquadKey, title: Title, creator: HeroId): EitherNel<CreateMissionError, PendingMission>
+    fun getMission(id: MissionId): EitherNel<GetMissionError, Mission<*>>
 
-    fun updateTitle(id: TaskId, title: Title, author: HeroId): EitherNel<UpdateTitleError, Task<*>>
+    fun updateTitle(id: MissionId, title: Title, author: HeroId): EitherNel<UpdateTitleError, Mission<*>>
     fun updateDescription(
-        id: TaskId, description: Description, author: HeroId
-    ): EitherNel<UpdateDescriptionError, Task<*>>
+        id: MissionId, description: Description, author: HeroId
+    ): EitherNel<UpdateDescriptionError, Mission<*>>
 
-    fun assignTask(id: PendingTaskId, assignees: HeroIds, author: HeroId): EitherNel<AssignTaskError, Task<*>>
-    fun assignTask(id: InProgressTaskId, assignees: HeroIds, author: HeroId): EitherNel<AssignTaskError, Task<*>>
-
-    /**
-     * Adds the author to the assignees if not in already
-     */
-    fun startWork(id: PendingTaskId, author: HeroId): EitherNel<StartWorkError, InProgressTask>
+    fun assignMission(id: PendingMissionId, assignees: HeroIds, author: HeroId): EitherNel<AssignMissionError, Mission<*>>
+    fun assignMission(id: InProgressMissionId, assignees: HeroIds, author: HeroId): EitherNel<AssignMissionError, Mission<*>>
 
     /**
      * Adds the author to the assignees if not in already
      */
-    fun startWork(id: DoneTaskId, author: HeroId): EitherNel<StartWorkError, InProgressTask>
+    fun startWork(id: PendingMissionId, author: HeroId): EitherNel<StartWorkError, InProgressMission>
 
-    fun pauseWork(id: InProgressTaskId, author: HeroId): EitherNel<PauseWorkError, PendingTask>
-    fun pauseWork(id: DoneTaskId, author: HeroId): EitherNel<PauseWorkError, PendingTask>
+    /**
+     * Adds the author to the assignees if not in already
+     */
+    fun startWork(id: DoneMissionId, author: HeroId): EitherNel<StartWorkError, InProgressMission>
+
+    fun pauseWork(id: InProgressMissionId, author: HeroId): EitherNel<PauseWorkError, PendingMission>
+    fun pauseWork(id: DoneMissionId, author: HeroId): EitherNel<PauseWorkError, PendingMission>
 
     /**
      * Clears assignees
      */
-    fun endWork(id: PendingTaskId, author: HeroId): EitherNel<EndWorkError, DoneTask>
+    fun endWork(id: PendingMissionId, author: HeroId): EitherNel<EndWorkError, DoneMission>
 
     /**
      * Clears assignees
      */
-    fun endWork(id: InProgressTaskId, author: HeroId): EitherNel<EndWorkError, DoneTask>
+    fun endWork(id: InProgressMissionId, author: HeroId): EitherNel<EndWorkError, DoneMission>
 
 }

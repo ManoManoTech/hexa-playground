@@ -66,7 +66,7 @@ It's even better when most of the bugs can't happen by design.
 
 When doing a tech showcase, which business model to use is often tricky.
 
-A made up application, called HeroesDesk, is the functional target. It's a task tracker for heroes: familiar to
+A made up application, called HeroesDesk, is the functional target. It's a mission tracker for heroes: familiar to
 developers, yet allowing some complexity and with a clear mission statement.
 
 Read more about the requirements in [Functional requirement](FUNCTIONAL_REQUIREMENTS.md).

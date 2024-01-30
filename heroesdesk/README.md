@@ -21,7 +21,7 @@ Regarding the ports, if sticking strictly to the hexagonal naming, there are 3 s
 ```
 org.hexastacks.heroesdesk.kotlin.HeroesDesk
 org.hexastacks.heroesdesk.kotlin.ports.UserRepository
-org.hexastacks.heroesdesk.kotlin.ports.TaskRepository
+org.hexastacks.heroesdesk.kotlin.ports.MissionRepository
 ```
 
 The HeroesDesk one is the interface exposed to consumers of this domain, the primary one as says Alistair Cockburn
