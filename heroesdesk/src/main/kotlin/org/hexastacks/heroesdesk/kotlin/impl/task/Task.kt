@@ -1,9 +1,7 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
-import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 
 sealed interface Task<T : TaskId> {
     fun updateTitle(title: Title): Task<out TaskId> = when (this) {
@@ -29,5 +27,5 @@ sealed interface Task<T : TaskId> {
     val description: Description
     val assignees: HeroIds
 
-    fun scopeKey(): ScopeKey = taskId.scope
+    fun squadKey(): SquadKey = taskId.squadKey
 }

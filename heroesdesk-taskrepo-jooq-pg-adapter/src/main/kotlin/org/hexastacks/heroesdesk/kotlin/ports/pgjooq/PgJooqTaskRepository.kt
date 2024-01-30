@@ -5,10 +5,10 @@ import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.core.raise.either
 import org.hexastacks.heroesdesk.kotlin.errors.*
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeMembers
+import org.hexastacks.heroesdesk.kotlin.squad.Name
+import org.hexastacks.heroesdesk.kotlin.squad.Squad
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
+import org.hexastacks.heroesdesk.kotlin.squad.SquadMembers
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
@@ -16,7 +16,7 @@ import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
 import org.hexastacks.heroesdesk.kotlin.ports.TaskRepository
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.Tables.*
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.enums.Taskstatus
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.ScopeRecord
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.SquadRecord
 import org.jooq.DSLContext
 import org.jooq.Record6
 import org.jooq.Result
@@ -25,119 +25,119 @@ import org.jooq.exception.IntegrityConstraintViolationException
 import java.util.*
 
 class PgJooqTaskRepository(private val dslContext: DSLContext) : TaskRepository {
-    override fun createScope(scopeKey: ScopeKey, name: Name): EitherNel<CreateScopeError, Scope> =
+    override fun createSquad(squadKey: SquadKey, name: Name): EitherNel<CreateSquadError, Squad> =
         try {
-            val execute = dslContext.insertInto(SCOPE)
-                .set(SCOPE.KEY, scopeKey.value)
-                .set(SCOPE.NAME, name.value)
+            val execute = dslContext.insertInto(SQUAD)
+                .set(SQUAD.KEY, squadKey.value)
+                .set(SQUAD.NAME, name.value)
                 .execute()
             if (execute != 1)
                 Left(nonEmptyListOf(TaskRepositoryError("Insert failed")))
             else
-                Right(Scope(name, scopeKey))
+                Right(Squad(name, squadKey))
         } catch (e: DataAccessException) {
             if (e is IntegrityConstraintViolationException && e.message?.contains("""ERROR: duplicate key value violates unique constraint "${Keys.CHK_NAME_UNIQUE.name}"""") ?: false)
-                Left(nonEmptyListOf(ScopeNameAlreadyExistingError(name)))
-            else if (e is IntegrityConstraintViolationException && e.message?.contains("""ERROR: duplicate key value violates unique constraint "${Keys.PK_SCOPE.name}"""") ?: false)
-                Left(nonEmptyListOf(ScopeKeyAlreadyExistingError(scopeKey)))
+                Left(nonEmptyListOf(SquadNameAlreadyExistingError(name)))
+            else if (e is IntegrityConstraintViolationException && e.message?.contains("""ERROR: duplicate key value violates unique constraint "${Keys.PK_SQUAD.name}"""") ?: false)
+                Left(nonEmptyListOf(SquadKeyAlreadyExistingError(squadKey)))
             else
                 Left(nonEmptyListOf(TaskRepositoryError(e)))
         }
 
-    override fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope> =
+    override fun getSquad(squadKey: SquadKey): EitherNel<GetSquadError, Squad> =
         try {
-            dslContext.selectFrom(SCOPE)
-                .where(SCOPE.KEY.eq(scopeKey.value))
-                .fetchOneInto(ScopeRecord::class.java)
+            dslContext.selectFrom(SQUAD)
+                .where(SQUAD.KEY.eq(squadKey.value))
+                .fetchOneInto(SquadRecord::class.java)
                 ?.let {
                     Name(it.name)
                         .mapLeft { errors ->
                             errors.map { error -> TaskRepositoryError(error) }
                         }
-                        .map { name -> Scope(name, scopeKey) }
+                        .map { name -> Squad(name, squadKey) }
                 }
-                ?: Left(nonEmptyListOf(ScopeNotExistingError(scopeKey)))
+                ?: Left(nonEmptyListOf(SquadNotExistingError(squadKey)))
         } catch (e: DataAccessException) {
             Left(nonEmptyListOf(TaskRepositoryError(e)))
         }
 
-    override fun getScopeMembers(scopeKey: ScopeKey): EitherNel<GetScopeMembersError, ScopeMembers> =
+    override fun getSquadMembers(squadKey: SquadKey): EitherNel<GetSquadMembersError, SquadMembers> =
         try {
-            (if (isScopeNotExisting(scopeKey)
-            ) Left(nonEmptyListOf(ScopeNotExistingError(scopeKey)))
-            else dslContext.select(SCOPE_USER.USER_ID)
-                .from(SCOPE_USER)
-                .where(SCOPE_USER.SCOPE_KEY.eq(scopeKey.value))
+            (if (isSquadNotExisting(squadKey)
+            ) Left(nonEmptyListOf(SquadNotExistingError(squadKey)))
+            else dslContext.select(SQUAD_USER.USER_ID)
+                .from(SQUAD_USER)
+                .where(SQUAD_USER.SQUAD_KEY.eq(squadKey.value))
                 .map { HeroId(it.value1()) }
                 .toList()
                 .let { either { it.bindAll() } }
                 .mapLeft { errors ->
                     errors.map { error -> TaskRepositoryError(error) }
-                }.map { heroIds -> ScopeMembers(scopeKey, HeroIds(heroIds)) })
+                }.map { heroIds -> SquadMembers(squadKey, HeroIds(heroIds)) })
         } catch (e: DataAccessException) {
             Left(nonEmptyListOf(TaskRepositoryError(e)))
         }
 
-    override fun updateScopeName(scopeKey: ScopeKey, name: Name): EitherNel<UpdateScopeNameError, Scope> =
+    override fun updateSquadName(squadKey: SquadKey, name: Name): EitherNel<UpdateSquadNameError, Squad> =
         try {
-            dslContext.update(SCOPE)
-                .set(SCOPE.NAME, name.value)
-                .where(SCOPE.KEY.eq(scopeKey.value))
+            dslContext.update(SQUAD)
+                .set(SQUAD.NAME, name.value)
+                .where(SQUAD.KEY.eq(squadKey.value))
                 .returning()
-                .fetchOneInto(Scope::class.java)
+                .fetchOneInto(Squad::class.java)
                 ?.let { Right(it) }
-                ?: Left(nonEmptyListOf(ScopeNotExistingError(scopeKey)))
+                ?: Left(nonEmptyListOf(SquadNotExistingError(squadKey)))
         } catch (e: DataAccessException) {
             Left(nonEmptyListOf(TaskRepositoryError(e)))
         }
 
-    override fun assignScope(
-        scopeKey: ScopeKey,
+    override fun assignSquad(
+        squadKey: SquadKey,
         assignees: Heroes
-    ): EitherNel<AssignHeroesOnScopeError, ScopeMembers> =
+    ): EitherNel<AssignHeroesOnSquadError, SquadMembers> =
         try {
-            if (isScopeNotExisting(scopeKey) // FIXME: if scope not existing then FK should make insert fail and thus no need for extra query
-            ) Left(nonEmptyListOf(ScopeNotExistingError(scopeKey)))
+            if (isSquadNotExisting(squadKey) // FIXME: if squad not existing then FK should make insert fail and thus no need for extra query
+            ) Left(nonEmptyListOf(SquadNotExistingError(squadKey)))
             else {
-                dslContext.deleteFrom(SCOPE_USER)
-                    .where(SCOPE_USER.SCOPE_KEY.eq(scopeKey.value))
+                dslContext.deleteFrom(SQUAD_USER)
+                    .where(SQUAD_USER.SQUAD_KEY.eq(squadKey.value))
                     .execute()
-                val nbUpdate = dslContext.insertInto(SCOPE_USER)
-                    .columns(SCOPE_USER.SCOPE_KEY, SCOPE_USER.USER_ID)
+                val nbUpdate = dslContext.insertInto(SQUAD_USER)
+                    .columns(SQUAD_USER.SQUAD_KEY, SQUAD_USER.USER_ID)
                     .apply {
                         assignees.forEach { hero ->
-                            values(scopeKey.value, hero.id.value)
+                            values(squadKey.value, hero.id.value)
                         }
                     }
                     .execute()
                 if (nbUpdate != assignees.size)
                     Left(nonEmptyListOf(TaskRepositoryError("Only $nbUpdate updated on ${assignees.size}")))
                 else
-                    Right(ScopeMembers(scopeKey, HeroIds(assignees.map { it.id })))
+                    Right(SquadMembers(squadKey, HeroIds(assignees.map { it.id })))
             }
         } catch (e: DataAccessException) {
             Left(nonEmptyListOf(TaskRepositoryError(e)))
         }
 
-    private fun isScopeNotExisting(scopeKey: ScopeKey) = !dslContext.fetchExists(
+    private fun isSquadNotExisting(squadKey: SquadKey) = !dslContext.fetchExists(
         dslContext.selectOne()
-            .from(SCOPE)
-            .where(SCOPE.KEY.eq(scopeKey.value))
+            .from(SQUAD)
+            .where(SQUAD.KEY.eq(squadKey.value))
     )
 
-    override fun areHeroesInScope(
+    override fun areHeroesInSquad(
         heroIds: HeroIds,
-        scopeKey: ScopeKey
-    ): EitherNel<AreHeroesInScopeError, ScopeMembers> =
+        squadKey: SquadKey
+    ): EitherNel<AreHeroesInSquadError, SquadMembers> =
         try {
-            if (isScopeNotExisting(scopeKey)
-            ) Left(nonEmptyListOf(ScopeNotExistingError(scopeKey)))
+            if (isSquadNotExisting(squadKey)
+            ) Left(nonEmptyListOf(SquadNotExistingError(squadKey)))
             else {
-                dslContext.select(SCOPE_USER.USER_ID)
-                    .from(SCOPE_USER)
+                dslContext.select(SQUAD_USER.USER_ID)
+                    .from(SQUAD_USER)
                     .where(
-                        SCOPE_USER.SCOPE_KEY.eq(scopeKey.value)
-                            .and(SCOPE_USER.USER_ID.`in`(heroIds.value.map { it.value }))
+                        SQUAD_USER.SQUAD_KEY.eq(squadKey.value)
+                            .and(SQUAD_USER.USER_ID.`in`(heroIds.value.map { it.value }))
                     )
                     .map { HeroId(it.value1()) }
                     .toList()
@@ -147,14 +147,14 @@ class PgJooqTaskRepository(private val dslContext: DSLContext) : TaskRepository 
                     }
                     .flatMap { fetchedHeroIds: List<HeroId> ->
                         if (fetchedHeroIds.size == heroIds.size)
-                            Right(ScopeMembers(scopeKey, HeroIds(fetchedHeroIds)))
+                            Right(SquadMembers(squadKey, HeroIds(fetchedHeroIds)))
                         else
                             Left(
                                 nonEmptyListOf(
-                                    HeroesNotInScopeError(
+                                    HeroesNotInSquadError(
                                         HeroIds(
                                             heroIds.value.filterNot { fetchedHeroIds.contains(it) }),
-                                        scopeKey
+                                        squadKey
                                     )
                                 )
                             )
@@ -162,27 +162,27 @@ class PgJooqTaskRepository(private val dslContext: DSLContext) : TaskRepository 
             }
         } catch (e: DataAccessException) {
             if (e is IntegrityConstraintViolationException && e.message?.contains("ERROR: insert or update on table \"$TASK_USER.name\" violates foreign key constraint \"${Keys.TASK_USER__FK_TASK}\"") ?: false)
-                Left(nonEmptyListOf(HeroesNotInScopeError(heroIds, scopeKey)))
+                Left(nonEmptyListOf(HeroesNotInSquadError(heroIds, squadKey)))
             else
                 Left(nonEmptyListOf(TaskRepositoryError(e)))
         }
 
     override fun createTask(
-        scopeKey: ScopeKey,
+        squadKey: SquadKey,
         title: Title
     ): EitherNel<CreateTaskError, PendingTask> =
         try {
             val id = UUID.randomUUID().toString()
             dslContext.insertInto(TASK)
                 .set(TASK.ID, id)
-                .set(TASK.SCOPE_KEY, scopeKey.value)
+                .set(TASK.SQUAD_KEY, squadKey.value)
                 .set(TASK.TITLE, title.value)
                 .set(TASK.STATUS, Taskstatus.Pending)
                 .returning()
                 .fetchOneInto(TASK)
                 ?.let { task ->
-                    ScopeKey(task.scopeKey)
-                        .flatMap { dbScopeKey -> PendingTaskId(dbScopeKey, task.id) }
+                    SquadKey(task.squadKey)
+                        .flatMap { dbSquadKey -> PendingTaskId(dbSquadKey, task.id) }
                         .mapLeft { errors ->
                             errors.map { error -> TaskRepositoryError(error) }
                         }
@@ -197,7 +197,7 @@ class PgJooqTaskRepository(private val dslContext: DSLContext) : TaskRepository 
 
     override fun getTask(taskId: TaskId): EitherNel<GetTaskError, Task<*>> =
         try {
-            dslContext.select(TASK.ID, TASK.SCOPE_KEY, TASK.TITLE, TASK.DESCRIPTION, TASK.STATUS, TASK_USER.USER_ID)
+            dslContext.select(TASK.ID, TASK.SQUAD_KEY, TASK.TITLE, TASK.DESCRIPTION, TASK.STATUS, TASK_USER.USER_ID)
                 .from(TASK)
                 .leftJoin(TASK_USER).on(TASK.ID.eq(TASK_USER.TASK_ID))
                 .where(TASK.ID.eq(taskId.value))
@@ -213,7 +213,7 @@ class PgJooqTaskRepository(private val dslContext: DSLContext) : TaskRepository 
 
     private fun buildTask(rawTaskAndUsers: Result<Record6<String, String, String, String, Taskstatus, String>>): Either<NonEmptyList<TaskRepositoryError>, Task<out AbstractTaskId>> {
         val task = rawTaskAndUsers.first()
-        val rawScopeKey = task[TASK.SCOPE_KEY]
+        val rawSquadKey = task[TASK.SQUAD_KEY]
         val rawTaskId = task[TASK.ID]
         val rawTitle = task[TASK.TITLE]
         val rawDescription = task[TASK.DESCRIPTION]
@@ -229,7 +229,7 @@ class PgJooqTaskRepository(private val dslContext: DSLContext) : TaskRepository 
 
         return when (taskStatus) {
             Taskstatus.Pending -> either {
-                val key = ScopeKey(rawScopeKey).bind()
+                val key = SquadKey(rawSquadKey).bind()
                 val id = PendingTaskId(key, rawTaskId).bind()
                 val title = Title(rawTitle).bind()
                 val description = Description(rawDescription).bind()
@@ -240,7 +240,7 @@ class PgJooqTaskRepository(private val dslContext: DSLContext) : TaskRepository 
             }
 
             Taskstatus.InProgress -> either {
-                val key = ScopeKey(rawScopeKey).bind()
+                val key = SquadKey(rawSquadKey).bind()
                 val id = InProgressTaskId(key, rawTaskId).bind()
                 val title = Title(rawTitle).bind()
                 val description = Description(rawDescription).bind()
@@ -251,7 +251,7 @@ class PgJooqTaskRepository(private val dslContext: DSLContext) : TaskRepository 
             }
 
             Taskstatus.Done -> either {
-                val key = ScopeKey(rawScopeKey).bind()
+                val key = SquadKey(rawSquadKey).bind()
                 val id = DoneTaskId(key, rawTaskId).bind()
                 val title = Title(rawTitle).bind()
                 val description = Description(rawDescription).bind()

@@ -1,23 +1,19 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
-import arrow.core.Either
 import arrow.core.EitherNel
-import arrow.core.NonEmptyList
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.zipOrAccumulate
-import org.hexastacks.heroesdesk.kotlin.impl.AbstractStringValue
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.*
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.Companion.MAX_LENGTH
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId.Companion.MIN_LENGTH
 
-class DoneTaskId private constructor(override val scope: ScopeKey, override val value: String) : AbstractTaskId() {
+class DoneTaskId private constructor(override val squadKey: SquadKey, override val value: String) : AbstractTaskId() {
 
     companion object {
         operator fun invoke(
-            scope: ScopeKey,
+            squadKey: SquadKey,
             stringBetween1And36Chars: String
         ): EitherNel<TaskIdError, DoneTaskId> =
             either {
@@ -37,7 +33,7 @@ class DoneTaskId private constructor(override val scope: ScopeKey, override val 
                         }
                     },
                 ) { _, _ ->
-                    DoneTaskId(scope, stringBetween1And36Chars)
+                    DoneTaskId(squadKey, stringBetween1And36Chars)
                 }
             }
     }

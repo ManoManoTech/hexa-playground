@@ -2,8 +2,8 @@ package org.hexastacks.heroesdesk.kotlin.test
 
 import arrow.core.getOrElse
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.squad.Name
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.*
 
@@ -19,11 +19,11 @@ object HeroesDeskTestUtils {
 
     fun createHeroOrThrow(id: String) = Hero(createUserNameOrThrow(id), createHeroIdOrThrow(id))
 
-    fun createPendingTaskIdOrThrow(scopeKey: String, id: String) =
-        PendingTaskId(createScopeKeyOrThrow(scopeKey), id).getOrElse { throw AssertionError() }
+    fun createPendingTaskIdOrThrow(squadKey: String, id: String) =
+        PendingTaskId(createSquadKeyOrThrow(squadKey), id).getOrElse { throw AssertionError() }
 
-    fun createInProgressTaskIdOrThrow(scopeKey: String, id: String): InProgressTaskId =
-        InProgressTaskId(createScopeKeyOrThrow(scopeKey), id).getOrElse { throw AssertionError() }
+    fun createInProgressTaskIdOrThrow(squadKey: String, id: String): InProgressTaskId =
+        InProgressTaskId(createSquadKeyOrThrow(squadKey), id).getOrElse { throw AssertionError() }
 
     fun HeroesDesk.getTaskOrThrow(id: TaskId): Task<*> = this.getTask(id).getOrElse { throw AssertionError() }
     fun createAdminIdOrThrow(adminId: String): AdminId = AdminId(adminId).getOrElse { throw AssertionError() }
@@ -32,6 +32,6 @@ object HeroesDeskTestUtils {
 
     fun createNameOrThrow(name: String): Name = Name(name).getOrElse { throw AssertionError() }
 
-    fun createScopeKeyOrThrow(scopeKey: String): ScopeKey = ScopeKey(scopeKey).getOrElse { throw AssertionError() }
+    fun createSquadKeyOrThrow(squadKey: String): SquadKey = SquadKey(squadKey).getOrElse { throw AssertionError() }
 
 }

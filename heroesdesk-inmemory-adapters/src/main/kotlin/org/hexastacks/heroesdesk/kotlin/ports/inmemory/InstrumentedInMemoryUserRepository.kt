@@ -1,6 +1,5 @@
 package org.hexastacks.heroesdesk.kotlin.ports.inmemory
 
-import org.hexastacks.heroesdesk.kotlin.adapters.inmemory.InMemoryUserRepository
 import org.hexastacks.heroesdesk.kotlin.impl.user.Admin
 import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.test.InstrumentedUserRepository

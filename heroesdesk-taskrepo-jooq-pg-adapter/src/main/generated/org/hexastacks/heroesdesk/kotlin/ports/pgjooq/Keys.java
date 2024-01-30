@@ -4,12 +4,12 @@
 package org.hexastacks.heroesdesk.kotlin.ports.pgjooq;
 
 
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Scope;
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.ScopeUser;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Squad;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.SquadUser;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Task;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.TaskUser;
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.ScopeRecord;
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.ScopeUserRecord;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.SquadRecord;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.SquadUserRecord;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.TaskRecord;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.TaskUserRecord;
 import org.jooq.ForeignKey;
@@ -30,9 +30,9 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final UniqueKey<ScopeRecord> CHK_NAME_UNIQUE = Internal.createUniqueKey(Scope.SCOPE, DSL.name("CHK_name_UNIQUE"), new TableField[] { Scope.SCOPE.NAME }, true);
-    public static final UniqueKey<ScopeRecord> PK_SCOPE = Internal.createUniqueKey(Scope.SCOPE, DSL.name("PK_SCOPE"), new TableField[] { Scope.SCOPE.KEY }, true);
-    public static final UniqueKey<ScopeUserRecord> PK_SCOPE_USER = Internal.createUniqueKey(ScopeUser.SCOPE_USER, DSL.name("PK_Scope_User"), new TableField[] { ScopeUser.SCOPE_USER.SCOPE_KEY, ScopeUser.SCOPE_USER.USER_ID }, true);
+    public static final UniqueKey<SquadRecord> CHK_NAME_UNIQUE = Internal.createUniqueKey(Squad.SQUAD, DSL.name("CHK_name_UNIQUE"), new TableField[] { Squad.SQUAD.NAME }, true);
+    public static final UniqueKey<SquadRecord> PK_SQUAD = Internal.createUniqueKey(Squad.SQUAD, DSL.name("PK_SQUAD"), new TableField[] { Squad.SQUAD.KEY }, true);
+    public static final UniqueKey<SquadUserRecord> PK_SQUAD_USER = Internal.createUniqueKey(SquadUser.SQUAD_USER, DSL.name("PK_Squad_User"), new TableField[] { SquadUser.SQUAD_USER.SQUAD_KEY, SquadUser.SQUAD_USER.USER_ID }, true);
     public static final UniqueKey<TaskRecord> PK_TASK = Internal.createUniqueKey(Task.TASK, DSL.name("PK_Task"), new TableField[] { Task.TASK.ID }, true);
     public static final UniqueKey<TaskUserRecord> PK_TASK_USER = Internal.createUniqueKey(TaskUser.TASK_USER, DSL.name("PK_Task_User"), new TableField[] { TaskUser.TASK_USER.TASK_ID, TaskUser.TASK_USER.USER_ID }, true);
 
@@ -40,7 +40,7 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final ForeignKey<ScopeUserRecord, ScopeRecord> SCOPE_USER__FK_SCOPE = Internal.createForeignKey(ScopeUser.SCOPE_USER, DSL.name("FK_Scope"), new TableField[] { ScopeUser.SCOPE_USER.SCOPE_KEY }, Keys.PK_SCOPE, new TableField[] { Scope.SCOPE.KEY }, true);
-    public static final ForeignKey<TaskRecord, ScopeRecord> TASK__FK_SCOPE_KEY = Internal.createForeignKey(Task.TASK, DSL.name("FK_scope_key"), new TableField[] { Task.TASK.SCOPE_KEY }, Keys.PK_SCOPE, new TableField[] { Scope.SCOPE.KEY }, true);
+    public static final ForeignKey<SquadUserRecord, SquadRecord> SQUAD_USER__FK_SQUAD = Internal.createForeignKey(SquadUser.SQUAD_USER, DSL.name("FK_Squad"), new TableField[] { SquadUser.SQUAD_USER.SQUAD_KEY }, Keys.PK_SQUAD, new TableField[] { Squad.SQUAD.KEY }, true);
+    public static final ForeignKey<TaskRecord, SquadRecord> TASK__FK_SQUAD_KEY = Internal.createForeignKey(Task.TASK, DSL.name("FK_squad_key"), new TableField[] { Task.TASK.SQUAD_KEY }, Keys.PK_SQUAD, new TableField[] { Squad.SQUAD.KEY }, true);
     public static final ForeignKey<TaskUserRecord, TaskRecord> TASK_USER__FK_TASK = Internal.createForeignKey(TaskUser.TASK_USER, DSL.name("FK_Task"), new TableField[] { TaskUser.TASK_USER.TASK_ID }, Keys.PK_TASK, new TableField[] { Task.TASK.ID }, true);
 }

@@ -7,8 +7,8 @@ package org.hexastacks.heroesdesk.kotlin.ports.pgjooq;
 import java.util.Arrays;
 import java.util.List;
 
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Scope;
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.ScopeUser;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Squad;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.SquadUser;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Task;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.TaskUser;
 import org.jooq.Catalog;
@@ -30,14 +30,14 @@ public class Heroesdeskschema extends SchemaImpl {
     public static final Heroesdeskschema HEROESDESKSCHEMA = new Heroesdeskschema();
 
     /**
-     * The table <code>heroesdeskschema.Scope</code>.
+     * The table <code>heroesdeskschema.Squad</code>.
      */
-    public final Scope SCOPE = Scope.SCOPE;
+    public final Squad SQUAD = Squad.SQUAD;
 
     /**
-     * The table <code>heroesdeskschema.Scope_User</code>.
+     * The table <code>heroesdeskschema.Squad_User</code>.
      */
-    public final ScopeUser SCOPE_USER = ScopeUser.SCOPE_USER;
+    public final SquadUser SQUAD_USER = SquadUser.SQUAD_USER;
 
     /**
      * The table <code>heroesdeskschema.Task</code>.
@@ -65,8 +65,8 @@ public class Heroesdeskschema extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
-            Scope.SCOPE,
-            ScopeUser.SCOPE_USER,
+            Squad.SQUAD,
+            SquadUser.SQUAD_USER,
             Task.TASK,
             TaskUser.TASK_USER
         );

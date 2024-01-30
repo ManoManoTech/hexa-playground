@@ -1,7 +1,7 @@
 import DbAccess.createDslContext
 import DbAccess.dbSchema
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.squad.Name
+import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.Description
 import org.hexastacks.heroesdesk.kotlin.impl.task.TaskId
 import org.hexastacks.heroesdesk.kotlin.impl.task.Title
@@ -62,17 +62,17 @@ fun main() {
 }
 
 fun dbDropAndInit(dslContext: DSLContext) {
-    val SCOPE_TABLE = "Scope"
-    val SCOPE_KEY_COLUMN = "key"
-    val SCOPE_NAME_COLUMN = "name"
+    val SQUAD_TABLE = "Squad"
+    val SQUAD_KEY_COLUMN = "key"
+    val SQUAD_NAME_COLUMN = "name"
 
-    val SCOPE_TO_USER_TABLE = "${SCOPE_TABLE}_User"
-    val SCOPE_TO_USER_SCOPE_KEY_COLUMN = "scope_key"
-    val SCOPE_TO_USER_USER_ID_COLUMN = "user_id"
+    val SQUAD_TO_USER_TABLE = "${SQUAD_TABLE}_User"
+    val SQUAD_TO_USER_SQUAD_KEY_COLUMN = "squad_key"
+    val SQUAD_TO_USER_USER_ID_COLUMN = "user_id"
 
     val TASK_TABLE = "Task"
     val TASK_ID_COLUMN = "id"
-    val TASK_SCOPE_COLUMN = "scope_key"
+    val TASK_SQUAD_COLUMN = "squad_key"
     val TASK_TITLE_COLUMN = "title"
     val TASK_DESCRIPTION_COLUMN = "description"
     val TASK_STATUS_COLUMN = "status"
@@ -85,39 +85,39 @@ fun dbDropAndInit(dslContext: DSLContext) {
     val TASK_TO_USER_USER_ID_COLUMN = "user_id"
 
 
-    dslContext.dropTableIfExists(SCOPE_TO_USER_TABLE).execute()
+    dslContext.dropTableIfExists(SQUAD_TO_USER_TABLE).execute()
     dslContext.dropTableIfExists(TASK_TO_USER_TABLE).execute()
     dslContext.dropTableIfExists(TASK_TABLE).execute()
     dslContext.dropTypeIfExists(TASK_STATUS_ENUM_TYPE).execute()
-    dslContext.dropTableIfExists(SCOPE_TABLE).execute()
+    dslContext.dropTableIfExists(SQUAD_TABLE).execute()
     dslContext.dropSchemaIfExists(dbSchema).execute()
     dslContext.createSchema(dbSchema).execute()
 
-    val scopeKeyColumnDefinition = SQLDataType.VARCHAR(ScopeKey.MAX_LENGTH).nullable(false)
-    dslContext.createTable(SCOPE_TABLE)
-        .column(SCOPE_KEY_COLUMN, scopeKeyColumnDefinition)
-        .column(SCOPE_NAME_COLUMN, SQLDataType.VARCHAR(Name.MAX_LENGTH).nullable(false))
+    val squadKeyColumnDefinition = SQLDataType.VARCHAR(SquadKey.MAX_LENGTH).nullable(false)
+    dslContext.createTable(SQUAD_TABLE)
+        .column(SQUAD_KEY_COLUMN, squadKeyColumnDefinition)
+        .column(SQUAD_NAME_COLUMN, SQLDataType.VARCHAR(Name.MAX_LENGTH).nullable(false))
         .constraints(
-            DSL.constraint("PK_SCOPE").primaryKey(SCOPE_KEY_COLUMN),
-            DSL.constraint("CHK_${SCOPE_KEY_COLUMN}_LENGTH").check(
-                DSL.length(SCOPE_KEY_COLUMN).ge(ScopeKey.MIN_LENGTH)
+            DSL.constraint("PK_SQUAD").primaryKey(SQUAD_KEY_COLUMN),
+            DSL.constraint("CHK_${SQUAD_KEY_COLUMN}_LENGTH").check(
+                DSL.length(SQUAD_KEY_COLUMN).ge(SquadKey.MIN_LENGTH)
             ),
-            DSL.constraint("CHK_${SCOPE_NAME_COLUMN}_MIN_LENGTH").check(
-                DSL.length(SCOPE_NAME_COLUMN).ge(Name.MIN_LENGTH)
+            DSL.constraint("CHK_${SQUAD_NAME_COLUMN}_MIN_LENGTH").check(
+                DSL.length(SQUAD_NAME_COLUMN).ge(Name.MIN_LENGTH)
             ),
-            DSL.constraint("CHK_${SCOPE_NAME_COLUMN}_UNIQUE").unique(SCOPE_NAME_COLUMN)
+            DSL.constraint("CHK_${SQUAD_NAME_COLUMN}_UNIQUE").unique(SQUAD_NAME_COLUMN)
         )
         .execute()
     val userIdColumnDefinition = SQLDataType.VARCHAR(UserId.MAX_LENGTH).nullable(false)
 
-    dslContext.createTable(SCOPE_TO_USER_TABLE)
-        .column(SCOPE_TO_USER_SCOPE_KEY_COLUMN, scopeKeyColumnDefinition)
-        .column(SCOPE_TO_USER_USER_ID_COLUMN, userIdColumnDefinition)
+    dslContext.createTable(SQUAD_TO_USER_TABLE)
+        .column(SQUAD_TO_USER_SQUAD_KEY_COLUMN, squadKeyColumnDefinition)
+        .column(SQUAD_TO_USER_USER_ID_COLUMN, userIdColumnDefinition)
         .constraints(
-            DSL.constraint("PK_$SCOPE_TO_USER_TABLE")
-                .primaryKey(SCOPE_TO_USER_SCOPE_KEY_COLUMN, SCOPE_TO_USER_USER_ID_COLUMN),
-            DSL.constraint("FK_$SCOPE_TABLE").foreignKey(SCOPE_TO_USER_SCOPE_KEY_COLUMN)
-                .references(SCOPE_TABLE, SCOPE_KEY_COLUMN),
+            DSL.constraint("PK_$SQUAD_TO_USER_TABLE")
+                .primaryKey(SQUAD_TO_USER_SQUAD_KEY_COLUMN, SQUAD_TO_USER_USER_ID_COLUMN),
+            DSL.constraint("FK_$SQUAD_TABLE").foreignKey(SQUAD_TO_USER_SQUAD_KEY_COLUMN)
+                .references(SQUAD_TABLE, SQUAD_KEY_COLUMN),
         )
         .execute()
 
@@ -129,7 +129,7 @@ fun dbDropAndInit(dslContext: DSLContext) {
     val taskIdColumnDefinition = SQLDataType.VARCHAR(TaskId.MAX_LENGTH).nullable(false)
     dslContext.createTable(TASK_TABLE)
         .column(TASK_ID_COLUMN, taskIdColumnDefinition)
-        .column(TASK_SCOPE_COLUMN, SQLDataType.VARCHAR(ScopeKey.MAX_LENGTH).nullable(false))
+        .column(TASK_SQUAD_COLUMN, SQLDataType.VARCHAR(SquadKey.MAX_LENGTH).nullable(false))
         .column(TASK_TITLE_COLUMN, SQLDataType.VARCHAR(Title.MAX_LENGTH).nullable(false))
         .column(TASK_DESCRIPTION_COLUMN, SQLDataType.VARCHAR(Description.MAX_LENGTH).nullable(false).defaultValue(""))
         .constraints(
@@ -140,8 +140,8 @@ fun dbDropAndInit(dslContext: DSLContext) {
             DSL.constraint("CHK_${TASK_TITLE_COLUMN}_MIN_LENGTH").check(
                 DSL.length(TASK_TITLE_COLUMN).ge(Title.MIN_LENGTH)
             ),
-            DSL.constraint("FK_$TASK_SCOPE_COLUMN").foreignKey(TASK_SCOPE_COLUMN)
-                .references(SCOPE_TABLE, SCOPE_KEY_COLUMN),
+            DSL.constraint("FK_$TASK_SQUAD_COLUMN").foreignKey(TASK_SQUAD_COLUMN)
+                .references(SQUAD_TABLE, SQUAD_KEY_COLUMN),
             DSL.constraint("CHK_${TASK_DESCRIPTION_COLUMN}_MIN_LENGTH").check(
                 DSL.length(TASK_TITLE_COLUMN).ge(Description.MIN_LENGTH)
             ),

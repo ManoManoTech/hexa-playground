@@ -1,4 +1,4 @@
-package org.hexastacks.heroesdesk.kotlin.impl.scope
+package org.hexastacks.heroesdesk.kotlin.squad
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
@@ -7,7 +7,6 @@ import arrow.core.raise.ensure
 import arrow.core.raise.zipOrAccumulate
 import org.hexastacks.heroesdesk.kotlin.impl.AbstractStringValue
 import org.hexastacks.heroesdesk.kotlin.impl.StringValueError
-import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 
 class Name private constructor(value: String) : AbstractStringValue(value) {
 

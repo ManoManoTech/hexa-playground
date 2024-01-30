@@ -36,16 +36,16 @@ public class TaskRecord extends UpdatableRecordImpl<TaskRecord> implements Recor
     }
 
     /**
-     * Setter for <code>heroesdeskschema.Task.scope_key</code>.
+     * Setter for <code>heroesdeskschema.Task.squad_key</code>.
      */
-    public void setScopeKey(String value) {
+    public void setSquadKey(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>heroesdeskschema.Task.scope_key</code>.
+     * Getter for <code>heroesdeskschema.Task.squad_key</code>.
      */
-    public String getScopeKey() {
+    public String getSquadKey() {
         return (String) get(1);
     }
 
@@ -121,7 +121,7 @@ public class TaskRecord extends UpdatableRecordImpl<TaskRecord> implements Recor
 
     @Override
     public Field<String> field2() {
-        return Task.TASK.SCOPE_KEY;
+        return Task.TASK.SQUAD_KEY;
     }
 
     @Override
@@ -146,7 +146,7 @@ public class TaskRecord extends UpdatableRecordImpl<TaskRecord> implements Recor
 
     @Override
     public String component2() {
-        return getScopeKey();
+        return getSquadKey();
     }
 
     @Override
@@ -171,7 +171,7 @@ public class TaskRecord extends UpdatableRecordImpl<TaskRecord> implements Recor
 
     @Override
     public String value2() {
-        return getScopeKey();
+        return getSquadKey();
     }
 
     @Override
@@ -197,7 +197,7 @@ public class TaskRecord extends UpdatableRecordImpl<TaskRecord> implements Recor
 
     @Override
     public TaskRecord value2(String value) {
-        setScopeKey(value);
+        setSquadKey(value);
         return this;
     }
 
@@ -243,11 +243,11 @@ public class TaskRecord extends UpdatableRecordImpl<TaskRecord> implements Recor
     /**
      * Create a detached, initialised TaskRecord
      */
-    public TaskRecord(String id, String scopeKey, String title, String description, Taskstatus status) {
+    public TaskRecord(String id, String squadKey, String title, String description, Taskstatus status) {
         super(Task.TASK);
 
         setId(id);
-        setScopeKey(scopeKey);
+        setSquadKey(squadKey);
         setTitle(title);
         setDescription(description);
         setStatus(status);
