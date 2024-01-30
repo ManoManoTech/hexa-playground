@@ -8,7 +8,15 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
-import org.hexastacks.heroesdesk.kotlin.HeroesDesk.*
+import org.hexastacks.heroesdesk.kotlin.errors.*
+import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeMembers
+import org.hexastacks.heroesdesk.kotlin.impl.task.*
+import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
+import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes.Companion.empty
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createAdminIdOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createDescriptionOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createHeroIdOrThrow
@@ -19,20 +27,12 @@ import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createPendingTa
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createScopeKeyOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.createTitleOrThrow
 import org.hexastacks.heroesdesk.kotlin.test.HeroesDeskTestUtils.getTaskOrThrow
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
-import org.hexastacks.heroesdesk.kotlin.impl.task.*
-import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
-import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
-import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
-import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes.Companion.empty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
-import org.hexastacks.heroesdesk.kotlin.errors.*
 
 abstract class AbstractHeroesDeskTest {
 
@@ -87,7 +87,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(creationFailure.isLeft())
         creationFailure.onLeft {
-            assertTrue(it.head is ScopeNameAlreadyExistingError)
+            assertTrue(it.head is ScopeNameAlreadyExistingError, "$it")
         }
     }
 
@@ -110,7 +110,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(creationFailure.isLeft())
         creationFailure.onLeft {
-            assertTrue(it.head is ScopeKeyAlreadyExistingError)
+            assertTrue(it.head is ScopeKeyAlreadyExistingError, "$it")
         }
     }
 
@@ -162,15 +162,12 @@ abstract class AbstractHeroesDeskTest {
             heroesDesk.createScope(scopeId, createNameOrThrow("name"), admin.id)
                 .getOrElse { throw AssertionError("$it") }
 
-        val assignedScope =
+        val scopeMembers =
             heroesDesk.assignScope(scopeId, HeroIds(heroes), admin.id).getOrElse { throw AssertionError(it.toString()) }
 
-        assertEquals(scope, assignedScope)
-        assertEquals(heroes, assignedScope.assignees)
-
+        assertEquals(scope.key, scopeMembers.scopeKey)
         val storedScope = heroesDesk.getScope(scopeId).getOrElse { throw AssertionError("$it") }
         assertEquals(scope, storedScope)
-        assertEquals(heroes, storedScope.assignees)
     }
 
     @Test
@@ -271,29 +268,35 @@ abstract class AbstractHeroesDeskTest {
     }
 
     @Test
-    fun `getScope works on scope without assignee`() {
+    fun `getScopeMembers works on scope without assignee`() {
         val scopeId = createScopeKeyOrThrow("scopeKey")
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
         val name = createNameOrThrow("name")
-        heroesDesk.createScope(scopeId, name, admin.id).getOrElse { throw AssertionError("$it") }
+        val scope = heroesDesk.createScope(scopeId, name, admin.id).getOrElse { throw AssertionError("$it") }
 
-        val scope = heroesDesk.getScope(scopeId).getOrElse { throw AssertionError("$it") }
+        val scopeMembers =
+            heroesDesk.getScopeMembers(scopeId)
+                .getOrElse { throw AssertionError("$it") }
 
-        assertEquals(name, scope.name)
+        assertEquals(scopeId, scopeMembers.scopeKey)
+        assertEquals(HeroIds.empty, scopeMembers.heroes)
+
     }
 
     @Test
-    fun `getScope works on scope with assignee`() {
+    fun `getScopeMembers works on scope with assignee`() {
         val scopeId = createScopeKeyOrThrow("scopeKey")
         val admin = userRepo.ensureAdminExistingOrThrow("adminId")
         val name = createNameOrThrow("name")
         heroesDesk.createScope(scopeId, name, admin.id).getOrElse { throw AssertionError("$it") }
-        heroesDesk.assignScope(scopeId, HeroIds(ensureHeroExisting("heroId")), admin.id)
+        val assignees = HeroIds(ensureHeroExisting("heroId"))
+        heroesDesk.assignScope(scopeId, assignees, admin.id)
             .getOrElse { throw AssertionError("$it") }
 
-        val scope = heroesDesk.getScope(scopeId).getOrElse { throw AssertionError("$it") }
+        val scopeMembers = heroesDesk.getScopeMembers(scopeId).getOrElse { throw AssertionError("$it") }
 
-        assertEquals(name, scope.name)
+        assertEquals(scopeId, scopeMembers.scopeKey)
+        assertEquals(assignees, scopeMembers.heroes)
     }
 
     @Test
@@ -305,8 +308,8 @@ abstract class AbstractHeroesDeskTest {
 
         val task = heroesDesk.createTask(scope.key, title, currentHero.id).getOrElse { throw AssertionError("$it") }
 
-        assertEquals(task.title, title)
-        assertEquals(task.scope, scope)
+        assertEquals(title, task.title)
+        assertEquals(scope.key, task.scopeKey())
     }
 
 
@@ -325,7 +328,7 @@ abstract class AbstractHeroesDeskTest {
         assertTrue(task2.isRight(), "$task2")
         task1.flatMap { right1 ->
             task2.map { right2 ->
-             assertTrue(  right1 != right2 , "$right1 and $right2 are the same")
+                assertTrue(right1 != right2, "$right1 and $right2 are the same")
             }
         }
     }
@@ -340,7 +343,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(task.isLeft())
         task.onLeft {
-            assertTrue(it.head is HeroesNotExistingError, "$it")
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
@@ -350,11 +353,11 @@ abstract class AbstractHeroesDeskTest {
         val rawTitle = "title"
 
         val task =
-            heroesDesk.createTask(ensureScopeExisting("scopeKey").key, createTitleOrThrow(rawTitle), currentHero.id)
+            heroesDesk.createTask(createScopeKeyOrThrow("scopeKey"), createTitleOrThrow(rawTitle), currentHero.id)
 
         assertTrue(task.isLeft())
         task.onLeft {
-            assertTrue(it.head is HeroesNotInScopeError, "$it")
+            assertTrue(it.head is ScopeNotExistingError, "$it")
         }
     }
 
@@ -364,11 +367,11 @@ abstract class AbstractHeroesDeskTest {
         val rawTitle = "title"
 
         val task =
-            heroesDesk.createTask(createScopeKeyOrThrow("scopeKey"), createTitleOrThrow(rawTitle), currentHero.id)
+            heroesDesk.createTask(ensureScopeExisting("scopeKey").key, createTitleOrThrow(rawTitle), currentHero.id)
 
         assertTrue(task.isLeft())
         task.onLeft {
-            assertTrue(it.head is ScopeNotExistingError)
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
@@ -429,7 +432,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroesNotExistingError, "$it")
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
@@ -452,8 +455,7 @@ abstract class AbstractHeroesDeskTest {
         val newDescription = createDescriptionOrThrow("new description")
         val hero = ensureHeroExisting("heroId")
 
-        val updatedTaskId =
-            heroesDesk.updateDescription(nonExistingPendingTaskId(), newDescription, hero.id)
+        val updatedTaskId = heroesDesk.updateDescription(nonExistingPendingTaskId(), newDescription, hero.id)
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
@@ -510,7 +512,7 @@ abstract class AbstractHeroesDeskTest {
         }
 
         assertEquals(taskId, assignedTask.taskId)
-        assertEquals(Heroes(hero), assignedTask.assignees)
+        assertEquals(HeroIds(hero), assignedTask.assignees)
     }
 
     @Test
@@ -547,7 +549,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(assignedTask.isLeft())
         assignedTask.onLeft {
-            assertTrue(it.head is TaskNotExistingError, "$it")
+            assertTrue(it.head is ScopeNotExistingError, "$it")
         }
     }
 
@@ -567,18 +569,20 @@ abstract class AbstractHeroesDeskTest {
         val nonScopeAssignedHeroes = ensureHeroExisting("nonScopeAssignedHero")
         val assignmentAuthor = ensureHeroExisting("assignmentAuthor").id
 
-        val assignedTask = when(taskId) {
-            is PendingTaskId -> heroesDesk.assignTask(
-                taskId,
-                HeroIds(nonScopeAssignedHeroes),
-                assignmentAuthor
-            )
+        val assignedTask = when (taskId) {
+            is PendingTaskId ->
+                heroesDesk.assignTask(
+                    taskId,
+                    HeroIds(nonScopeAssignedHeroes),
+                    assignmentAuthor
+                )
 
-            is InProgressTaskId -> heroesDesk.assignTask(
-                taskId,
-                HeroIds(nonScopeAssignedHeroes),
-                assignmentAuthor
-            )
+            is InProgressTaskId ->
+                heroesDesk.assignTask(
+                    taskId,
+                    HeroIds(nonScopeAssignedHeroes),
+                    assignmentAuthor
+                )
 
             else -> throw AssertionError("Non assignable task id type $taskId")
         }
@@ -639,7 +643,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroesNotExistingError, "$it")
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
@@ -691,7 +695,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(pauseWorkResult.isLeft())
         pauseWorkResult.onLeft {
-            assertTrue(it.head is HeroesNotExistingError, "$it")
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
@@ -744,7 +748,7 @@ abstract class AbstractHeroesDeskTest {
 
         assertTrue(updatedTaskId.isLeft())
         updatedTaskId.onLeft {
-            assertTrue(it.head is HeroesNotExistingError, "$it")
+            assertTrue(it.head is HeroesNotInScopeError, "$it")
         }
     }
 
@@ -779,14 +783,14 @@ abstract class AbstractHeroesDeskTest {
         return Pair(taskId, hero)
     }
 
-    private fun assignScope(task: Task<*>, heroes: Heroes): Scope {
-        return assignScope(task.scope.key, heroes)
+    private fun assignScope(task: Task<*>, heroes: Heroes): ScopeMembers {
+        return assignScope(task.scopeKey(), heroes)
     }
 
     private fun assignScope(
         scopeKey: ScopeKey,
         heroes: Heroes
-    ): Scope {
+    ): ScopeMembers {
         return heroesDesk.assignScope(
             scopeKey,
             HeroIds(heroes),

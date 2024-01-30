@@ -6,16 +6,21 @@ import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
 import org.hexastacks.heroesdesk.kotlin.impl.task.Description
 import org.hexastacks.heroesdesk.kotlin.impl.task.Title
-import org.hexastacks.heroesdesk.kotlin.impl.user.*
+import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
+import org.hexastacks.heroesdesk.kotlin.impl.user.UserName
 
 object TestUtils {
 
-    fun createScopeOrThow(scopeKey: String): Scope =
+    fun createScopeOrThrow(scopeKey: String): Scope =
         Scope(
             Name(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") },
-            ScopeKey(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") },
-            Heroes.empty
+            createScopeKeyOrThrow(scopeKey)
         )
+
+    fun createScopeKeyOrThrow(scopeKey: String): ScopeKey =
+        ScopeKey(scopeKey).getOrElse { throw RuntimeException("scope should be valid: $it") }
+
 
     fun createTitleOrThrow(title: String): Title =
         Title(title).getOrElse { throw RuntimeException("title should be valid: $it") }

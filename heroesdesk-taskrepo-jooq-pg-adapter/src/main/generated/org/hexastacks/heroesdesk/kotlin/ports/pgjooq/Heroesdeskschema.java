@@ -9,7 +9,8 @@ import java.util.List;
 
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Scope;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.ScopeUser;
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.User;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Task;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.TaskUser;
 import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
@@ -39,9 +40,14 @@ public class Heroesdeskschema extends SchemaImpl {
     public final ScopeUser SCOPE_USER = ScopeUser.SCOPE_USER;
 
     /**
-     * The table <code>heroesdeskschema.User</code>.
+     * The table <code>heroesdeskschema.Task</code>.
      */
-    public final User USER = User.USER;
+    public final Task TASK = Task.TASK;
+
+    /**
+     * The table <code>heroesdeskschema.Task_User</code>.
+     */
+    public final TaskUser TASK_USER = TaskUser.TASK_USER;
 
     /**
      * No further instances allowed
@@ -61,7 +67,8 @@ public class Heroesdeskschema extends SchemaImpl {
         return Arrays.asList(
             Scope.SCOPE,
             ScopeUser.SCOPE_USER,
-            User.USER
+            Task.TASK,
+            TaskUser.TASK_USER
         );
     }
 }

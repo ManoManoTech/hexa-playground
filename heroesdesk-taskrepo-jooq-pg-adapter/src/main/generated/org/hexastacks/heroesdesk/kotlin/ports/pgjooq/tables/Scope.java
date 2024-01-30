@@ -106,10 +106,15 @@ public class Scope extends TableImpl<ScopeRecord> {
     }
 
     @Override
+    public List<UniqueKey<ScopeRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.CHK_NAME_UNIQUE);
+    }
+
+    @Override
     public List<Check<ScopeRecord>> getChecks() {
         return Arrays.asList(
-            Internal.createCheck(this, DSL.name("CHK_SCOPE_KEY_MIN_LENGTH"), "((char_length('key'::text) >= 1))", true),
-            Internal.createCheck(this, DSL.name("CHK_SCOPE_NAME_MIN_LENGTH"), "((char_length('name'::text) >= 1))", true)
+            Internal.createCheck(this, DSL.name("CHK_key_LENGTH"), "((char_length('key'::text) >= 1))", true),
+            Internal.createCheck(this, DSL.name("CHK_name_MIN_LENGTH"), "((char_length('name'::text) >= 1))", true)
         );
     }
 

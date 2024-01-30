@@ -20,7 +20,7 @@ object DbAccess {
         .withPassword(dbPassword)
 
     fun createDslContext(container: PostgreSQLContainer<*>): DSLContext {
-        Thread.sleep(5000)
+        Thread.sleep(2000)
         val conn = DriverManager.getConnection(
             container.jdbcUrl,
             container.username,

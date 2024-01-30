@@ -27,7 +27,7 @@ class PgJooqTaskRepositoryTest : AbstractHeroesDeskTest() {
         fun initContainer(): Unit {
             println("Starting container...")
             postgreSQLContainer.start()
-            println("Creating dslContext...")
+            println("Creating dslContext on ${postgreSQLContainer.jdbcUrl}...")
             dslContext = createDslContext(postgreSQLContainer)
         }
     }

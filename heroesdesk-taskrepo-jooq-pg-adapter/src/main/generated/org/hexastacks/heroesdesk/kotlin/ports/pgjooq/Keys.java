@@ -6,10 +6,12 @@ package org.hexastacks.heroesdesk.kotlin.ports.pgjooq;
 
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Scope;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.ScopeUser;
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.User;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Task;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.TaskUser;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.ScopeRecord;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.ScopeUserRecord;
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.UserRecord;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.TaskRecord;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.records.TaskUserRecord;
 import org.jooq.ForeignKey;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -28,14 +30,17 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<ScopeRecord> CHK_NAME_UNIQUE = Internal.createUniqueKey(Scope.SCOPE, DSL.name("CHK_name_UNIQUE"), new TableField[] { Scope.SCOPE.NAME }, true);
     public static final UniqueKey<ScopeRecord> PK_SCOPE = Internal.createUniqueKey(Scope.SCOPE, DSL.name("PK_SCOPE"), new TableField[] { Scope.SCOPE.KEY }, true);
-    public static final UniqueKey<ScopeUserRecord> PK_SCOPE_USER = Internal.createUniqueKey(ScopeUser.SCOPE_USER, DSL.name("PK_Scope_User"), new TableField[] { ScopeUser.SCOPE_USER.SCOPE_KEY, ScopeUser.SCOPE_USER.ID }, true);
-    public static final UniqueKey<UserRecord> PK_USER_ID = Internal.createUniqueKey(User.USER, DSL.name("PK_USER_ID"), new TableField[] { User.USER.ID }, true);
+    public static final UniqueKey<ScopeUserRecord> PK_SCOPE_USER = Internal.createUniqueKey(ScopeUser.SCOPE_USER, DSL.name("PK_Scope_User"), new TableField[] { ScopeUser.SCOPE_USER.SCOPE_KEY, ScopeUser.SCOPE_USER.USER_ID }, true);
+    public static final UniqueKey<TaskRecord> PK_TASK = Internal.createUniqueKey(Task.TASK, DSL.name("PK_Task"), new TableField[] { Task.TASK.ID }, true);
+    public static final UniqueKey<TaskUserRecord> PK_TASK_USER = Internal.createUniqueKey(TaskUser.TASK_USER, DSL.name("PK_Task_User"), new TableField[] { TaskUser.TASK_USER.TASK_ID, TaskUser.TASK_USER.USER_ID }, true);
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
     public static final ForeignKey<ScopeUserRecord, ScopeRecord> SCOPE_USER__FK_SCOPE = Internal.createForeignKey(ScopeUser.SCOPE_USER, DSL.name("FK_Scope"), new TableField[] { ScopeUser.SCOPE_USER.SCOPE_KEY }, Keys.PK_SCOPE, new TableField[] { Scope.SCOPE.KEY }, true);
-    public static final ForeignKey<ScopeUserRecord, UserRecord> SCOPE_USER__FK_USER = Internal.createForeignKey(ScopeUser.SCOPE_USER, DSL.name("FK_User"), new TableField[] { ScopeUser.SCOPE_USER.ID }, Keys.PK_USER_ID, new TableField[] { User.USER.ID }, true);
+    public static final ForeignKey<TaskRecord, ScopeRecord> TASK__FK_SCOPE_KEY = Internal.createForeignKey(Task.TASK, DSL.name("FK_scope_key"), new TableField[] { Task.TASK.SCOPE_KEY }, Keys.PK_SCOPE, new TableField[] { Scope.SCOPE.KEY }, true);
+    public static final ForeignKey<TaskUserRecord, TaskRecord> TASK_USER__FK_TASK = Internal.createForeignKey(TaskUser.TASK_USER, DSL.name("FK_Task"), new TableField[] { TaskUser.TASK_USER.TASK_ID }, Keys.PK_TASK, new TableField[] { Task.TASK.ID }, true);
 }

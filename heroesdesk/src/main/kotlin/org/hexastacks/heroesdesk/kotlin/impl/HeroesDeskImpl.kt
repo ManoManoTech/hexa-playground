@@ -3,16 +3,16 @@ package org.hexastacks.heroesdesk.kotlin.impl
 import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.core.EitherNel
-import arrow.core.flatMap
 import arrow.core.nonEmptyListOf
+import arrow.core.raise.either
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
 import org.hexastacks.heroesdesk.kotlin.errors.*
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Name
 import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
 import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeMembers
 import org.hexastacks.heroesdesk.kotlin.impl.task.*
 import org.hexastacks.heroesdesk.kotlin.impl.user.AdminId
-import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroId
 import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import org.hexastacks.heroesdesk.kotlin.ports.TaskRepository
@@ -22,60 +22,47 @@ import org.hexastacks.heroesdesk.kotlin.ports.UserRepository
 class HeroesDeskImpl(private val userRepository: UserRepository, private val taskRepository: TaskRepository) :
     HeroesDesk {
     override fun createScope(scopeKey: ScopeKey, name: Name, creator: AdminId): EitherNel<CreateScopeError, Scope> =
-        userRepository
-            .getAdmin(creator)
-            .flatMap {
-                taskRepository.createScope(scopeKey, name)
-            }
+        either {
+            userRepository.getAdmin(creator).bind()
+            taskRepository.createScope(scopeKey, name).bind()
+        }
 
     override fun assignScope(
         scopeKey: ScopeKey,
         assignees: HeroIds,
         changeAuthor: AdminId
-    ): EitherNel<AssignHeroesOnScopeError, Scope> =
-        userRepository
-            .getHeroes(assignees)
-            .flatMap { heroes ->
-                userRepository
-                    .getAdmin(changeAuthor)
-                    .map { _ -> heroes }
-            }
-            .flatMap {
-                taskRepository.assignScope(scopeKey, it)
-            }
+    ): EitherNel<AssignHeroesOnScopeError, ScopeMembers> =
+        either {
+            val heroes = userRepository.getHeroes(assignees).bind()
+            userRepository.getAdmin(changeAuthor).bind()
+            taskRepository.assignScope(scopeKey, heroes).bind()
+        }
 
     override fun updateScopeName(
         scopeKey: ScopeKey,
         name: Name,
         changeAuthor: AdminId
     ): EitherNel<UpdateScopeNameError, Scope> =
-        userRepository
-            .getAdmin(changeAuthor)
-            .flatMap {
-                taskRepository.updateScopeName(scopeKey, name)
-            }
+        either {
+            userRepository.getAdmin(changeAuthor).bind()
+            taskRepository.updateScopeName(scopeKey, name).bind()
+        }
 
     override fun getScope(scopeKey: ScopeKey): EitherNel<GetScopeError, Scope> =
         taskRepository.getScope(scopeKey)
+
+    override fun getScopeMembers(scopeKey: ScopeKey): EitherNel<GetScopeMembersError, ScopeMembers> =
+        taskRepository.getScopeMembers(scopeKey)
 
     override fun createTask(
         scopeKey: ScopeKey,
         title: Title,
         creator: HeroId
     ): EitherNel<CreateTaskError, PendingTask> =
-        userRepository
-            .getHero(creator)
-            .flatMap { hero ->
-                taskRepository
-                    .getScope(scopeKey)
-                    .flatMap { scope ->
-                        if (scope.assignees.containsNot(hero))
-                            Left(nonEmptyListOf(HeroesNotInScopeError(creator, scopeKey)))
-                        else
-                            Right(Pair(scope, hero))
-                    }
-            }
-            .flatMap { scopeAndHero -> taskRepository.createTask(scopeAndHero.first, title, scopeAndHero.second) }
+        either {
+            taskRepository.areHeroesInScope(HeroIds(creator), scopeKey).bind()
+            taskRepository.createTask(scopeKey, title).bind()
+        }
 
     override fun getTask(id: TaskId): EitherNel<GetTaskError, Task<*>> = taskRepository.getTask(id)
 
@@ -84,109 +71,71 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         title: Title,
         author: HeroId
     ): EitherNel<UpdateTitleError, Task<*>> =
-        userRepository
-            .getHero(author)
-            .flatMap { hero -> taskRepository.updateTitle(id, title, hero) }
+        either {
+            taskRepository.areHeroesInScope(HeroIds(author), id).bind()
+            taskRepository.updateTitle(id, title).bind()
+        }
 
     override fun updateDescription(
         id: TaskId,
         description: Description,
         author: HeroId
     ): EitherNel<UpdateDescriptionError, Task<*>> =
-        userRepository
-            .getHero(author)
-            .flatMap { taskRepository.updateDescription(id, description, it) }
+        either {
+            userRepository.getHero(author).bind()
+            taskRepository.updateDescription(id, description).bind()
+        }
 
     override fun assignTask(
         id: PendingTaskId,
         assignees: HeroIds,
         author: HeroId
-    ): EitherNel<AssignTaskError, Task<*>> = doAssignTask(id, assignees, author)
+    ): EitherNel<AssignTaskError, Task<*>> =
+        doAssignTask(id, assignees, author)
 
     override fun assignTask(
         id: InProgressTaskId,
         assignees: HeroIds,
         author: HeroId
-    ): EitherNel<AssignTaskError, Task<*>> = doAssignTask(id, assignees, author)
+    ): EitherNel<AssignTaskError, Task<*>> =
+        doAssignTask(id, assignees, author)
 
     private fun doAssignTask(
         id: TaskId,
         assignees: HeroIds,
         author: HeroId
     ): EitherNel<AssignTaskError, Task<*>> =
-        taskRepository.getTask(id)
-            .flatMap { task ->
-                userRepository
-                    .getHeroes(assignees + author)
-                    .flatMap { authorAndAssignees ->
-                        val nonScopeAssignedHeroes = authorAndAssignees.subtract(task.scope.assignees)
-                        if (nonScopeAssignedHeroes.isNotEmpty()) {
-                            Left(
-                                nonEmptyListOf(
-                                    HeroesNotInScopeError(
-                                        nonScopeAssignedHeroes,
-                                        task.scope.key
-                                    )
-                                )
-                            )
-
-                        } else Right(authorAndAssignees)
-
-                    }
-                    .flatMap { taskRepository.assignTask(id, it, author) }
-            }
-
+        either {
+            taskRepository.areHeroesInScope(assignees + author, id.scope).bind()
+            taskRepository.assignTask(id, assignees).bind()
+        }
 
     override fun startWork(
         id: PendingTaskId,
         author: HeroId
     ): EitherNel<StartWorkError, InProgressTask> =
-        taskRepository
-            .getTask(id)
-            .flatMap { task ->
-                when (task) {
-                    is PendingTask -> Right(task)
-                    else -> Left(nonEmptyListOf(TaskNotPendingError(task, id)))
-                }
-            }
-            .flatMap { verifiedTask ->
-                userRepository
-                    .getHero(author)
-                    .flatMap { existingAuthor ->
-                        if (verifiedTask.scope.assignees.containsNot(existingAuthor)) {
-                            Left(
-                                nonEmptyListOf(
-                                    HeroesNotInScopeError(
-                                        author,
-                                        verifiedTask.scope.key
-                                    )
-                                )
-                            )
-                        } else
-                            if (verifiedTask.assignees.isNotEmpty()) {
-                                Right(existingAuthor)
-                            } else {
-                                assignAuthorToTask(verifiedTask, existingAuthor, id)
-                            }
-                    }
-            }
-            .flatMap { hero ->
-                taskRepository.startWork(id, hero)
-            }
+        either {
+            val task = taskRepository.areHeroesInScope(HeroIds(author), id).bind()
+            val verifiedTask = when (task) {
+                is PendingTask -> Right(task)
+                else -> Left(nonEmptyListOf(TaskNotPendingError(task, id)))
+            }.bind()
+            if (verifiedTask.assignees.isNotEmpty()) {
+                Right(verifiedTask)
+            } else {
+                Right(assignAuthorToTask(verifiedTask, author, id))
+            }.bind()
+            taskRepository.startWork(id).bind()
+        }
+
 
     private fun assignAuthorToTask(
         verifiedTask: PendingTask,
-        author: Hero,
+        author: HeroId,
         id: PendingTaskId
-    ): EitherNel<StartWorkError, Hero> =
+    ): EitherNel<StartWorkError, Task<*>> =
         taskRepository
-            .assignTask(id, verifiedTask.assignees.add(author), author.id)
-            .flatMap {
-                when (it) {
-                    is PendingTask -> Right(author)
-                    else -> Left(nonEmptyListOf(TaskNotPendingError(it, id)))
-                }
-            }
+            .assignTask(id, verifiedTask.assignees.add(author))
 
     override fun startWork(
         id: DoneTaskId,
@@ -199,34 +148,15 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         id: InProgressTaskId,
         author: HeroId
     ): EitherNel<PauseWorkError, PendingTask> =
-        taskRepository
-            .getTask(id)
-            .flatMap { task ->
-                when (task) {
-                    is InProgressTask -> Right(task)
-                    else -> Left(nonEmptyListOf(TaskNotInProgressError(task, id)))
-                }
-            }
-            .flatMap { verifiedTask ->
-                userRepository
-                    .getHero(author)
-                    .flatMap { existingAuthor ->
-                        if (verifiedTask.scope.assignees.containsNot(existingAuthor)) {
-                            Left(
-                                nonEmptyListOf(
-                                    HeroesNotInScopeError(
-                                        author,
-                                        verifiedTask.scope.key
-                                    )
-                                )
-                            )
-                        } else
-                            Right(existingAuthor)
-                    }
-            }
-            .flatMap { hero ->
-                taskRepository.pauseWork(id, hero)
-            }
+        either {
+            val task = taskRepository.getTask(id).bind()
+            val verifiedTask = when (task) {
+                is InProgressTask -> Right(task)
+                else -> Left(nonEmptyListOf(TaskNotInProgressError(task, id)))
+            }.bind()
+            taskRepository.areHeroesInScope(HeroIds(author), verifiedTask.scopeKey()).bind()
+            taskRepository.pauseWork(id).bind()
+        }
 
     override fun pauseWork(
         id: DoneTaskId,
@@ -243,33 +173,13 @@ class HeroesDeskImpl(private val userRepository: UserRepository, private val tas
         id: InProgressTaskId,
         author: HeroId
     ): EitherNel<EndWorkError, DoneTask> =
-        taskRepository
-            .getTask(id)
-            .flatMap { task ->
-                when (task) {
-                    is InProgressTask -> Right(task)
-                    else -> Left(nonEmptyListOf(TaskNotInProgressError(task, id)))
-                }
-            }
-            .flatMap { verifiedTask ->
-                userRepository
-                    .getHero(author)
-                    .flatMap { existingAuthor ->
-                        if (verifiedTask.scope.assignees.containsNot(existingAuthor)) {
-                            Left(
-                                nonEmptyListOf(
-                                    HeroesNotInScopeError(
-                                        author,
-                                        verifiedTask.scope.key
-                                    )
-                                )
-                            )
-                        } else
-                            Right(existingAuthor)
-                    }
-            }
-            .flatMap { hero ->
-                taskRepository.endWork(id, hero)
-            }
-
+        either {
+            val task = taskRepository.getTask(id).bind()
+            val verifiedTask = when (task) {
+                is InProgressTask -> Right(task)
+                else -> Left(nonEmptyListOf(TaskNotInProgressError(task, id)))
+            }.bind()
+            taskRepository.areHeroesInScope(HeroIds(author), verifiedTask.scopeKey()).bind()
+            taskRepository.endWork(id).bind()
+        }
 }

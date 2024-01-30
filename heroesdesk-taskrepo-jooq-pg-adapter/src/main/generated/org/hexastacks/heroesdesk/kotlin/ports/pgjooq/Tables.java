@@ -6,7 +6,8 @@ package org.hexastacks.heroesdesk.kotlin.ports.pgjooq;
 
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Scope;
 import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.ScopeUser;
-import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.User;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.Task;
+import org.hexastacks.heroesdesk.kotlin.ports.pgjooq.tables.TaskUser;
 
 
 /**
@@ -26,7 +27,12 @@ public class Tables {
     public static final ScopeUser SCOPE_USER = ScopeUser.SCOPE_USER;
 
     /**
-     * The table <code>heroesdeskschema.User</code>.
+     * The table <code>heroesdeskschema.Task</code>.
      */
-    public static final User USER = User.USER;
+    public static final Task TASK = Task.TASK;
+
+    /**
+     * The table <code>heroesdeskschema.Task_User</code>.
+     */
+    public static final TaskUser TASK_USER = TaskUser.TASK_USER;
 }

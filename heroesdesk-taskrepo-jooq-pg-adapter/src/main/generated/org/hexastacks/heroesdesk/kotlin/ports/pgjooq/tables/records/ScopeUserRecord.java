@@ -34,16 +34,16 @@ public class ScopeUserRecord extends UpdatableRecordImpl<ScopeUserRecord> implem
     }
 
     /**
-     * Setter for <code>heroesdeskschema.Scope_User.id</code>.
+     * Setter for <code>heroesdeskschema.Scope_User.user_id</code>.
      */
-    public void setId(String value) {
+    public void setUserId(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>heroesdeskschema.Scope_User.id</code>.
+     * Getter for <code>heroesdeskschema.Scope_User.user_id</code>.
      */
-    public String getId() {
+    public String getUserId() {
         return (String) get(1);
     }
 
@@ -77,7 +77,7 @@ public class ScopeUserRecord extends UpdatableRecordImpl<ScopeUserRecord> implem
 
     @Override
     public Field<String> field2() {
-        return ScopeUser.SCOPE_USER.ID;
+        return ScopeUser.SCOPE_USER.USER_ID;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ScopeUserRecord extends UpdatableRecordImpl<ScopeUserRecord> implem
 
     @Override
     public String component2() {
-        return getId();
+        return getUserId();
     }
 
     @Override
@@ -97,7 +97,7 @@ public class ScopeUserRecord extends UpdatableRecordImpl<ScopeUserRecord> implem
 
     @Override
     public String value2() {
-        return getId();
+        return getUserId();
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ScopeUserRecord extends UpdatableRecordImpl<ScopeUserRecord> implem
 
     @Override
     public ScopeUserRecord value2(String value) {
-        setId(value);
+        setUserId(value);
         return this;
     }
 
@@ -133,11 +133,11 @@ public class ScopeUserRecord extends UpdatableRecordImpl<ScopeUserRecord> implem
     /**
      * Create a detached, initialised ScopeUserRecord
      */
-    public ScopeUserRecord(String scopeKey, String id) {
+    public ScopeUserRecord(String scopeKey, String userId) {
         super(ScopeUser.SCOPE_USER);
 
         setScopeKey(scopeKey);
-        setId(id);
+        setUserId(userId);
         resetChangedOnNotNull();
     }
 }

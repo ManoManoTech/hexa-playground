@@ -1,13 +1,11 @@
 package org.hexastacks.heroesdesk.kotlin.impl.task
 
 import arrow.core.getOrElse
-import org.hexastacks.heroesdesk.kotlin.impl.TestUtils
 import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createDescriptionOrThrow
-import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createScopeOrThow
+import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createScopeKeyOrThrow
 import org.hexastacks.heroesdesk.kotlin.impl.TestUtils.createTitleOrThrow
-import org.hexastacks.heroesdesk.kotlin.impl.scope.Scope
-import org.hexastacks.heroesdesk.kotlin.impl.user.Hero
-import org.hexastacks.heroesdesk.kotlin.impl.user.Heroes
+import org.hexastacks.heroesdesk.kotlin.impl.scope.ScopeKey
+import org.hexastacks.heroesdesk.kotlin.impl.user.HeroIds
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -15,7 +13,7 @@ abstract class AbstractTaskTest<Id : TaskId, T : Task<Id>> {
 
     @Test
     fun `updateTitle should return a new task with the updated title`() {
-        val task = createTaskOrThrow("scopeKey", "taskId", "title", "description", "creator")
+        val task = createTaskOrThrow("scopeKey", "taskId", "title", "description")
         val newTitle = Title("new title").getOrElse { throw RuntimeException("new title should be valid") }
 
         val updatedTask = task.updateTitle(newTitle)
@@ -27,30 +25,22 @@ abstract class AbstractTaskTest<Id : TaskId, T : Task<Id>> {
         scopeKey: String,
         taskId: String,
         title: String,
-        description: String,
-        creator: String
+        description: String
     ): T {
-        val scope = createScopeOrThow(scopeKey)
+        val scope = createScopeKeyOrThrow(scopeKey)
         return createTaskOrThrow(
-            scope,
             createTaskIdOrThrow(scope, taskId),
             createTitleOrThrow(title),
-            createDescriptionOrThrow(description),
-            Hero(
-                TestUtils.createHeroNameOrThrow(creator),
-                TestUtils.createHeroIdOrThrow(creator)
-            )
+            createDescriptionOrThrow(description)
         )
     }
 
-    abstract fun createTaskIdOrThrow(scope: Scope, taskId: String): Id
+    abstract fun createTaskIdOrThrow(scope: ScopeKey, taskId: String): Id
 
     abstract fun createTaskOrThrow(
-        scope: Scope,
         id: Id,
         title: Title,
         description: Description,
-        creator: Hero,
-        assignees: Heroes = Heroes.empty
+        assignees: HeroIds = HeroIds.empty
     ): T
 }

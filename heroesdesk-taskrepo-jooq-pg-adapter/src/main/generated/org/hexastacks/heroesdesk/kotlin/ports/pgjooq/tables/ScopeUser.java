@@ -56,9 +56,9 @@ public class ScopeUser extends TableImpl<ScopeUserRecord> {
     public final TableField<ScopeUserRecord, String> SCOPE_KEY = createField(DSL.name("scope_key"), SQLDataType.VARCHAR(36).nullable(false), this, "");
 
     /**
-     * The column <code>heroesdeskschema.Scope_User.id</code>.
+     * The column <code>heroesdeskschema.Scope_User.user_id</code>.
      */
-    public final TableField<ScopeUserRecord, String> ID = createField(DSL.name("id"), SQLDataType.VARCHAR(36).nullable(false), this, "");
+    public final TableField<ScopeUserRecord, String> USER_ID = createField(DSL.name("user_id"), SQLDataType.VARCHAR(36).nullable(false), this, "");
 
     private ScopeUser(Name alias, Table<ScopeUserRecord> aliased) {
         this(alias, aliased, null);
@@ -107,11 +107,10 @@ public class ScopeUser extends TableImpl<ScopeUserRecord> {
 
     @Override
     public List<ForeignKey<ScopeUserRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.SCOPE_USER__FK_SCOPE, Keys.SCOPE_USER__FK_USER);
+        return Arrays.asList(Keys.SCOPE_USER__FK_SCOPE);
     }
 
     private transient Scope _scope;
-    private transient User _user;
 
     /**
      * Get the implicit join path to the <code>heroesdeskschema.Scope</code>
@@ -122,17 +121,6 @@ public class ScopeUser extends TableImpl<ScopeUserRecord> {
             _scope = new Scope(this, Keys.SCOPE_USER__FK_SCOPE);
 
         return _scope;
-    }
-
-    /**
-     * Get the implicit join path to the <code>heroesdeskschema.User</code>
-     * table.
-     */
-    public User user() {
-        if (_user == null)
-            _user = new User(this, Keys.SCOPE_USER__FK_USER);
-
-        return _user;
     }
 
     @Override
