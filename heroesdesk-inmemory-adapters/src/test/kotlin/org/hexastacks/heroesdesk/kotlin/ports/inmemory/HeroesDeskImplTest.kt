@@ -1,17 +1,23 @@
 package org.hexastacks.heroesdesk.kotlin.ports.inmemory
 
+import arrow.core.getOrElse
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
 import org.hexastacks.heroesdesk.kotlin.misc.HeroesDeskImpl
 import org.hexastacks.heroesdesk.kotlin.test.AbstractHeroesDeskTest
-import org.hexastacks.heroesdesk.kotlin.test.InstrumentedUserRepository
+import org.hexastacks.heroesdesk.kotlin.user.*
 
 class HeroesDeskImplTest : AbstractHeroesDeskTest() {
 
-    override fun createHeroesDesk(userRepo: InstrumentedUserRepository): HeroesDesk =
-        HeroesDeskImpl(userRepo, InMemoryMissionRepository())
+    private var userRepo: InstrumentedInMemoryUserRepository? = null
 
-    override fun instrumentedUserRepository(): InstrumentedUserRepository = InstrumentedInMemoryUserRepository()
+    override fun createHeroesDesk(): HeroesDesk {
+        userRepo = InstrumentedInMemoryUserRepository()
+        return HeroesDeskImpl(userRepo!!, InMemoryMissionRepository())
+    }
 
-    override fun nonExistingRawMissionId(): String = InMemoryMissionRepository.NON_EXISTING_MISSION_ID
+    override fun ensureAdminExistingOrThrow(id: String): AdminId =
+        userRepo!!.ensureAdminExistingOrThrow(id)
 
+    override fun ensureHeroExistingOrThrow(id: String): HeroId  =
+        userRepo!!.ensureHeroExistingOrThrow(id)
 }

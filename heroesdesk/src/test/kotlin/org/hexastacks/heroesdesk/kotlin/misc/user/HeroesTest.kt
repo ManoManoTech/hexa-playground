@@ -15,6 +15,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class HeroesTest {
+
     @Test
     fun `Heroes can be created empty`() {
         val heroes = Heroes(emptySet())
@@ -33,7 +34,7 @@ class HeroesTest {
     @Test
     fun `contains works on present element`() {
         val authorId = createHeroIdOrThrow("id")
-        val heroes = Heroes(Hero(createHeroNameOrThrow("name"), authorId))
+        val heroes = Heroes(Hero(authorId, createHeroNameOrThrow("name")))
 
         val contains = heroes.contains(authorId)
 
@@ -42,7 +43,7 @@ class HeroesTest {
 
     @Test
     fun `contains returns false on missing element`() {
-        val heroes = Heroes(Hero(createHeroNameOrThrow("name"), createHeroIdOrThrow("id")))
+        val heroes = Heroes(Hero(createHeroIdOrThrow("id"), createHeroNameOrThrow("name")))
 
         val contains = heroes.contains(createHeroIdOrThrow("heroIdNotIn"))
 
@@ -91,7 +92,7 @@ class HeroesTest {
     @Test
     fun `get return Hero on present id`() {
         val id = createHeroIdOrThrow("id")
-        val heroes = Heroes(Hero(createHeroNameOrThrow("name"), id))
+        val heroes = Heroes(Hero(id, createHeroNameOrThrow("name")))
 
         val hero: Hero? = heroes[id]
 

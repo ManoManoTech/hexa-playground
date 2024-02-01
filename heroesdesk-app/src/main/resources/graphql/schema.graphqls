@@ -1,0 +1,25 @@
+# The Root Query for the application
+type Query {
+    toRemoveOnceAQueryDefined: [String]! # one query is required: remove once a true one is defined
+}
+
+type Mutation {
+    createSquad(squadKey: ID!, name: String!, creator: String!): Squad
+    addUser(id: ID!, kind:UserKind! ): User
+}
+
+type Squad {
+    squadKey: ID!
+    name: String!
+}
+
+type User {
+    id: ID!
+    kind: UserKind!
+}
+
+enum UserKind {
+    ADMIN
+    HERO
+}
+

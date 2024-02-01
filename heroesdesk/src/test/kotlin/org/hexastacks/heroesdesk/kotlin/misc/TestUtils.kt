@@ -13,7 +13,6 @@ object TestUtils {
     fun createSquadKeyOrThrow(squadKey: String): SquadKey =
         SquadKey(squadKey).getOrElse { throw RuntimeException("squad key should be valid: $it") }
 
-
     fun createTitleOrThrow(title: String): Title =
         Title(title).getOrElse { throw RuntimeException("title should be valid: $it") }
 
@@ -27,6 +26,6 @@ object TestUtils {
         HeroId(heroId).getOrElse { throw RuntimeException("$heroId should be valid: $it") }
 
     fun createHeroOrThrow(creator: String, id: String): Hero =
-        Hero(createHeroNameOrThrow(creator), createHeroIdOrThrow(id))
+        Hero(createHeroIdOrThrow(id), createHeroNameOrThrow(creator))
 
 }

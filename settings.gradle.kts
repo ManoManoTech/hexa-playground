@@ -2,7 +2,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.7.0"
 }
 rootProject.name = "hexa-playground"
-include("heroesdesk", "heroesdesk-test", "heroesdesk-inmemory-adapters", "heroesdesk-missionrepo-jooq-pg-adapter")
+include("heroesdesk", "heroesdesk-test", "heroesdesk-inmemory-adapters", "heroesdesk-missionrepo-jooq-pg-adapter", "heroesdesk-app")
 
 dependencyResolutionManagement {
     versionCatalogs {
@@ -11,6 +11,7 @@ dependencyResolutionManagement {
             library("kotlin-reflect", "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
             val coroutinesVersion = "1.7.3"
             library("kotlin-coroutines", "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+            library("kotlin-serialization-json", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 
             val arrowVersion = "1.2.0"
             library("arrow-core", "io.arrow-kt:arrow-core:$arrowVersion")
@@ -30,6 +31,13 @@ dependencyResolutionManagement {
             val testContainerVersion = "1.18.3"
             library("testcontainer-jupiter", "org.testcontainers:junit-jupiter:$testContainerVersion")
             library("testcontainer-postgresql", "org.testcontainers:postgresql:$testContainerVersion")
+
+            val springBootVersion = "3.2.2"
+            library("spring-boot-starter-web", "org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+            library("spring-boot-starter-graphql", "org.springframework.boot:spring-boot-starter-graphql:$springBootVersion")
+            library("spring-boot-starter-test", "org.springframework.boot:spring-boot-starter-test:$springBootVersion")
+
+            library("logback-classic", "ch.qos.logback:logback-classic:1.2.6")
         }
     }
 }

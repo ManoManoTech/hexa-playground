@@ -12,7 +12,7 @@ dependencies {
     testImplementation(libs.jooq.codegen)
     testImplementation(libs.testcontainer.jupiter)
     testImplementation(libs.testcontainer.postgresql)
-    testImplementation("ch.qos.logback","logback-classic","1.2.6")
+    testImplementation(libs.logback.classic)
 }
 
 sourceSets {

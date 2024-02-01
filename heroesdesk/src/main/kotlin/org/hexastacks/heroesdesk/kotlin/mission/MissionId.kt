@@ -1,6 +1,6 @@
 package org.hexastacks.heroesdesk.kotlin.mission
 
-import org.hexastacks.heroesdesk.kotlin.misc.ErrorMessage
+import org.hexastacks.heroesdesk.kotlin.misc.ValidationError
 import org.hexastacks.heroesdesk.kotlin.squad.SquadKey
 
 sealed interface MissionId {
@@ -13,13 +13,15 @@ sealed interface MissionId {
     val squadKey: SquadKey
     val value: String
 
-    sealed interface MissionIdError : ErrorMessage
+    sealed interface MissionIdError : ValidationError
 
     data class BelowMinLengthError(val string: String) : MissionIdError {
-        override val message: String = "Mission id must be above $MIN_LENGTH characters, got ${string.length} in $string"
+        override val message: String =
+            "Mission id must be above $MIN_LENGTH characters, got ${string.length} in $string"
     }
 
     data class AboveMaxLengthError(val string: String) : MissionIdError {
-        override val message: String = "Mission id must be below $MAX_LENGTH characters, got ${string.length} in $string"
+        override val message: String =
+            "Mission id must be below $MAX_LENGTH characters, got ${string.length} in $string"
     }
 }

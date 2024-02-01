@@ -1,18 +1,25 @@
 package org.hexastacks.heroesdesk.kotlin.ports.inmemory
 
-import org.hexastacks.heroesdesk.kotlin.user.Admin
-import org.hexastacks.heroesdesk.kotlin.user.Hero
-import org.hexastacks.heroesdesk.kotlin.test.InstrumentedUserRepository
+import arrow.core.getOrElse
+import org.hexastacks.heroesdesk.kotlin.user.*
 
-class InstrumentedInMemoryUserRepository : InMemoryUserRepository(), InstrumentedUserRepository {
+class InstrumentedInMemoryUserRepository : InMemoryUserRepository() {
 
-    override fun ensureExisting(hero: Hero): Hero {
-        users.add(hero)
-        return hero
+    fun ensureAdminExistingOrThrow(id: String): AdminId {
+        val adminId = AdminId(id).getOrElse { throw IllegalArgumentException("Invalid admin id: $it") }
+        val name = UserName(id).getOrElse {
+            throw IllegalArgumentException("Invalid user name: $it")
+        }
+        addUser(Admin(adminId, name))
+        return Admin(adminId, name).id
     }
 
-    override fun ensureExisting(admin: Admin): Admin {
-        users.add(admin)
-        return admin
+    fun ensureHeroExistingOrThrow(id: String): HeroId {
+        val heroId = HeroId(id).getOrElse { throw IllegalArgumentException("Invalid hero id: $it") }
+        val name = UserName(id).getOrElse {
+            throw IllegalArgumentException("Invalid user name: $it")
+        }
+        addUser(Hero(heroId, name))
+        return Hero(heroId, name).id
     }
 }

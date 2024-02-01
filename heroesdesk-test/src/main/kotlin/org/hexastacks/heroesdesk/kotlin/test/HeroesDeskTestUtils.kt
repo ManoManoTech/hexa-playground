@@ -17,7 +17,7 @@ object HeroesDeskTestUtils {
 
     fun createHeroIdOrThrow(id: String) = HeroId(id).getOrElse { throw AssertionError() }
 
-    fun createHeroOrThrow(id: String) = Hero(createUserNameOrThrow(id), createHeroIdOrThrow(id))
+    fun createHeroOrThrow(id: String) = Hero(createHeroIdOrThrow(id), createUserNameOrThrow(id))
 
     fun createPendingMissionIdOrThrow(squadKey: String, id: String) =
         PendingMissionId(createSquadKeyOrThrow(squadKey), id).getOrElse { throw AssertionError() }
@@ -26,9 +26,8 @@ object HeroesDeskTestUtils {
         InProgressMissionId(createSquadKeyOrThrow(squadKey), id).getOrElse { throw AssertionError() }
 
     fun HeroesDesk.getMissionOrThrow(id: MissionId): Mission<*> = this.getMission(id).getOrElse { throw AssertionError() }
+
     fun createAdminIdOrThrow(adminId: String): AdminId = AdminId(adminId).getOrElse { throw AssertionError() }
-    fun createAdminOrThrow(adminId: String): Admin =
-        Admin(createAdminIdOrThrow(adminId), createUserNameOrThrow(adminId))
 
     fun createNameOrThrow(name: String): Name = Name(name).getOrElse { throw AssertionError() }
 

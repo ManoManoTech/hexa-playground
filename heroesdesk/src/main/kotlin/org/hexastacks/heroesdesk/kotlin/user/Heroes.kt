@@ -14,7 +14,7 @@ data class Heroes(val value: Set<Hero>) {
 
     fun contains(heroId: HeroId): Boolean =
         value
-            .any { it.id  == heroId }
+            .any { it.id == heroId }
 
     fun containsNot(hero: Hero): Boolean =
         value
