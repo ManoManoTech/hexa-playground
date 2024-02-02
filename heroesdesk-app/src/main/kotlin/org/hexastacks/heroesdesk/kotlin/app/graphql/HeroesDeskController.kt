@@ -33,6 +33,20 @@ class HeroesDeskController {
             throw HeroesDeskControllerException(it)
         }
 
+    @MutationMapping
+    fun assignSquad(
+        @Argument squadKey: String,
+        @Argument assignees: List<String>,
+        @Argument changeAuthor: String
+    ): GlResult {
+        // TODO heroesDesk.assignSquad()
+        return GlResult.SUCCESS
+    }
+}
+
+enum class GlResult {
+    SUCCESS,
+    FAILURE
 }
 
 class HeroesDeskControllerException(val errorMessages: NonEmptyList<ErrorMessage>) : RuntimeException()

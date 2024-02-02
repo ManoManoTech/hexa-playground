@@ -5,6 +5,7 @@ type Query {
 
 type Mutation {
     createSquad(squadKey: ID!, name: String!, creator: String!): Squad
+    assignSquad(squadKey: ID!, assignees: [String!]!, changeAuthor: String! ): Result
     addUser(id: ID!, kind:UserKind! ): User
 }
 
@@ -12,14 +13,16 @@ type Squad {
     squadKey: ID!
     name: String!
 }
-
 type User {
     id: ID!
     kind: UserKind!
 }
-
 enum UserKind {
     ADMIN
     HERO
 }
 
+enum Result{
+    SUCCESS
+    FAILURE
+}

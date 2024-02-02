@@ -6,9 +6,12 @@ import arrow.core.EitherNel
 import arrow.core.getOrElse
 import arrow.core.nonEmptyListOf
 import arrow.core.toNonEmptyListOrNull
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.hexastacks.heroesdesk.kotlin.HeroesDesk
-import org.hexastacks.heroesdesk.kotlin.app.graphql.ExceptionResolver.Companion.GRAPHQL_ERROR_TYPE
+import org.hexastacks.heroesdesk.kotlin.app.graphql.ExceptionResolver.Companion.HD_ERROR_TYPE
 import org.hexastacks.heroesdesk.kotlin.errors.*
 import org.hexastacks.heroesdesk.kotlin.mission.*
 import org.hexastacks.heroesdesk.kotlin.squad.Name
@@ -54,12 +57,12 @@ class HeroesDeskGraphQlAdapter(private val uri: String) : HeroesDesk {
                 errors
                     .jsonArray
                     .map {
-                        val errorType = it.jsonObject["extensions"]?.jsonObject?.get(GRAPHQL_ERROR_TYPE)?.jsonPrimitive?.content
-                        when (errorType) {
+                        val extensions = it.jsonObject["extensions"]?.jsonObject
+                        when (val errorType = extensions?.get(HD_ERROR_TYPE)?.jsonPrimitive?.content) {
                             AdminNotExistingError::class.simpleName -> AdminNotExistingError(creator)
-                            else -> {
-                                MissionRepositoryError("Unknown error error type $errorType with content $it")
-                            }
+                            SquadNameAlreadyExistingError::class.simpleName -> SquadNameAlreadyExistingError(name)
+                            SquadKeyAlreadyExistingError::class.simpleName -> SquadKeyAlreadyExistingError(squadKey)
+                            else -> MissionRepositoryError("Unknown error error type $errorType with content $it")
                         }
                     }
                     .toNonEmptyListOrNull()!!)
